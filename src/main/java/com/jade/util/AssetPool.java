@@ -22,6 +22,12 @@ public class AssetPool {
         return textures.get(resourceName);
     }
 
+    public static void addTexture(String resourceName, Texture texture) {
+        if (!textures.containsKey(resourceName)) {
+            textures.put(resourceName, texture);
+        }
+    }
+
 //    public static Sound getSound(String soundFile) {
 //        File file = new File(soundFile);
 //        if (hasSound(soundFile)) {

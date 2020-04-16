@@ -3,16 +3,12 @@ package com.jade.renderer;
 import com.jade.Camera;
 import com.jade.GameObject;
 import com.jade.UIObject;
+import com.jade.components.FontRenderer;
 import com.jade.components.Mesh;
 import com.jade.components.SpriteRenderer;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL20.glDisableVertexAttribArray;
-import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
 
 public class Renderer {
     private final int MAX_BATCH_SIZE = 100;
@@ -36,22 +32,34 @@ public class Renderer {
 
     public void addUIObject(UIObject u) {
         SpriteRenderer spriteRenderer = u.getComponent(SpriteRenderer.class);
+        FontRenderer fontRenderer = u.getComponent(FontRenderer.class);
         boolean wasAdded = false;
-        for (int i=0; i < uiBatches.size(); i++) {
-            UIBatcher batch = uiBatches.get(i);
-            if (batch.hasRoom() && batch.hasTexture(spriteRenderer.getSprite().getTexture())) {
+
+        if (spriteRenderer != null) {
+            for (int i = 0; i < uiBatches.size(); i++) {
+                UIBatcher batch = uiBatches.get(i);
+                if (batch.hasRoom() && batch.hasTexture(spriteRenderer.getSprite().getTexture())) {
+                    batch.add(spriteRenderer);
+                    wasAdded = true;
+                    break;
+                }
+            }
+
+            if (!wasAdded) {
+                UIBatcher batch = new UIBatcher(MAX_BATCH_SIZE, this, 0);
+                batch.start();
                 batch.add(spriteRenderer);
+                uiBatches.add(batch);
                 wasAdded = true;
-                break;
+            }
+        } else if (fontRenderer != null) {
+            wasAdded = true;
+            for (UIObject uiObject : fontRenderer.getUIObjects()) {
+                addUIObject(uiObject);
             }
         }
 
-        if (!wasAdded) {
-            UIBatcher batch = new UIBatcher(MAX_BATCH_SIZE, this, 0);
-            batch.start();
-            batch.add(spriteRenderer);
-            uiBatches.add(batch);
-        }
+        assert wasAdded : "Object was never added to renderer.";
     }
 
     public void render() {

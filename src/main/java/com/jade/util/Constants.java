@@ -1,11 +1,19 @@
 package com.jade.util;
 
+import com.jade.renderer.fonts.FontTexture;
 import org.joml.Vector4f;
+
+import java.awt.Font;
 
 public class Constants {
     public static final int INITIAL_WINDOW_WIDTH = 2560;
     public static final int INITIAL_WINDOW_HEIGHT = 1440;
     public static final String WINDOW_TITLE = "Minecraft";
+
+    // ======================================================================================================
+    // FONTS
+    // ======================================================================================================
+    public static FontTexture DEFAULT_FONT = new FontTexture(new Font("LLPixel", Font.PLAIN, 48), "US-ASCII");
 
     // ======================================================================================================
     // COLORS

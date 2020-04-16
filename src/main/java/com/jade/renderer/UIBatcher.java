@@ -12,6 +12,7 @@ import org.lwjgl.BufferUtils;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
@@ -43,6 +44,8 @@ public class UIBatcher implements Comparable<UIBatcher> {
     private final int VERTEX_SIZE_BYTES = JMath.sizeof(DataType.FLOAT) * VERTEX_SIZE;
 
     private List<SpriteRenderer> sprites;
+    private List<SpriteRenderer> spritesToRemove;
+
     private List<Texture> textures;
     private float[] vertices;
     private int[] indices;
@@ -60,6 +63,7 @@ public class UIBatcher implements Comparable<UIBatcher> {
         this.shader = AssetPool.getShader("shaders/default.glsl");
         this.textures = new ArrayList<>();
         this.sprites = new ArrayList<>();
+        this.spritesToRemove = new ArrayList<>();
         this.maxBatchSize = maxBatchSize;
 
         // 4 Vertices per quad
@@ -216,18 +220,20 @@ public class UIBatcher implements Comparable<UIBatcher> {
                 rebufferData = true;
             }
 
-//            if (spr.getQuad().shouldDelete) {
-//                deleteVertexProperties(i);
-//                spr.getQuad().shouldDelete = false;
-//                spr.setClean();
-//                spr.getQuad().isDirty = false;
-//                rebufferData = true;
-//            }
+            if (spr.shouldDelete()) {
+                deleteVertexProperties(i);
+                rebufferData = true;
+            }
         }
+        // Remove deleted sprites if needed
+        if (spritesToRemove.size() > 0) {
+            removeDeletedSprites();
+        }
+
         if (rebufferData) {
             verticesBuffer.put(vertices).flip();
             glBindBuffer(GL_ARRAY_BUFFER, vboID);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, verticesBuffer);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, Arrays.copyOfRange(vertices, 0, sprites.size() * VERTEX_SIZE * 4));
         }
 
         // Use our program
@@ -266,30 +272,44 @@ public class UIBatcher implements Comparable<UIBatcher> {
         shader.detach();
     }
 
-    public void deleteVertexProperties(int index) {
-        // Add it's transform and stuff to the vertex array
-        int offset = index * VERTEX_SIZE * 4;
+    private void removeDeletedSprites() {
+        for (SpriteRenderer sprite : spritesToRemove) {
+            sprites.remove(sprite);
+        }
+        spritesToRemove.clear();
+    }
 
-        for (int i=0; i < 4; i++) {
-            // Load position
-            vertices[offset] = 0.0f;
-            vertices[offset + 1] = 0.0f;
-            vertices[offset + 2] = 0.0f;
+    private void deleteVertexProperties(int index) {
+        spritesToRemove.add(sprites.get(index));
 
-            // Load color
-            vertices[offset + 3] = 0.0f;
-            vertices[offset + 4] = 0.0f;
-            vertices[offset + 5] = 0.0f;
-            vertices[offset + 6] = 0.0f;
+        // Shift everything back one over this guy,
+        // so that everything is in order...
+        // We will remove him after we finish checking other sprites
+        while (index < sprites.size() - 1) {
+            int offset = index * VERTEX_SIZE * 4;
+            int nextOffset = (index + 1) * VERTEX_SIZE * 4;
+            for (int i = 0; i < 4; i++) {
+                // Load position
+                vertices[offset] = vertices[nextOffset];
+                vertices[offset + 1] = vertices[nextOffset + 1];
+                vertices[offset + 2] = vertices[nextOffset + 2];
 
-            // Load tex coords
-            vertices[offset + 7] = 0.0f;
-            vertices[offset + 8] = 0.0f;
+                // Load color
+                vertices[offset + 3] = vertices[nextOffset + 3];
+                vertices[offset + 4] = vertices[nextOffset + 4];
+                vertices[offset + 5] = vertices[nextOffset + 5];
+                vertices[offset + 6] = vertices[nextOffset + 6];
 
-            // Load tex id
-            vertices[offset + 9] = 0.0f;
+                // Load tex coords
+                vertices[offset + 7] = vertices[nextOffset + 7];
+                vertices[offset + 8] = vertices[nextOffset + 8];
 
-            offset += VERTEX_SIZE;
+                // Load tex id
+                vertices[offset + 9] = vertices[nextOffset + 9];
+
+                offset += VERTEX_SIZE;
+            }
+            index++;
         }
     }
 

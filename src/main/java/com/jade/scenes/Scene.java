@@ -24,6 +24,10 @@ public abstract class Scene {
         this.uiObjects = new ArrayList<>();
     }
 
+    public Renderer getRenderer() {
+        return this.renderer;
+    }
+
     public void init() {
 
     }

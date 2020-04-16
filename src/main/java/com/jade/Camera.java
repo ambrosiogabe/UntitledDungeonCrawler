@@ -39,7 +39,7 @@ public class Camera {
                     0.1f, 100.0f);
         } else {
             projectionMatrix.identity();
-            projectionMatrix.ortho(-500.0f * aspect, 500.0f * aspect, -500.0f, 500.0f, 0.0f, 100.0f);
+            projectionMatrix.ortho(-1080.0f * aspect, 1080.0f * aspect, -1080.0f, 1080.0f, 0.0f, 100.0f);
             inverseProjection.identity();
             projectionMatrix.invert(inverseProjection);
         }

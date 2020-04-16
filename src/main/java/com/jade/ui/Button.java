@@ -31,7 +31,7 @@ public class Button extends Component {
 
     @Override
     public void update(float dt) {
-        Vector2f mouseScreen = new Vector2f(MouseListener.getNormX(), MouseListener.getNormY());
+        Vector4f mouseScreen = MouseListener.positionScreenCoords();
         if (mouseScreen.x > this.uiObject.transform.position.x && mouseScreen.x < this.uiObject.transform.position.x + this.uiObject.transform.scale.x &&
             mouseScreen.y > this.uiObject.transform.position.y && mouseScreen.y < this.uiObject.transform.position.y + this.uiObject.transform.scale.y) {
             if (this.state != 1 && this.state != 2) {

@@ -15,6 +15,7 @@ public class SpriteRenderer extends Component {
     private Shader shader = AssetPool.getShader("shaders/default.glsl");
 
     private boolean isDirty = false;
+    private boolean shouldDelete = false;
     private Transform lastTransform;
     private int lastSpriteId;
 
@@ -70,6 +71,14 @@ public class SpriteRenderer extends Component {
 
     public void setDirty() {
         this.isDirty = true;
+    }
+
+    public void delete() {
+        this.shouldDelete = true;
+    }
+
+    public boolean shouldDelete() {
+        return this.shouldDelete;
     }
 
     public void setColor(Vector4f color) {
