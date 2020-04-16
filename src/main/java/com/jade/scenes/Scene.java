@@ -43,4 +43,8 @@ public abstract class Scene {
     }
 
     public abstract void update(float dt);
+
+    public Camera camera() {
+        return this.camera;
+    }
 }

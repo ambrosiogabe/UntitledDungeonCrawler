@@ -162,14 +162,14 @@ public class UIBatcher implements Comparable<UIBatcher> {
 
         // Add 4 vertices with the appropriate properties to vertex array
         float xAdd = 1.0f;
-        float yAdd = 1.0f;
+        float yAdd = -1.0f;
         for (int i=0; i < 4; i++) {
             if (i == 1) {
                 yAdd = 0.0f;
             } else if (i == 2) {
                 xAdd = 0.0f;
             } else if (i == 3) {
-                yAdd = 1.0f;
+                yAdd = -1.0f;
             }
 
             // Load position

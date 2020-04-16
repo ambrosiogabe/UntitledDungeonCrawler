@@ -67,6 +67,7 @@ public class Texture {
         } else {
             assert false : "Texture error, cannot handle loading texture with '" + channels + "' channels";
         }
+        System.out.println(resourceName);
 
         // Free image
         STBImage.stbi_image_free(buffer);

@@ -77,6 +77,11 @@ public class SpriteRenderer extends Component {
         JMath.copyValues(color, this.color);
     }
 
+    public void setSprite(Sprite sprite) {
+        this.sprite = sprite;
+        this.isDirty = true;
+    }
+
     public Sprite getSprite() {
         return this.sprite;
     }

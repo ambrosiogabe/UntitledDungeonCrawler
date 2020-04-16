@@ -33,12 +33,13 @@ public class Camera {
     }
 
     public void adjustPerspective() {
+        this.caluclateAspect();
         if (isPerspective) {
             projectionMatrix = projectionMatrix.perspective(fov, (float) Window.getWindow().getWidth() / (float) Window.getWindow().getHeight(),
                     0.1f, 100.0f);
         } else {
             projectionMatrix.identity();
-            projectionMatrix.ortho(0.0f, 32.0f * 40.0f, 0.0f, 32.0f * 21.0f, 0.0f, 100.0f);
+            projectionMatrix.ortho(-500.0f * aspect, 500.0f * aspect, -500.0f, 500.0f, 0.0f, 100.0f);
             inverseProjection.identity();
             projectionMatrix.invert(inverseProjection);
         }

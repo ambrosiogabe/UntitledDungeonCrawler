@@ -1,5 +1,9 @@
 package com.jade.events;
 
+import com.jade.Window;
+import org.joml.Vector2f;
+import org.joml.Vector4f;
+
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
@@ -9,6 +13,9 @@ public class MouseListener {
     private double xPos, yPos, lastY, lastX;
     private boolean mouseButtonPressed[] = new boolean[3];
     private boolean isDragging;
+
+    private double deviceX, deviceY;
+    private Vector4f screenPosCoords = new Vector4f();
 
     private MouseListener() {
         this.scrollX = 0.0;
@@ -68,6 +75,14 @@ public class MouseListener {
         return (float)get().yPos;
     }
 
+    public static float getNormX() {
+        return (float)(get().xPos / Window.getWindow().getWidth()) * 2.0f - 1.0f;
+    }
+
+    public static float getNormY() {
+        return (float)(get().yPos / Window.getWindow().getHeight()) * 2.0f - 1.0f;
+    }
+
     public static float getDx() {
         return (float)(get().lastX - get().xPos);
     }
@@ -94,5 +109,17 @@ public class MouseListener {
         } else {
             return false;
         }
+    }
+
+    public static Vector4f positionScreenCoords() {
+        get().deviceX = get().xPos * 2.0 / Window.getWindow().getWidth() - 1.0;
+        get().deviceY = get().yPos * 2.0 / Window.getWindow().getHeight() - 1.0;
+
+        get().screenPosCoords.z = 0.0f;
+        get().screenPosCoords.x = (float)get().deviceX;
+        get().screenPosCoords.y = (float)get().deviceY;
+        get().screenPosCoords.w = 1.0f;
+        get().screenPosCoords.mul(Window.getScene().camera().getInverseProjection());
+        return get().screenPosCoords;
     }
 }

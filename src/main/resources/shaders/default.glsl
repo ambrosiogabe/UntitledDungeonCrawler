@@ -20,7 +20,7 @@ void main()
     fTexCoords = aTexCoords;
     fTexSlot = texID;
 
-    gl_Position = vec4(aPos, 1.0);
+    gl_Position = uProjection * uView * vec4(aPos, 1.0);
 }
 
 #type fragment

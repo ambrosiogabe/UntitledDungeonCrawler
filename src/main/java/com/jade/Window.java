@@ -20,9 +20,19 @@ public class Window {
     private static Window instance = null;
 
     private long glfwWindow = 0;
-    private int width, height;
+    private int width, height, halfWidth, halfHeight;
     private String title;
     private static Scene currentScene = null;
+
+    public static void framebufferSizeCallback(long window, int width, int height) {
+        Window.getWindow().setWidth(width);
+        Window.getWindow().setHeight(height);
+        //Window.getWindow().setAspect(width / height);
+        if (Window.getScene() != null) {
+            glViewport(0, 0, width, height);
+            Window.getScene().camera().adjustPerspective();
+        }
+    }
 
     private Window() {
         this.width = Constants.INITIAL_WINDOW_WIDTH;
@@ -52,6 +62,10 @@ public class Window {
         }
 
         return Window.instance;
+    }
+
+    public static Scene getScene() {
+        return getWindow().currentScene;
     }
 
     public void run() {
@@ -90,6 +104,7 @@ public class Window {
             throw new IllegalStateException("Failed to create the GLFW window.");
         }
 
+        glfwSetFramebufferSizeCallback(glfwWindow, Window::framebufferSizeCallback);
         glfwSetCursorPosCallback(glfwWindow, MouseListener::mousePosCallback);
         glfwSetMouseButtonCallback(glfwWindow, MouseListener::mouseButtonCallback);
         glfwSetScrollCallback(glfwWindow, MouseListener::mouseScrollCallback);
@@ -148,5 +163,13 @@ public class Window {
 
     public float getAspect() {
         return (float)this.width / (float)this.height;
+    }
+
+    public void setWidth(float val) {
+        this.width = (int)val;
+    }
+
+    public void setHeight(float val) {
+        this.height = (int)val;
     }
 }

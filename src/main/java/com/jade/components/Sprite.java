@@ -11,12 +11,16 @@ import org.joml.Vector4f;
 public class Sprite extends Component {
     private String pictureFile;
 
-    private int offsetX, offsetY, width, height, id;
+    private int offsetX = 0;
+    private int offsetY = 0;
+    private int width = 0;
+    private int height = 0;
+    private int id = -1;
     private Vector2f[] texCoords = {
-            new Vector2f(0.0f, 0.0f),
-            new Vector2f(0.0f, 1.0f),
+            new Vector2f(1.0f, 1.0f),
             new Vector2f(1.0f, 0.0f),
-            new Vector2f(1.0f, 1.0f)
+            new Vector2f(0.0f, 0.0f),
+            new Vector2f(0.0f, 1.0f)
     };
     private Texture texture = null;
 
@@ -40,13 +44,13 @@ public class Sprite extends Component {
         // Calculate texture coordinates
         float texWidth = (float)this.texture.getWidth();
         float texHeight = (float)this.texture.getHeight();
-        Vector2f topLeft = new Vector2f(offsetX, offsetY);
-        Vector2f bottomRight = new Vector2f(offsetX + width, offsetY + height);
+        Vector2f topLeft = new Vector2f(offsetX, offsetY + this.height);
+        Vector2f bottomRight = new Vector2f(offsetX + this.width, offsetY);
         this.texCoords = new Vector2f[4];
-        this.texCoords[0] = new Vector2f(topLeft.x / texWidth, topLeft.y / texHeight);                             // Top Left
-        this.texCoords[1] = new Vector2f((topLeft.x + (float)width) / texWidth, topLeft.y / texHeight);            // Top Right
-        this.texCoords[2] = new Vector2f((bottomRight.x - (float)width) / texWidth, bottomRight.y / texHeight);    // Bottom Left
-        this.texCoords[3] = new Vector2f(bottomRight.x / texWidth, bottomRight.y / texHeight);                     // Bottom Right
+        this.texCoords[0] = new Vector2f((topLeft.x + (float)this.width) / texWidth, topLeft.y / texHeight);            // Top Right
+        this.texCoords[1] = new Vector2f(bottomRight.x / texWidth, bottomRight.y / texHeight);                          // Bottom Right
+        this.texCoords[2] = new Vector2f((bottomRight.x - (float)this.width) / texWidth, bottomRight.y / texHeight);    // Bottom Left
+        this.texCoords[3] = new Vector2f(topLeft.x / texWidth, topLeft.y / texHeight);                                  // Top Left
     }
 
     @Override
