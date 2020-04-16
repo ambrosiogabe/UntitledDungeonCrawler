@@ -66,6 +66,10 @@ public class Window {
         return Window.instance;
     }
 
+    public static void stop() {
+        glfwSetWindowShouldClose(getWindow().glfwWindow, true);
+    }
+
     public static Scene getScene() {
         return getWindow().currentScene;
     }
@@ -126,6 +130,10 @@ public class Window {
         // creates the GLCapabilities instance and makes the OpenGL
         // bindings available for use.
         GL.createCapabilities();
+
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         Window.changeScene(0);
     }

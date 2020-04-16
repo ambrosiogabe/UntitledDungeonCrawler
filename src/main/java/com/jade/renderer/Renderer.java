@@ -54,9 +54,6 @@ public class Renderer {
             }
         } else if (fontRenderer != null) {
             wasAdded = true;
-            for (UIObject uiObject : fontRenderer.getUIObjects()) {
-                addUIObject(uiObject);
-            }
         }
 
         assert wasAdded : "Object was never added to renderer.";

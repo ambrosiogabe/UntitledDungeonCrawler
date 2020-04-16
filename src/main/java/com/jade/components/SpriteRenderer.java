@@ -82,8 +82,8 @@ public class SpriteRenderer extends Component {
     }
 
     public void setColor(Vector4f color) {
-        this.isDirty = true;
         JMath.copyValues(color, this.color);
+        this.isDirty = true;
     }
 
     public void setSprite(Sprite sprite) {

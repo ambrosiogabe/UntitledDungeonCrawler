@@ -134,6 +134,10 @@ public class UIBatcher implements Comparable<UIBatcher> {
         }
     }
 
+    public int numSprites() {
+        return this.sprites.size();
+    }
+
     public void loadVertexProperties(int index) {
         SpriteRenderer sprite = sprites.get(index);
         // Add it's transform and stuff to the vertex array
@@ -166,14 +170,14 @@ public class UIBatcher implements Comparable<UIBatcher> {
 
         // Add 4 vertices with the appropriate properties to vertex array
         float xAdd = 1.0f;
-        float yAdd = -1.0f;
+        float yAdd = 0.0f;
         for (int i=0; i < 4; i++) {
             if (i == 1) {
-                yAdd = 0.0f;
+                yAdd = 1.0f;
             } else if (i == 2) {
                 xAdd = 0.0f;
             } else if (i == 3) {
-                yAdd = -1.0f;
+                yAdd = 0.0f;
             }
 
             // Load position

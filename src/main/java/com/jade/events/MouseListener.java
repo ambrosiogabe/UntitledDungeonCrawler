@@ -113,7 +113,7 @@ public class MouseListener {
 
     public static Vector4f positionScreenCoords() {
         get().deviceX = getNormX();
-        get().deviceY = getNormY();
+        get().deviceY = -getNormY();
 
         get().screenPosCoords.z = 0.0f;
         get().screenPosCoords.x = (float)get().deviceX;

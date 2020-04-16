@@ -14,6 +14,7 @@ public class Constants {
     // FONTS
     // ======================================================================================================
     public static FontTexture DEFAULT_FONT = new FontTexture(new Font("LLPixel", Font.PLAIN, 48), "US-ASCII");
+    public static FontTexture EXTRA_LARGE_FONT = new FontTexture(new Font("LLPixel", Font.PLAIN, 96), "US-ASCII");
 
     // ======================================================================================================
     // COLORS
@@ -26,4 +27,5 @@ public class Constants {
     public static final Vector4f YELLOW = new Vector4f(1.0f, 1.0f, 0.0f, 1.0f);
     public static final Vector4f CYAN = new Vector4f(0.0f, 1.0f, 1.0f, 1.0f);
     public static final Vector4f PURPLE = new Vector4f(1.0f, 0.0f, 1.0f, 1.0f);
+    public static final Vector4f BLACK = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
 }

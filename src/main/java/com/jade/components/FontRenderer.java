@@ -7,6 +7,7 @@ import com.jade.renderer.fonts.FontTexture;
 import com.jade.util.Constants;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,16 +17,18 @@ public class FontRenderer extends Component {
     private List<UIObject> uiObjects;
     private String text;
     private float width;
+    private boolean firstTime = true;
 
     public FontRenderer(FontTexture fontTexture, String text) {
         this.fontTexture = fontTexture;
         this.text = text;
         this.uiObjects = new ArrayList<>();
+        calculateObjects(this.text);
     }
 
     @Override
     public void start() {
-        calculateObjects(this.text);
+        setPosition(uiObject.transform.position);
     }
 
     private void calculateObjects(String text) {
@@ -41,8 +44,8 @@ public class FontRenderer extends Component {
             }
         }
 
-        float currentX = uiObject.transform.position.x;
-        float currentY = uiObject.transform.position.y;
+        float currentX = 0;
+        float currentY = 0;
 
         char[] charArray = text.toCharArray();
         for (int i=0; i < charArray.length; i++) {
@@ -66,16 +69,28 @@ public class FontRenderer extends Component {
             } else {
                 newObject = new UIObject(new Vector3f(currentX, currentY, 0), new Vector3f(width, height, 0));
                 SpriteRenderer spriteRenderer = new SpriteRenderer(sprite);
-                spriteRenderer.setColor(Constants.RED);
                 newObject.addComponent(spriteRenderer);
                 uiObjects.add(newObject);
+                newObject.start();
                 Window.getScene().getRenderer().addUIObject(newObject);
             }
 
             currentX += fontTexture.getWidthOf(c);
+            this.width += fontTexture.getWidthOf(c);
         }
+    }
 
-        this.width = currentX - uiObject.transform.position.x;
+    public void setColor(Vector4f color) {
+        for (UIObject u : uiObjects) {
+            u.getComponent(SpriteRenderer.class).setColor(color);
+        }
+    }
+
+    public void setPosition(Vector3f position) {
+        for (UIObject u : uiObjects) {
+            u.transform.position.x += position.x;
+            u.transform.position.y += position.y;
+        }
     }
 
     private void modifyObject(UIObject u, int currentX, int currentY, int width, int height, Sprite sprite, SpriteRenderer spriteRenderer) {
@@ -87,8 +102,10 @@ public class FontRenderer extends Component {
     }
 
     public void setText(String newText) {
-        calculateObjects(newText);
-        this.text = newText;
+        if (!newText.equals(this.text)) {
+            calculateObjects(newText);
+            this.text = newText;
+        }
     }
 
     public String getText() {
@@ -97,6 +114,13 @@ public class FontRenderer extends Component {
 
     public List<UIObject> getUIObjects() {
         return this.uiObjects;
+    }
+
+    @Override
+    public void update(float dt) {
+        for (UIObject u : uiObjects) {
+            u.update(dt);
+        }
     }
 
     @Override

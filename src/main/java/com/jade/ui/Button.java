@@ -11,7 +11,7 @@ import org.joml.Vector4f;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
 
-public class Button extends Component {
+public abstract class Button extends Component {
     SpriteRenderer renderer;
     Sprite regular, hover, press;
 
@@ -29,26 +29,28 @@ public class Button extends Component {
         this.renderer = uiObject.getComponent(SpriteRenderer.class);
     }
 
+    public abstract void clicked();
+
     @Override
     public void update(float dt) {
         Vector4f mouseScreen = MouseListener.positionScreenCoords();
+        if (this.state == 2 && !MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_1)) {
+            clicked();
+        }
+
         if (mouseScreen.x > this.uiObject.transform.position.x && mouseScreen.x < this.uiObject.transform.position.x + this.uiObject.transform.scale.x &&
             mouseScreen.y > this.uiObject.transform.position.y && mouseScreen.y < this.uiObject.transform.position.y + this.uiObject.transform.scale.y) {
             if (this.state != 1 && this.state != 2) {
                 this.renderer.setSprite(this.hover);
-                System.out.println("Hover");
                 this.state = 1;
             } else if (this.state != 2 && MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_1)) {
                 this.state = 2;
                 this.renderer.setSprite(this.press);
-                System.out.println("Click");
             } else if (this.state == 2 && !MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_1)) {
                 this.state = 1;
                 this.renderer.setSprite(this.hover);
-                System.out.println("Release");
             }
         } else if (state != 0) {
-            System.out.println("No Hover");
             this.renderer.setSprite(this.regular);
             this.state = 0;
         }
