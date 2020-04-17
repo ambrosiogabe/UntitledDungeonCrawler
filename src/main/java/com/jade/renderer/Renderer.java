@@ -4,7 +4,7 @@ import com.jade.Camera;
 import com.jade.GameObject;
 import com.jade.UIObject;
 import com.jade.components.FontRenderer;
-import com.jade.components.Mesh;
+import com.jade.components.Model;
 import com.jade.components.SpriteRenderer;
 
 import java.util.ArrayList;
@@ -60,21 +60,12 @@ public class Renderer {
     }
 
     public void render() {
-//        for (GameObject go : gameObjects) {
-//            Mesh mesh;
-//            if ((mesh = go.getComponent(Mesh.class)) != null) {
-//                glBindVertexArray(mesh.getVAO());
-//                for (int i=0; i < mesh.getVertexAttributeLength(); i++) {
-//                    glEnableVertexAttribArray(i);
-//                }
-//
-//                glDrawElements(GL_TRIANGLES, mesh.getTriangleCount(), GL_UNSIGNED_INT, 0);
-//
-//                for (int i=0; i < mesh.getVertexAttributeLength(); i++) {
-//                    glDisableVertexAttribArray(i);
-//                }
-//            }
-//        }
+        for (GameObject go : gameObjects) {
+            Model model = go.getComponent(Model.class);
+            if (model != null) {
+                model.render();
+            }
+        }
 
         for (UIBatcher batch : uiBatches) {
             batch.render();

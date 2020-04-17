@@ -119,7 +119,7 @@ public class MouseListener {
         get().screenPosCoords.x = (float)get().deviceX;
         get().screenPosCoords.y = (float)get().deviceY;
         get().screenPosCoords.w = 1.0f;
-        get().screenPosCoords.mul(Window.getScene().camera().getInverseProjection());
+        get().screenPosCoords.mul(Window.getScene().camera().getOrthoInverseProjection());
         return get().screenPosCoords;
     }
 }

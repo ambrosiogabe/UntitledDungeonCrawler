@@ -242,8 +242,8 @@ public class UIBatcher implements Comparable<UIBatcher> {
 
         // Use our program
         shader.use();
-        shader.uploadMat4f("uProjection", renderer.camera().getProjectionMatrix());
-        shader.uploadMat4f("uView", renderer.camera().getViewMatrix());
+        shader.uploadMat4f("uProjection", renderer.camera().getOrthoProjection());
+        shader.uploadMat4f("uView", renderer.camera().getOrthoView());
         // Upload all the textures
         for (int i=0; i < textures.size(); i++) {
             shader.uploadTexture("TEX_" + (i + 1), i + 1);

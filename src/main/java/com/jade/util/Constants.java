@@ -1,6 +1,7 @@
 package com.jade.util;
 
 import com.jade.renderer.fonts.FontTexture;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.awt.Font;
@@ -9,6 +10,13 @@ public class Constants {
     public static final int INITIAL_WINDOW_WIDTH = 2560;
     public static final int INITIAL_WINDOW_HEIGHT = 1440;
     public static final String WINDOW_TITLE = "Minecraft";
+
+    public static final Vector3f LEFT = new Vector3f(-1.0f, 0.0f, 0.0f);
+    public static final Vector3f RIGHT = new Vector3f(1.0f, 0.0f, 0.0f);
+    public static final Vector3f UP = new Vector3f(0.0f, 1.0f, 0.0f);
+    public static final Vector3f DOWN = new Vector3f(0.0f, -1.0f, 0.0f);
+    public static final Vector3f FORWARD = new Vector3f(0.0f, 0.0f, 1.0f);
+    public static final Vector3f BACK = new Vector3f(0.0f, 0.0f, -1.0f);
 
     // ======================================================================================================
     // FONTS

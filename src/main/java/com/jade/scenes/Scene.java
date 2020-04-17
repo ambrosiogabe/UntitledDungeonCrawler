@@ -5,6 +5,7 @@ import com.jade.GameObject;
 import com.jade.UIObject;
 import com.jade.renderer.Renderer;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ public abstract class Scene {
     private Camera camera;
 
     public Scene() {
-        this.camera = new Camera(new Vector2f(0, 0));
+        this.camera = new Camera(new Vector3f(0, 0, 0));
         this.renderer = new Renderer(this.camera);
         renderer.init();
 

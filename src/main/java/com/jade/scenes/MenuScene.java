@@ -1,14 +1,14 @@
 package com.jade.scenes;
 
 import com.jade.GameObject;
+import com.jade.Transform;
 import com.jade.UIObject;
-import com.jade.components.FontRenderer;
-import com.jade.components.Sprite;
-import com.jade.components.SpriteRenderer;
+import com.jade.components.*;
 import com.jade.ui.Button;
 import com.jade.ui.buttons.ExitGameButton;
 import com.jade.ui.buttons.PlayGameButton;
 import com.jade.util.Constants;
+import com.jade.util.Time;
 import org.joml.Vector3f;
 
 public class MenuScene extends Scene {
@@ -19,6 +19,11 @@ public class MenuScene extends Scene {
 
     @Override
     public void init() {
+        GameObject testWall = new GameObject("Test wall", new Transform(new Vector3f(-0.0f, 0.0f, 0.0f)));
+        Model test = new Model("mesh-ext/brickWall.fbx");
+        testWall.addComponent(test);
+        this.addGameObject(testWall);
+
         UIObject startMenuButton = new UIObject(new Vector3f(750.0f, 500.0f, 0.0f), new Vector3f(400, 100, 0f));
         Sprite noHover = new Sprite("images/button-no-hover.png");
         Sprite hover = new Sprite("images/button-hover.png");
@@ -61,6 +66,11 @@ public class MenuScene extends Scene {
 
     @Override
     public void update(float dt) {
+        float speed = 0.5f;
+        float radius = 40.0f;
+        this.camera().position.x = (float)Math.sin(Time.getTime() * speed) * radius;
+        this.camera().position.z = (float)Math.cos(Time.getTime() * speed) * radius;
+
         for (GameObject g : gameObjects) {
             g.update(dt);
         }
