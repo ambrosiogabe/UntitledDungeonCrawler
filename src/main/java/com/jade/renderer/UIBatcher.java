@@ -20,8 +20,7 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL20.glDisableVertexAttribArray;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+import static org.lwjgl.opengl.GL30.*;
 
 public class UIBatcher implements Comparable<UIBatcher> {
 //
@@ -77,6 +76,10 @@ public class UIBatcher implements Comparable<UIBatcher> {
         this.zIndex = zIndex;
 
         generateIndices();
+    }
+
+    public void clear() {
+        glDeleteVertexArrays(vaoID);
     }
 
     public void start() {

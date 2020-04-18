@@ -2,7 +2,9 @@ package com.jade.scenes;
 
 import com.jade.Camera;
 import com.jade.GameObject;
+import com.jade.Transform;
 import com.jade.UIObject;
+import com.jade.components.Model;
 import com.jade.renderer.Renderer;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -27,6 +29,13 @@ public abstract class Scene {
 
     public Renderer getRenderer() {
         return this.renderer;
+    }
+
+    public void reset() {
+        this.gameObjects.clear();
+        this.uiObjects.clear();
+        this.camera.transform = new Transform();
+        this.renderer.reset();
     }
 
     public void init() {

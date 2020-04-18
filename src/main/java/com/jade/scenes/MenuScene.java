@@ -1,15 +1,17 @@
 package com.jade.scenes;
 
 import com.jade.GameObject;
-import com.jade.Transform;
 import com.jade.UIObject;
+import com.jade.Window;
 import com.jade.components.*;
+import com.jade.events.KeyListener;
 import com.jade.ui.Button;
 import com.jade.ui.buttons.ExitGameButton;
 import com.jade.ui.buttons.PlayGameButton;
 import com.jade.util.Constants;
-import com.jade.util.Time;
 import org.joml.Vector3f;
+
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_F1;
 
 public class MenuScene extends Scene {
 
@@ -19,10 +21,9 @@ public class MenuScene extends Scene {
 
     @Override
     public void init() {
-        GameObject testWall = new GameObject("Test wall", new Transform(new Vector3f(-0.0f, 0.0f, 0.0f)));
-        Model test = new Model("mesh-ext/brickWall.fbx");
-        testWall.addComponent(test);
-        this.addGameObject(testWall);
+        Window.getScene().camera().transform.position.z = -5.0f;
+        Window.getScene().camera().transform.position.x = 25.0f;
+        Window.getScene().camera().transform.rotation.y = 90.0f;
 
         UIObject startMenuButton = new UIObject(new Vector3f(750.0f, 500.0f, 0.0f), new Vector3f(400, 100, 0f));
         Sprite noHover = new Sprite("images/button-no-hover.png");
@@ -59,17 +60,22 @@ public class MenuScene extends Scene {
         gameTitle.addComponent(gameTitleLabel);
         this.addUIObject(gameTitle);
 
-        for (UIObject u : this.uiObjects) {
+        for (int i=0; i < this.gameObjects.size(); i++) {
+            GameObject g = this.gameObjects.get(i);
+            g.start();
+        }
+
+        for (int i=0; i < this.uiObjects.size(); i++) {
+            UIObject u = this.uiObjects.get(i);
             u.start();
         }
     }
 
     @Override
     public void update(float dt) {
-        float speed = 0.5f;
-        float radius = 40.0f;
-        this.camera().position.x = (float)Math.sin(Time.getTime() * speed) * radius;
-        this.camera().position.z = (float)Math.cos(Time.getTime() * speed) * radius;
+        if (KeyListener.isKeyPressed(GLFW_KEY_F1)) {
+            Window.changeScene(2);
+        }
 
         for (GameObject g : gameObjects) {
             g.update(dt);

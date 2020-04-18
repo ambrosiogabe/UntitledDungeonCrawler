@@ -1,20 +1,25 @@
 package com.jade;
 
 import com.jade.util.Constants;
+import com.sun.javafx.sg.prism.NGAmbientLight;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 public class Camera {
-    private Matrix4f projectionMatrix, viewMatrix, inverseProjection, orthoProjection, orthoView, orthoInverseProjection;
+    private Matrix4f projectionMatrix, viewMatrix, inverseProjection, orthoProjection, orthoView, orthoInverseProjection, modelMatrix;
     private float fov = 45;
     private float aspect = 0.0f;
 
-    public Vector3f position;
+    private Vector3f cameraForward = new Vector3f();
+    private Vector3f cameraUp = new Vector3f();
+    private Vector3f cameraRight = new Vector3f();
+
+    public Transform transform;
 
     public Camera(Vector3f position) {
-        this.position = position;
+        this.transform = new Transform(position);
 
         this.projectionMatrix = new Matrix4f();
         this.viewMatrix = new Matrix4f();
@@ -44,13 +49,33 @@ public class Camera {
     }
 
     public Matrix4f getViewMatrix() {
-        Vector3f cameraFront = Constants.FORWARD;
-        Vector3f cameraUp = Constants.UP;
+        cameraForward.x = (float)(Math.cos(Math.toRadians(transform.rotation.y)) * Math.cos(Math.toRadians(transform.rotation.x)));
+        cameraForward.y = (float)Math.sin(Math.toRadians(transform.rotation.x));
+        cameraForward.z = (float)(Math.sin(Math.toRadians(transform.rotation.y)) * Math.cos(Math.toRadians(transform.rotation.x)));
+        cameraForward.normalize();
+
+        cameraForward.cross(Constants.UP, cameraRight);
+        cameraRight.cross(cameraForward, cameraUp);
+
+        Vector3f tmp = new Vector3f(transform.position.x, transform.position.y, transform.position.z);
+        tmp.add(cameraForward);
 
         this.viewMatrix.identity();
-        this.viewMatrix = viewMatrix.lookAt(position, new Vector3f(), cameraUp);
+        this.viewMatrix = viewMatrix.lookAt(transform.position, tmp, cameraUp);
 
         return this.viewMatrix;
+    }
+
+    public Vector3f cameraForward() {
+        return this.cameraForward;
+    }
+
+    public Vector3f cameraUp() {
+        return this.cameraUp;
+    }
+
+    public Vector3f cameraRight() {
+        return this.cameraRight;
     }
 
     public Matrix4f getOrthoView() {

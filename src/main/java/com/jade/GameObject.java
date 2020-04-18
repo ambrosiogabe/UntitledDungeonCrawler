@@ -72,7 +72,8 @@ public class GameObject extends Serialize {
 
 
     public void update(double dt) {
-        for (Component c : components) {
+        for (int i=0; i < this.components.size(); i++) {
+            Component c = this.components.get(i);
             c.update(dt);
         }
     }
@@ -82,7 +83,8 @@ public class GameObject extends Serialize {
     }
 
     public void start() {
-        for (Component c : components) {
+        for (int i=0; i < this.components.size(); i++) {
+            Component c = this.components.get(i);
             c.start();
         }
     }

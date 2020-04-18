@@ -4,6 +4,7 @@ import com.jade.events.KeyListener;
 import com.jade.events.MouseListener;
 import com.jade.scenes.MenuScene;
 import com.jade.scenes.Scene;
+import com.jade.scenes.TestScene;
 import com.jade.scenes.WorldScene;
 import com.jade.util.Constants;
 import com.jade.util.Time;
@@ -25,6 +26,7 @@ public class Window {
     private int width, height, halfWidth, halfHeight;
     private String title;
     private static Scene currentScene = null;
+    private static boolean cursorIsLocked = false;
 
     public static void framebufferSizeCallback(long window, int width, int height) {
         Window.getWindow().setWidth(width);
@@ -50,6 +52,11 @@ public class Window {
                 break;
             case 1:
                 currentScene = new WorldScene();
+                currentScene.init();
+                break;
+            case 2:
+                currentScene.reset();
+                currentScene = new TestScene();
                 currentScene.init();
                 break;
             default:
@@ -131,7 +138,7 @@ public class Window {
         // bindings available for use.
         GL.createCapabilities();
 
-        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -148,7 +155,7 @@ public class Window {
             glfwPollEvents();
 
             glClearColor(Constants.WINDOW_CLEAR_COLOR.x, Constants.WINDOW_CLEAR_COLOR.y, Constants.WINDOW_CLEAR_COLOR.z, Constants.WINDOW_CLEAR_COLOR.w);
-            glClear(GL_COLOR_BUFFER_BIT);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             if (dt >= 0) {
                 currentScene.update(dt);
@@ -160,6 +167,8 @@ public class Window {
             endTime = Time.getTime();
             dt = endTime - beginTime;
             beginTime = endTime;
+
+            MouseListener.endFrame();
         }
     }
 
@@ -181,5 +190,21 @@ public class Window {
 
     public void setHeight(float val) {
         this.height = (int)val;
+    }
+
+    public static void lockCursor() {
+        if (!cursorIsLocked) {
+            // Lock cursor
+            glfwSetInputMode(getWindow().glfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            cursorIsLocked = true;
+        }
+    }
+
+    public static void unlockCursor() {
+        if (cursorIsLocked) {
+            // Lock cursor
+            glfwSetInputMode(getWindow().glfwWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            cursorIsLocked = false;
+        }
     }
 }

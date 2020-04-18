@@ -11,15 +11,15 @@ public class Transform extends Serialize {
     public Vector3f rotation;
 
     public Transform() {
-        init(new Vector3f(0.0f), new Vector3f(1.0f), new Vector3f(90.0f, 0.0f, 0.0f));
+        init(new Vector3f(0.0f), new Vector3f(1.0f), new Vector3f(0.0f, 0.0f, 0.0f));
     }
 
     public Transform(Vector3f position) {
-        init(position, new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(90.0f, 0.0f, 0.0f));
+        init(position, new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.0f, 0.0f));
     }
 
     public Transform(Vector3f position, Vector3f scale) {
-        init(position, scale, new Vector3f(90.0f, 0.0f, 0.0f));
+        init(position, scale, new Vector3f(0.0f, 0.0f, 0.0f));
     }
 
     public Transform(Vector3f position, Vector3f scale, Vector3f rotation) {

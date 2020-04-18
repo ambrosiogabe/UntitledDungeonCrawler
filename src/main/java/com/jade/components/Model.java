@@ -2,32 +2,51 @@ package com.jade.components;
 
 import com.jade.Component;
 import com.jade.Window;
+import com.jade.renderer.Mesh;
 import com.jade.renderer.Shader;
+import com.jade.renderer.Texture;
 import com.jade.util.AssetPool;
 import com.jade.util.Constants;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.lwjgl.PointerBuffer;
+import org.joml.Vector4f;
 import org.lwjgl.assimp.*;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.net.URL;
-import java.nio.ByteBuffer;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import static org.lwjgl.assimp.Assimp.AI_SCENE_FLAGS_INCOMPLETE;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 public class Model extends Component {
 
     private Matrix4f modelMatrix;
     private Shader shader = AssetPool.getShader("shaders/defaultObj.glsl");
+    private Texture texture = null;
     private List<Mesh> meshes;
+
+    private PointLight[] pointLights = new PointLight[4];
+
+    public Model(String resourceName, String texResource) {
+        this.modelMatrix = new Matrix4f();
+        this.texture = AssetPool.getTexture(texResource);
+
+        this.meshes = new ArrayList<>();
+
+        URL url = this.getClass().getClassLoader().getResource(resourceName);
+        assert url != null : "Error: Model file not found '" + resourceName + "'";
+
+        File file = new File(url.getFile());
+        AIScene scene = Assimp.aiImportFile(file.getAbsolutePath(), Assimp.aiProcess_Triangulate | Assimp.aiProcess_FlipUVs);
+
+        assert (scene != null && ((scene.mFlags() & AI_SCENE_FLAGS_INCOMPLETE) == 0) && scene.mRootNode() != null) :
+                "Error: Assimp could not load model properly '" + resourceName + "'\n" + Assimp.aiGetErrorString();
+
+        processNode(scene.mRootNode(), scene);
+    }
 
     public Model(String resourceName) {
         this.modelMatrix = new Matrix4f();
@@ -47,6 +66,7 @@ public class Model extends Component {
     }
 
     public Model(Mesh mesh) {
+        this.modelMatrix = new Matrix4f();
         this.meshes = new ArrayList<>();
         this.meshes.add(mesh);
     }
@@ -87,6 +107,10 @@ public class Model extends Component {
                 vertices.add(0.0f);
                 vertices.add(0.0f);
             }
+
+            vertices.add(-aiMesh.mNormals().x());
+            vertices.add(-aiMesh.mNormals().y());
+            vertices.add(aiMesh.mNormals().z());
         }
 
         // Process indices
@@ -101,19 +125,35 @@ public class Model extends Component {
         // TODO: Actually process the textures!!
 
         // TODO: Create resource manager for meshes so that they are not allocating GPU memory here!!!
-        Mesh mesh = new Mesh(vertices, indices);
-        //mesh.allocateGPUMemory();
-        return mesh;
+        return new Mesh(vertices, indices);
+    }
+
+    public void clear() {
+        for (Mesh mesh : meshes) {
+            mesh.clear();
+        }
     }
 
     private void calculateModelMatrix() {
         this.modelMatrix.identity();
 
         this.modelMatrix.scale(this.gameObject.transform.scale);
-        this.modelMatrix.rotate((float)Math.toRadians(this.gameObject.transform.rotation.x), Constants.RIGHT);
         this.modelMatrix.rotate((float)Math.toRadians(this.gameObject.transform.rotation.y), Constants.UP);
+        this.modelMatrix.rotate((float)Math.toRadians(this.gameObject.transform.rotation.x), Constants.RIGHT);
         this.modelMatrix.rotate((float)Math.toRadians(this.gameObject.transform.rotation.z), Constants.FORWARD);
         this.modelMatrix.translate(this.gameObject.transform.position);
+    }
+
+    public Matrix4f getModelMatrix() {
+        return this.modelMatrix;
+    }
+
+    public void addPointLight(PointLight light) {
+        for (int i=0; i < this.pointLights.length; i++) {
+            if (pointLights[i] == null) {
+                pointLights[i] = light;
+            }
+        }
     }
 
     public void render() {
@@ -124,11 +164,27 @@ public class Model extends Component {
         shader.uploadMat4f("uProjection", Window.getScene().camera().getProjectionMatrix());
         shader.uploadMat4f("uView", Window.getScene().camera().getViewMatrix());
         shader.uploadMat4f("uModel", this.modelMatrix);
+        if (texture != null) {
+            shader.uploadTexture("uTexture", 0);
+            glActiveTexture(GL_TEXTURE0);
+            texture.bind();
+            shader.uploadFloat("uUseTexture", 1.0f);
+        } else {
+            shader.uploadFloat("uUseTexture", 0.0f);
+        }
+
+        if (pointLights[0] != null) {
+            Vector3f pos = pointLights[0].gameObject.transform.position;
+            shader.uploadVec3f("uLightPos", new Vector3f(pos.x, pos.y, pos.z));
+        }
 
         for (Mesh mesh : meshes) {
             mesh.render();
         }
 
+        if (texture != null) {
+            texture.unbind();
+        }
         shader.detach();
     }
 

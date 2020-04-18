@@ -5,10 +5,13 @@ import com.jade.GameObject;
 import com.jade.UIObject;
 import com.jade.components.FontRenderer;
 import com.jade.components.Model;
+import com.jade.components.PointLight;
 import com.jade.components.SpriteRenderer;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.lwjgl.opengl.GL11.*;
 
 public class Renderer {
     private final int MAX_BATCH_SIZE = 100;
@@ -21,6 +24,20 @@ public class Renderer {
         this.camera = camera;
     }
 
+    public void reset() {
+        for (GameObject g : gameObjects) {
+            Model model;
+            if ((model = g.getComponent(Model.class)) != null) {
+                model.clear();
+            }
+        }
+        gameObjects.clear();
+        for (UIBatcher batch : uiBatches) {
+            batch.clear();
+        }
+        uiBatches.clear();
+    }
+
     public void init() {
         this.gameObjects = new ArrayList<>();
         this.uiBatches = new ArrayList<>();
@@ -31,11 +48,10 @@ public class Renderer {
     }
 
     public void addUIObject(UIObject u) {
-        SpriteRenderer spriteRenderer = u.getComponent(SpriteRenderer.class);
-        FontRenderer fontRenderer = u.getComponent(FontRenderer.class);
+        SpriteRenderer spriteRenderer;
         boolean wasAdded = false;
 
-        if (spriteRenderer != null) {
+        if ((spriteRenderer = u.getComponent(SpriteRenderer.class)) != null) {
             for (int i = 0; i < uiBatches.size(); i++) {
                 UIBatcher batch = uiBatches.get(i);
                 if (batch.hasRoom() && batch.hasTexture(spriteRenderer.getSprite().getTexture())) {
@@ -52,7 +68,7 @@ public class Renderer {
                 uiBatches.add(batch);
                 wasAdded = true;
             }
-        } else if (fontRenderer != null) {
+        } else if (u.getComponent(FontRenderer.class) != null) {
             wasAdded = true;
         }
 
@@ -60,6 +76,7 @@ public class Renderer {
     }
 
     public void render() {
+        glEnable(GL_DEPTH_TEST);
         for (GameObject go : gameObjects) {
             Model model = go.getComponent(Model.class);
             if (model != null) {
@@ -67,6 +84,7 @@ public class Renderer {
             }
         }
 
+        glDisable(GL_DEPTH_TEST);
         for (UIBatcher batch : uiBatches) {
             batch.render();
         }
