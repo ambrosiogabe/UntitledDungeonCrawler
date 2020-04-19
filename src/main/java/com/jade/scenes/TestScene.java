@@ -70,21 +70,21 @@ public class TestScene extends Scene {
     public void init() {
         Window.getScene().camera().transform.position.z = -5.0f;
         Window.getScene().camera().transform.position.x = 25.0f;
-        Window.getScene().camera().transform.rotation.y = 90.0f;
+        Window.getScene().camera().transform.rotation.y = 0.0f;
 
-        testLight = new GameObject("Test Light", new Transform(new Vector3f(10.0f, 8.0f, -10.0f)));
-        PointLight testLightComp = new PointLight(Constants.WHITE, 1.0f);
+        testLight = new GameObject("Test Light", new Transform(new Vector3f(12.0f, 8.0f, -5.0f)));
+        PointLight testLightComp = new PointLight(new Vector3f(1.0f, 0.95f, 0.71f), 1.0f);
         testLight.addComponent(testLightComp);
         this.addGameObject(testLight);
 
-        testWall = new GameObject("Test wall", new Transform(new Vector3f(0.0f, -15.0f, 0.0f)));
-        Model test = new Model("mesh-ext/brickWall.fbx", "images/BrickPaint.png");
+        testWall = new GameObject("Test wall", new Transform(new Vector3f(0.0f, 0.0f, 0.0f)));
+        Model test = new Model("mesh-ext/brickWall.obj", "images/BrickPaint.png");
         test.addPointLight(testLightComp);
         testWall.addComponent(test);
         this.addGameObject(testWall);
 
         GameObject cube = new GameObject("Test Cube", new Transform(new Vector3f(10.0f, 0.0f, -12.0f)));
-        Model cubeModel = new Model("mesh-ext/cube.fbx");
+        Model cubeModel = new Model("mesh-ext/cube.obj");
         cubeModel.addPointLight(testLightComp);
         cube.addComponent(cubeModel);
         this.addGameObject(cube);
@@ -146,6 +146,18 @@ public class TestScene extends Scene {
             camera().transform.rotation.y = yaw;
         } else {
             Window.unlockCursor();
+
+            if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
+                testLight.transform.position.y += dt * 50.0f;
+            } else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
+                testLight.transform.position.y -= dt * 50.0f;
+            }
+
+            if (KeyListener.isKeyPressed(GLFW_KEY_D)) {
+                testLight.transform.position.z += dt * 50.0f;
+            } else if (KeyListener.isKeyPressed(GLFW_KEY_A)) {
+                testLight.transform.position.z -= dt * 50.0f;
+            }
         }
 
         for (GameObject g : gameObjects) {

@@ -3,10 +3,7 @@ package com.jade.renderer;
 import com.jade.Camera;
 import com.jade.GameObject;
 import com.jade.UIObject;
-import com.jade.components.FontRenderer;
-import com.jade.components.Model;
-import com.jade.components.PointLight;
-import com.jade.components.SpriteRenderer;
+import com.jade.components.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,8 +76,11 @@ public class Renderer {
         glEnable(GL_DEPTH_TEST);
         for (GameObject go : gameObjects) {
             Model model = go.getComponent(Model.class);
+            Billboard billboard;
             if (model != null) {
                 model.render();
+            } else if ((billboard = go.getComponent(Billboard.class)) != null) {
+                billboard.render();
             }
         }
 

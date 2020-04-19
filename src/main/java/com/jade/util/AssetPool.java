@@ -1,5 +1,7 @@
 package com.jade.util;
 
+import com.jade.components.Model;
+import com.jade.renderer.Mesh;
 import com.jade.renderer.Shader;
 import com.jade.renderer.Texture;
 
@@ -11,6 +13,7 @@ public class AssetPool {
 //    static Map<String, Spritesheet> spritesheets = new HashMap<>();
     static Map<String, Shader> shaders = new HashMap<>();
     static Map<String, Texture> textures = new HashMap<>();
+    static Map<String, Mesh> meshes = new HashMap<>();
 //    static Map<String, Sound> sounds = new HashMap<>();
 
     public static Texture getTexture(String resourceName) {
@@ -25,6 +28,18 @@ public class AssetPool {
     public static void addTexture(String resourceName, Texture texture) {
         if (!textures.containsKey(resourceName)) {
             textures.put(resourceName, texture);
+        }
+    }
+
+    public static Mesh getMesh(String resourceName) {
+        return meshes.getOrDefault(resourceName, null);
+    }
+
+    public static void addMesh(String resourceName, Mesh mesh) {
+        if (!meshes.containsKey(resourceName)) {
+            meshes.put(resourceName, mesh);
+        } else if (mesh != meshes.get(resourceName)) {
+            mesh.clear();
         }
     }
 

@@ -9,19 +9,25 @@ out vec2 fTexCoords;
 
 out vec3 fFragPos;
 out vec3 fNormal;
+out vec3 fLightDir;
 
 uniform mat4 uView;
 uniform mat4 uProjection;
 uniform mat4 uModel;
+
+uniform vec3 uLightPos;
 
 void main()
 {
     fPos = aPos;
     fTexCoords = aTexCoords;
 
-    gl_Position = uProjection * uView * uModel * vec4(aPos, 1.0);
+    vec4 worldPos = uModel * vec4(aPos, 1.0);
+    gl_Position = uProjection * uView * worldPos;
     fFragPos = vec3(uModel * vec4(aPos, 1.0));
-    fNormal = mat3(transpose(inverse(uModel))) * aNormal;
+
+    fNormal = (uModel * vec4(aNormal, 0.0)).xyz;
+    fLightDir = uLightPos - worldPos.xyz;
 }
 
 #type fragment
@@ -30,7 +36,7 @@ uniform float uAspect;
 
 uniform sampler2D uTexture;
 uniform float uUseTexture;
-uniform vec3 uLightPos;
+uniform vec3 uLightColor;
 
 out vec4 color;
 
@@ -39,6 +45,7 @@ in vec2 fTexCoords;
 
 in vec3 fFragPos;
 in vec3 fNormal;
+in vec3 fLightDir;
 
 void main()
 {
@@ -50,16 +57,12 @@ void main()
         color = vec4(1, 0, 1, 1);
     }
 
-    vec3 lightColor = vec3(1, 0.95, 0.71);
-    float ambientStrength = 0.1;
-    vec3 ambient = ambientStrength * vec3(1, 0.95, 0.71);
+    vec3 unitNormal = normalize(fNormal);
+    vec3 unitLightDir = normalize(fLightDir);
 
-    vec3 norm = normalize(fNormal);
-    vec3 lightDir = normalize(uLightPos - fFragPos);
+    float nDotl = max(dot(unitNormal, unitLightDir), 0.0);
+    vec3 diffuse = nDotl * uLightColor;
 
-    float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = diff * lightColor;
-
-    vec3 result = (ambient + diffuse) * vec3(color);
-    color = vec4(result, 1);
+    vec3 result = diffuse * color.xyz;
+    color = vec4(result, 1) * color;
 }
