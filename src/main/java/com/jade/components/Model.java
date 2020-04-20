@@ -27,6 +27,7 @@ public class Model extends Component {
     private Shader shader = AssetPool.getShader("shaders/defaultObj.glsl");
     private Texture texture = null;
     private Mesh mesh;
+    private Vector3f tintColor;
 
     private PointLight[] pointLights = new PointLight[4];
 
@@ -34,6 +35,7 @@ public class Model extends Component {
         this.mesh = Mesh.loadVTNMesh(resourceName);
         this.modelMatrix = new Matrix4f();
         this.texture = AssetPool.getTexture(texResource);
+        this.tintColor = new Vector3f(1, 1, 1);
     }
 
     public Model(String resourceName) {
@@ -48,11 +50,11 @@ public class Model extends Component {
     private void calculateModelMatrix() {
         this.modelMatrix.identity();
 
-        this.modelMatrix.scale(this.gameObject.transform.scale);
+        this.modelMatrix.translate(this.gameObject.transform.position);
         this.modelMatrix.rotate((float)Math.toRadians(this.gameObject.transform.rotation.x), Constants.RIGHT);
         this.modelMatrix.rotate((float)Math.toRadians(this.gameObject.transform.rotation.y), Constants.UP);
         this.modelMatrix.rotate((float)Math.toRadians(this.gameObject.transform.rotation.z), Constants.FORWARD);
-        this.modelMatrix.translate(this.gameObject.transform.position);
+        this.modelMatrix.scale(this.gameObject.transform.scale);
     }
 
     public Matrix4f getModelMatrix() {
@@ -80,14 +82,18 @@ public class Model extends Component {
             shader.uploadTexture("uTexture", 0);
             glActiveTexture(GL_TEXTURE0);
             texture.bind();
-            shader.uploadFloat("uUseTexture", 1.0f);
+            shader.uploadInt("uUseTexture", 1);
+            shader.uploadVec3f("uTint", this.tintColor);
         } else {
-            shader.uploadFloat("uUseTexture", 0.0f);
+            shader.uploadInt("uUseTexture", 0);
         }
 
         if (pointLights[0] != null) {
+            shader.uploadInt("uUseLight", 1);
             shader.uploadVec3f("uLightPos", pointLights[0].gameObject.transform.position);
             shader.uploadVec3f("uLightColor", pointLights[0].getColor());
+        } else {
+            shader.uploadInt("uUseLight", 0);
         }
 
         mesh.render();
@@ -114,5 +120,9 @@ public class Model extends Component {
 
     public Mesh getMesh() {
         return this.mesh;
+    }
+
+    public void setTintColor(Vector3f color) {
+        this.tintColor = color;
     }
 }

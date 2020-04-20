@@ -7,7 +7,6 @@ layout (location = 2) in vec3 aNormal;
 out vec3 fPos;
 out vec2 fTexCoords;
 
-out vec3 fFragPos;
 out vec3 fNormal;
 out vec3 fLightDir;
 
@@ -24,7 +23,6 @@ void main()
 
     vec4 worldPos = uModel * vec4(aPos, 1.0);
     gl_Position = uProjection * uView * worldPos;
-    fFragPos = vec3(uModel * vec4(aPos, 1.0));
 
     fNormal = (uModel * vec4(aNormal, 0.0)).xyz;
     fLightDir = uLightPos - worldPos.xyz;
@@ -35,34 +33,37 @@ void main()
 uniform float uAspect;
 
 uniform sampler2D uTexture;
-uniform float uUseTexture;
 uniform vec3 uLightColor;
+uniform vec3 uTint;
+uniform int uUseTexture;
+uniform int uUseLight;
 
 out vec4 color;
 
 in vec3 fPos;
 in vec2 fTexCoords;
 
-in vec3 fFragPos;
 in vec3 fNormal;
 in vec3 fLightDir;
 
 void main()
 {
-    if (uUseTexture == 1.0) {
-        color = texture(uTexture, fTexCoords);
-    } else if (uUseTexture == 0.0) {
+    if (uUseTexture == 1) {
+        color = texture(uTexture, fTexCoords) * vec4(uTint, 1);
+    } else if (uUseTexture == 0) {
         color = vec4(1, 1, 1, 1);
     } else {
         color = vec4(1, 0, 1, 1);
     }
 
-    vec3 unitNormal = normalize(fNormal);
-    vec3 unitLightDir = normalize(fLightDir);
+    if (uUseLight == 1) {
+        vec3 unitNormal = normalize(fNormal);
+        vec3 unitLightDir = normalize(fLightDir);
 
-    float nDotl = max(dot(unitNormal, unitLightDir), 0.0);
-    vec3 diffuse = nDotl * uLightColor;
+        float nDotl = max(dot(unitNormal, unitLightDir), 0.0);
+        vec3 diffuse = nDotl * uLightColor;
 
-    vec3 result = diffuse * color.xyz;
-    color = vec4(result, 1) * color;
+        vec3 result = diffuse * color.xyz;
+        color = vec4(result, 1) * color;
+    }
 }

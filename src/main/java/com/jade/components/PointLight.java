@@ -1,13 +1,7 @@
 package com.jade.components;
 
 import com.jade.Component;
-import com.jade.UIObject;
-import com.jade.Window;
-import com.jade.prefabs.Prefabs;
-import com.jade.util.AssetPool;
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 public class PointLight extends Component {
     private Billboard billboard;

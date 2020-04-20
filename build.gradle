@@ -9,6 +9,7 @@ version '1.0-SNAPSHOT'
 
 project.ext.lwjglVersion = "3.2.3"
 project.ext.jomlVersion = "1.9.24"
+project.ext.imguiNatives = "natives-windows"
 
 switch (OperatingSystem.current()) {
     case OperatingSystem.LINUX:
@@ -27,9 +28,16 @@ switch (OperatingSystem.current()) {
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
+    // Java DearIMGui port
+    implementation 'io.imgui.java:binding:1.75-0.7.2'
+    implementation 'io.imgui.java:lwjgl3:1.75-0.7.2'
+    runtimeOnly "io.imgui.java:$imguiNatives:1.75-0.7.2"
+
+    // LWJGL/OpenGL/GLFW dependencies
     implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
     implementation "org.lwjgl:lwjgl"
