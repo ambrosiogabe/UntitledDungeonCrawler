@@ -2,6 +2,8 @@ package com.jade;
 
 import com.jade.file.Parser;
 import com.jade.file.Serialize;
+import imgui.ImGui;
+import imgui.enums.ImGuiCond;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +73,7 @@ public class GameObject extends Serialize {
     }
 
 
-    public void update(double dt) {
+    public void update(float dt) {
         for (int i=0; i < this.components.size(); i++) {
             Component c = this.components.get(i);
             c.update(dt);
@@ -80,6 +82,34 @@ public class GameObject extends Serialize {
 
     public void setNonserializable() {
         serializable = false;
+    }
+
+    public boolean isSerializable() {
+        return this.serializable;
+    }
+
+    public void imgui() {
+        ImGui.setNextWindowSize(600, Window.getWindow().getHeight(), ImGuiCond.Appearing);
+        ImGui.setNextWindowPos(Window.getWindow().getWidth() - 600, 0, ImGuiCond.Appearing);
+
+        ImGui.begin(this.name);
+        float[] xyzPosition = {this.transform.position.x, this.transform.position.y, this.transform.position.z};
+        float[] xyzScale = {this.transform.scale.x, this.transform.scale.y, this.transform.scale.z};
+        float[] xyzRotation = {this.transform.rotation.x, this.transform.rotation.y, this.transform.rotation.z};
+        ImGui.dragFloat3("Position", xyzPosition);
+        ImGui.dragFloat3("Scale", xyzScale);
+        ImGui.dragFloat3("Rotation", xyzRotation);
+        this.transform.position.set(xyzPosition);
+        this.transform.scale.set(xyzScale);
+        this.transform.rotation.set(xyzRotation);
+        ImGui.separator();
+        //ImGui.endMenu();
+
+        for (int i=0; i < this.components.size(); i++) {
+            this.components.get(i).imgui();
+            ImGui.separator();
+        }
+        ImGui.end();
     }
 
     public void start() {

@@ -23,6 +23,7 @@ public class Constants {
     // ======================================================================================================
     public static FontTexture DEFAULT_FONT = new FontTexture(new Font("LLPixel", Font.PLAIN, 48), "US-ASCII");
     public static FontTexture EXTRA_LARGE_FONT = new FontTexture(new Font("LLPixel", Font.PLAIN, 96), "US-ASCII");
+    public static FontTexture DEBUG_FONT = new FontTexture(new Font("Arial", Font.PLAIN, 24), "US-ASCII");
 
     // ======================================================================================================
     // COLORS

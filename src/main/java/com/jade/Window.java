@@ -395,7 +395,8 @@ public class Window {
             // IMPORTANT!!
             // Any Dear ImGui code SHOULD go between NewFrame()/Render() methods
             ImGui.newFrame();
-            showUi();
+            //showUi();
+            currentScene.imgui();
             ImGui.render();
 
             // After ImGui#render call we provide draw data into LWJGL3 renderer.

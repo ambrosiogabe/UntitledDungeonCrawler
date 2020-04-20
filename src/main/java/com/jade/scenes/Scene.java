@@ -18,6 +18,9 @@ public abstract class Scene {
     protected List<UIObject> uiObjects;
     private Camera camera;
 
+    protected int activeGameObject = -1;
+    protected int activeUiObject = -1;
+
     public Scene() {
         this.camera = new Camera(new Vector3f(0, 0, 0));
         this.renderer = new Renderer(this.camera);
@@ -54,6 +57,30 @@ public abstract class Scene {
 
     public void render() {
         this.renderer.render();
+    }
+
+    public void imgui() {
+        if (activeGameObject != -1) {
+            gameObjects.get(activeGameObject).imgui();
+        } else if (activeUiObject != -1) {
+            uiObjects.get(activeUiObject).imgui();
+        }
+    }
+
+    public List<GameObject> getAllGameObjects() {
+        return this.gameObjects;
+    }
+
+    public List<UIObject> getAllUIObjects() {
+        return this.uiObjects;
+    }
+
+    public void setActiveGameObject(int i) {
+        this.activeGameObject = i;
+    }
+
+    public void setActiveUiObject(int i) {
+        this.activeUiObject = i;
     }
 
     public abstract void update(float dt);

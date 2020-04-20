@@ -33,15 +33,21 @@ public class UIObject {
         this.transform = new Transform(position, scale, rotation);
     }
 
+    public void imgui() {
+        for (int i=0; i < this.components.size(); i++) {
+            this.components.get(i).imgui();
+        }
+    }
+
     public void update(float dt) {
-        for (Component c : this.components) {
-            c.update(dt);
+        for (int i=0; i < this.components.size(); i++) {
+            this.components.get(i).update(dt);
         }
     }
 
     public void start() {
-        for (Component c : this.components) {
-            c.start();
+        for (int i=0; i < this.components.size(); i++) {
+            this.components.get(i).start();
         }
     }
 

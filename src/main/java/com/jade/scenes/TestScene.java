@@ -66,6 +66,7 @@ public class TestScene extends Scene {
     GameObject debugGizmoArrow;
     GameObject cube;
     FontRenderer fpsLabel;
+    FontRenderer msLabel;
     float yaw = 0.0f;
     float pitch = 0.0f;
 
@@ -75,10 +76,15 @@ public class TestScene extends Scene {
         Window.getScene().camera().transform.position.x = 25.0f;
         Window.getScene().camera().transform.rotation.y = 90.0f;
 
-        UIObject fps = new UIObject(new Vector3f(10, 10, 0));
-        fpsLabel = new FontRenderer(Constants.DEFAULT_FONT, "FPS: ");
+        UIObject fps = new UIObject(new Vector3f(10, 1010, 0));
+        fpsLabel = new FontRenderer(Constants.DEBUG_FONT, "FPS: ");
         fps.addComponent(fpsLabel);
         this.addUIObject(fps);
+
+        UIObject ms = new UIObject(new Vector3f(10, 1040, 0));
+        msLabel = new FontRenderer(Constants.DEBUG_FONT, "MS Last Frame: ");
+        ms.addComponent(msLabel);
+        this.addUIObject(ms);
 
         testLight = new GameObject("Test Light", new Transform(new Vector3f(12.0f, 8.0f, -5.0f)));
         PointLight testLightComp = new PointLight(new Vector3f(1.0f, 0.95f, 0.71f), 1.0f);
@@ -117,6 +123,16 @@ public class TestScene extends Scene {
         cube.addComponent(cubeModel);
         this.addGameObject(cube);
 
+        GameObject cameraController = new GameObject("Camera Controller", new Transform());
+        cameraController.addComponent(new FlyingCameraController());
+        cameraController.setNonserializable();
+        this.addGameObject(cameraController);
+
+        GameObject debugKeyController = new GameObject("Debug Key Controller", new Transform());
+        debugKeyController.addComponent(new DebugKeyController());
+        debugKeyController.setNonserializable();
+        this.addGameObject(debugKeyController);
+
         for (int i=0; i < this.gameObjects.size(); i++) {
             GameObject g = this.gameObjects.get(i);
             g.start();
@@ -131,64 +147,7 @@ public class TestScene extends Scene {
     @Override
     public void update(float dt) {
         fpsLabel.setText(String.format("FPS: %.3f", (1.0f / dt)));
-
-        float velocity = 50.0f * dt;
-        Vector3f speedVec = new Vector3f(0.0f, 0.0f, 0.0f);
-
-        if (KeyListener.isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
-            Window.lockCursor();
-            if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
-                speedVec.add(camera().cameraForward());
-                speedVec.mul(velocity);
-                camera().transform.position.add(speedVec);
-//            testLight.transform.position.y += speed * dt * 0.1f;
-            } else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
-                speedVec.add(camera().cameraForward());
-                speedVec.mul(velocity);
-                camera().transform.position.sub(speedVec);
-//            testLight.transform.position.y -= speed * dt * 0.1f;
-            } else if (KeyListener.isKeyPressed(GLFW_KEY_A)) {
-                speedVec.add(camera().cameraRight());
-                speedVec.mul(velocity);
-                camera().transform.position.sub(speedVec);
-//            testLight.transform.position.z += speed * dt * 0.1f;
-            } else if (KeyListener.isKeyPressed(GLFW_KEY_D)) {
-                speedVec.add(camera().cameraRight());
-                speedVec.mul(velocity);
-                camera().transform.position.add(speedVec);
-//            testLight.transform.position.z -= speed * dt * 0.1f;
-            } else if (KeyListener.isKeyPressed(GLFW_KEY_E)) {
-                testLight.transform.position.x -= velocity * 0.1f;
-            } else if (KeyListener.isKeyPressed(GLFW_KEY_Q)) {
-                testLight.transform.position.x += velocity * 0.1f;
-            }
-
-            float sensitivity = 0.05f;
-            yaw -= MouseListener.getDx() * sensitivity;
-            pitch += MouseListener.getDy() * sensitivity;
-
-            if (pitch > 89.0f)
-                pitch = 89.0f;
-            if (pitch < -89.0f)
-                pitch = -89.0f;
-
-            camera().transform.rotation.x = pitch;
-            camera().transform.rotation.y = yaw;
-        } else {
-            Window.unlockCursor();
-
-            if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
-                testLight.transform.position.y += dt * 50.0f;
-            } else if (KeyListener.isKeyPressed(GLFW_KEY_S)) {
-                testLight.transform.position.y -= dt * 50.0f;
-            }
-
-            if (KeyListener.isKeyPressed(GLFW_KEY_D)) {
-                testLight.transform.position.z += dt * 50.0f;
-            } else if (KeyListener.isKeyPressed(GLFW_KEY_A)) {
-                testLight.transform.position.z -= dt * 50.0f;
-            }
-        }
+        msLabel.setText(String.format("MS Last Frame: %.3f", dt * 1000.0f));
 
         for (GameObject g : gameObjects) {
             g.update(dt);

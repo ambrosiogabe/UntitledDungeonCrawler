@@ -44,15 +44,15 @@ public class FontRenderer extends Component {
             }
         }
 
-        float currentX = 0;
-        float currentY = 0;
+        float currentX = uiObject ==  null ? 0 : uiObject.transform.position.x;
+        float currentY = uiObject == null ? 0 : uiObject.transform.position.y;
 
         char[] charArray = text.toCharArray();
         for (int i=0; i < charArray.length; i++) {
             char c = charArray[i];
             if (c == '\n') {
                 currentY -= fontTexture.getLineHeight();
-                currentX = uiObject.transform.position.x;
+                currentX = uiObject ==  null ? 0 : uiObject.transform.position.x;
                 continue;
             }
             int width = (int)fontTexture.getWidthOf(c);
