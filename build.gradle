@@ -32,6 +32,9 @@ repositories {
 }
 
 dependencies {
+    // Physics library jReact
+    implementation 'net.smert:jReactPhysics3D:0.4.0'
+
     // Java DearIMGui port
     implementation 'io.imgui.java:binding:1.75-0.7.2'
     implementation 'io.imgui.java:lwjgl3:1.75-0.7.2'

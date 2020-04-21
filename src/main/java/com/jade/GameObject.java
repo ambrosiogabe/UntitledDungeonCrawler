@@ -96,9 +96,27 @@ public class GameObject extends Serialize {
         float[] xyzPosition = {this.transform.position.x, this.transform.position.y, this.transform.position.z};
         float[] xyzScale = {this.transform.scale.x, this.transform.scale.y, this.transform.scale.z};
         float[] xyzRotation = {this.transform.rotation.x, this.transform.rotation.y, this.transform.rotation.z};
-        ImGui.dragFloat3("Position", xyzPosition);
-        ImGui.dragFloat3("Scale", xyzScale);
-        ImGui.dragFloat3("Rotation", xyzRotation);
+
+        ImGui.columns(2, "columns", false);
+        ImGui.setColumnWidth(0, ImGui.getFontSize() * 3);
+        ImGui.text("Position: ");
+        ImGui.sameLine();
+        ImGui.nextColumn();
+        ImGui.dragFloat3("##xyzPos", xyzPosition);
+
+        ImGui.nextColumn();
+        ImGui.text("Scale: ");
+        ImGui.sameLine();
+        ImGui.nextColumn();
+        ImGui.dragFloat3("##xyzScale", xyzScale);
+
+        ImGui.nextColumn();
+        ImGui.text("Rotation: ");
+        ImGui.sameLine();
+        ImGui.nextColumn();
+        ImGui.dragFloat3("##xyzRotation", xyzRotation);
+        ImGui.columns(1);
+
         this.transform.position.set(xyzPosition);
         this.transform.scale.set(xyzScale);
         this.transform.rotation.set(xyzRotation);

@@ -76,14 +76,16 @@ public class TestScene extends Scene {
         Window.getScene().camera().transform.position.x = 25.0f;
         Window.getScene().camera().transform.rotation.y = 90.0f;
 
-        UIObject fps = new UIObject(new Vector3f(10, 1010, 0));
+        UIObject fps = new UIObject("FPS Label", new Vector3f(10, 1010, 0));
         fpsLabel = new FontRenderer(Constants.DEBUG_FONT, "FPS: ");
         fps.addComponent(fpsLabel);
+        fps.setNonSerializable();
         this.addUIObject(fps);
 
-        UIObject ms = new UIObject(new Vector3f(10, 1040, 0));
+        UIObject ms = new UIObject("MS Label", new Vector3f(10, 1040, 0));
         msLabel = new FontRenderer(Constants.DEBUG_FONT, "MS Last Frame: ");
         ms.addComponent(msLabel);
+        ms.setNonSerializable();
         this.addUIObject(ms);
 
         testLight = new GameObject("Test Light", new Transform(new Vector3f(12.0f, 8.0f, -5.0f)));
@@ -101,6 +103,7 @@ public class TestScene extends Scene {
         Model debugModel = new Model("mesh-ext/debugGizmo_Arrow.obj", "images/defaultSprite.png");
         debugModel.setTintColor(new Vector3f(0, 1, 0));
         debugGizmoArrow.addComponent(debugModel);
+        debugGizmoArrow.setNonserializable();
         this.addGameObject(debugGizmoArrow);
 
         debugGizmoArrow = new GameObject("Debug Gizmo Arrow", new Transform(new Vector3f(0, -1f, 4)));
@@ -108,6 +111,7 @@ public class TestScene extends Scene {
         debugModel = new Model("mesh-ext/debugGizmo_Arrow.obj", "images/defaultSprite.png");
         debugModel.setTintColor(new Vector3f(1, 0, 0));
         debugGizmoArrow.addComponent(debugModel);
+        debugGizmoArrow.setNonserializable();
         this.addGameObject(debugGizmoArrow);
 
         debugGizmoArrow = new GameObject("Debug Gizmo Arrow", new Transform(new Vector3f(1, -1f, 5)));
@@ -115,6 +119,7 @@ public class TestScene extends Scene {
         debugModel = new Model("mesh-ext/debugGizmo_Arrow.obj", "images/defaultSprite.png");
         debugModel.setTintColor(new Vector3f(0, 0, 1));
         debugGizmoArrow.addComponent(debugModel);
+        debugGizmoArrow.setNonserializable();
         this.addGameObject(debugGizmoArrow);
 
         cube = new GameObject("Test Cube", new Transform(new Vector3f(10.0f, 0.0f, -12.0f)));

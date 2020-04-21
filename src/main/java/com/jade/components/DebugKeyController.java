@@ -8,7 +8,7 @@ import com.jade.events.KeyListener;
 
 import java.util.List;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_TAB;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class DebugKeyController extends Component {
 
@@ -30,7 +30,7 @@ public class DebugKeyController extends Component {
     public void update(float dt) {
         this.keyDebounceLeft -= dt;
 
-        if (KeyListener.isKeyPressed(GLFW_KEY_TAB) && this.keyDebounceLeft < 0) {
+        if (KeyListener.isKeyPressed(GLFW_KEY_RIGHT) && this.keyDebounceLeft < 0) {
             incrementActiveGameObject();
 
             this.keyDebounceLeft = this.keyDebounceTime;
@@ -41,11 +41,17 @@ public class DebugKeyController extends Component {
         if (this.activeUiObject == -1 && this.activeGameObject < this.gameObjects.size() - 1) {
             this.activeGameObject++;
             Window.getScene().setActiveGameObject(activeGameObject);
+            if (!this.gameObjects.get(activeGameObject).isSerializable()) {
+                incrementActiveGameObject();
+            }
         } else if (this.activeUiObject < this.uiObjects.size() - 1) {
             this.activeUiObject++;
             this.activeGameObject = -1;
             Window.getScene().setActiveGameObject(activeGameObject);
             Window.getScene().setActiveUiObject(activeUiObject);
+            if (!this.uiObjects.get(activeUiObject).isSerializable()) {
+                incrementActiveGameObject();
+            }
         } else if (this.activeUiObject == this.uiObjects.size() - 1) {
             this.activeUiObject = -1;
             Window.getScene().setActiveUiObject(activeUiObject);
