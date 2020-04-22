@@ -92,4 +92,26 @@ public class JMath {
 
         return new Vector2f(x, y);
     }
+
+    public static void rotate(Vector2f vec, float angle, Vector2f origin) {
+        float x = vec.x - origin.x;
+        float y = vec.y - origin.y;
+
+        float xPrime = vec.x + ((x * (float)Math.cos(Math.toRadians(angle))) - (y * (float)Math.sin(Math.toRadians(angle))));
+        float yPrime = vec.y + ((x * (float)Math.sin(Math.toRadians(angle))) + (y * (float)Math.cos(Math.toRadians(angle))));
+
+        vec.x = xPrime;
+        vec.y = yPrime;
+    }
+
+    public static void rotate(Vector2f vec, float angle, Vector3f origin) {
+        float x = vec.x - origin.x;
+        float y = vec.y - origin.y;
+
+        float xPrime = vec.x + ((x * (float)Math.cos(Math.toRadians(angle))) - (y * (float)Math.sin(Math.toRadians(angle))));
+        float yPrime = vec.y + ((x * (float)Math.sin(Math.toRadians(angle))) + (y * (float)Math.cos(Math.toRadians(angle))));
+
+        vec.x = xPrime;
+        vec.y = yPrime;
+    }
 }

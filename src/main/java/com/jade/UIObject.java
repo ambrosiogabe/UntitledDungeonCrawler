@@ -135,4 +135,8 @@ public class UIObject {
         components.add(c);
         c.uiObject = this;
     }
+
+    public String getName() {
+        return this.name;
+    }
 }

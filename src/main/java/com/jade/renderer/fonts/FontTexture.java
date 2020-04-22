@@ -19,6 +19,7 @@ public class FontTexture {
     private String charSetName;
     private Map<Character, CharInfo> charMap;
     private float lineHeight;
+    private float halfLineHeight;
 
     private Texture texture;
     private int width, height;
@@ -36,8 +37,16 @@ public class FontTexture {
         return charMap.get(c).getWidth();
     }
 
+    public float getHalfWidthOf(char c) {
+        return charMap.get(c).getHalfWidth();
+    }
+
     public float getLineHeight() {
         return this.lineHeight;
+    }
+
+    public float getHalfLineHeight() {
+        return this.halfLineHeight;
     }
 
     public float getWidthOf(String str) {
@@ -84,6 +93,7 @@ public class FontTexture {
         this.width = 0;
         this.height = fontMetrics.getHeight();
         this.lineHeight = fontMetrics.getHeight() * 1.3f;
+        this.halfLineHeight = this.lineHeight / 2.0f;
         int x = fontMetrics.getFont().getSize() * rowLength;
         int y = 0;
         for (char c : allChars.toCharArray()) {

@@ -26,7 +26,7 @@ public class MenuScene extends Scene {
         Window.getScene().camera().transform.position.x = 25.0f;
         Window.getScene().camera().transform.rotation.y = 90.0f;
 
-        UIObject startMenuButton = new UIObject("Start Button", new Vector3f(750.0f, 500.0f, 0.0f), new Vector3f(400, 100, 0f));
+        UIObject startMenuButton = new UIObject("Start Button", new Vector3f(930.0f, 510.0f, 0.0f), new Vector3f(400, 100, 0f));
         Sprite noHover = new Sprite("images/button-no-hover.png");
         Sprite hover = new Sprite("images/button-hover.png");
         Sprite press = new Sprite("images/button-press.png");
@@ -37,7 +37,7 @@ public class MenuScene extends Scene {
         startMenuButton.addComponent(button);
         this.addUIObject(startMenuButton);
 
-        UIObject exitGameButton = new UIObject("Exit Button", new Vector3f(750.0f, 300.0f, 0.0f), new Vector3f(400, 100, 0f));
+        UIObject exitGameButton = new UIObject("Exit Button", new Vector3f(930.0f, 310.0f, 0.0f), new Vector3f(400, 100, 0f));
         noHover = (Sprite)noHover.copy();
         Button exitButton = new ExitGameButton(noHover, (Sprite)hover.copy(), (Sprite)press.copy());
         exitGameButton.addComponent(exitButton);

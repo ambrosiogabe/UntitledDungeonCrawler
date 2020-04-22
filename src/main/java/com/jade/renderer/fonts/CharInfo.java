@@ -9,6 +9,8 @@ public class CharInfo {
 
     private final int width;
     private final int height;
+    private final int halfWidth;
+    private final int halfHeight;
 
     private Vector2f[] texCoords = new Vector2f[4];
 
@@ -17,6 +19,8 @@ public class CharInfo {
         this.sourceY = sourceY;
         this.width = width;
         this.height = height;
+        this.halfWidth = (int)(this.width / 2.0f);
+        this.halfHeight = (int)(this.height / 2.0f);
     }
 
     public void makeTexCoords(int overallWidth, int overallHeight) {
@@ -53,5 +57,13 @@ public class CharInfo {
 
     public int getHeight() {
         return height;
+    }
+
+    public int getHalfWidth() {
+        return this.halfWidth;
+    }
+
+    public int getHalfHeight() {
+        return this.halfHeight;
     }
 }

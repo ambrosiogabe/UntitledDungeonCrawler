@@ -111,12 +111,21 @@ public class FontRenderer extends Component {
             int width = (int)fontTexture.getWidthOf(c);
             int height = (int)fontTexture.getLineHeight();
 
+            if (i > 0) {
+                // TODO: Make it so that font actually rotates about the center of the object...
+                float widthToAdd = fontTexture.getHalfWidthOf(c) + fontTexture.getHalfWidthOf(charArray[i - 1]);
+                float heightToAdd = fontTexture.getLineHeight();
+                currentX += widthToAdd * (float)Math.cos(Math.toRadians(uiObject.transform.rotation.z));
+                currentY += heightToAdd * (float)Math.sin(Math.toRadians(uiObject.transform.rotation.z));
+
+//                currentX += widthToAdd;
+//                currentY += heightToAdd;
+                this.width = widthToAdd;
+            }
+
             UIObject obj = uiObjects.get(i);
             SpriteRenderer spriteRenderer = obj.getComponent(SpriteRenderer.class);
             modifyObject(obj, (int)currentX, (int)currentY, width, height, spriteRenderer.getSprite(), spriteRenderer);
-
-            currentX += fontTexture.getWidthOf(c);
-            this.width += fontTexture.getWidthOf(c);
         }
     }
 
@@ -127,8 +136,9 @@ public class FontRenderer extends Component {
         }
     }
 
-    public void setPosition(Vector3f position) {
+    public void setPosition(Vector3f position, Vector3f rotation) {
         this.uiObject.transform.position = position;
+        this.uiObject.transform.rotation = rotation;
         calculateObjectPositions();
     }
 
@@ -137,6 +147,7 @@ public class FontRenderer extends Component {
         u.transform.position.y = currentY;
         u.transform.scale.x = width;
         u.transform.scale.y = height;
+        u.transform.rotation.z = uiObject.transform.rotation.z;
         spriteRenderer.setSprite(sprite);
         spriteRenderer.setColor(this.color);
     }
@@ -178,8 +189,8 @@ public class FontRenderer extends Component {
 
     @Override
     public void update(float dt) {
-        if (!this.uiObject.transform.position.equals(this.lastTransform.position)) {
-            this.setPosition(this.uiObject.transform.position);
+        if (!this.uiObject.transform.position.equals(this.lastTransform.position) || !this.uiObject.transform.rotation.equals(this.lastTransform.rotation)) {
+            this.setPosition(this.uiObject.transform.position, this.uiObject.transform.rotation);
             Transform.copyValues(this.uiObject.transform, this.lastTransform);
         }
 

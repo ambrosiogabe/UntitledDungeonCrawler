@@ -35,22 +35,14 @@ public class Transform extends Serialize {
     public Transform copy() {
         Transform transform = new Transform(JMath.copy(this.position));
         transform.scale = JMath.copy(this.scale);
-        transform.rotation = this.rotation;
+        transform.rotation = JMath.copy(this.rotation);
         return transform;
     }
 
     public static void copyValues(Transform from, Transform to) {
-        to.position.x = from.position.x;
-        to.position.y = from.position.y;
-        to.position.z = from.position.z;
-
-        to.scale.x = from.scale.x;
-        to.scale.y = from.scale.y;
-        to.scale.z = from.scale.z;
-
-        to.rotation.x = from.rotation.x;
-        to.rotation.y = from.rotation.y;
-        to.rotation.z = from.rotation.z;
+        to.position.set(from.position);
+        to.scale.set(from.scale);
+        to.rotation.set(from.rotation);
     }
 
     @Override
@@ -111,8 +103,8 @@ public class Transform extends Serialize {
         if (!(o instanceof Transform)) return false;
 
         Transform other = (Transform)o;
-        return other.position.x == this.position.x && other.position.y == this.position.y && other.position.z == this.position.z &&
-                other.scale.x == this.scale.x && other.scale.y == this.scale.y && other.scale.z == this.scale.z &&
-                other.rotation.x == this.rotation.x && other.rotation.y == this.rotation.y && other.rotation.z == this.rotation.z;
+        return other.position.equals(this.position) &&
+                other.scale.equals(this.scale) &&
+                other.rotation.equals(this.rotation);
     }
 }

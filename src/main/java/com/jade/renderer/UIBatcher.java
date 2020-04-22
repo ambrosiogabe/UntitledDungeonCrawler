@@ -3,8 +3,10 @@ package com.jade.renderer;
 import com.jade.Window;
 import com.jade.components.SpriteRenderer;
 import com.jade.util.AssetPool;
+import com.jade.util.Constants;
 import com.jade.util.JMath;
 import com.jade.util.enums.DataType;
+import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
@@ -171,25 +173,30 @@ public class UIBatcher implements Comparable<UIBatcher> {
             assert texSlot != 0 : "Texture should be assigned to this batch.";
         }
 
+
+        // Get transform matrix to apply transformations
+        // TODO: Test this, consider making it faster by doing operations by hand
+        Matrix4f transform = new Matrix4f();
+        transform.translate(sprite.uiObject.transform.position);
+        transform.rotate((float)Math.toRadians(sprite.uiObject.transform.rotation.z), Constants.FORWARD);
+        transform.scale(sprite.uiObject.transform.scale);
+
         // Add 4 vertices with the appropriate properties to vertex array
-        float xAdd = 1.0f;
-        float yAdd = 0.0f;
+        float xAdd = 0.5f;
+        float yAdd = -0.5f;
         for (int i=0; i < 4; i++) {
             if (i == 1) {
-                yAdd = 1.0f;
+                yAdd = 0.5f;
             } else if (i == 2) {
-                xAdd = 0.0f;
+                xAdd = -0.5f;
             } else if (i == 3) {
-                yAdd = 0.0f;
+                yAdd = -0.5f;
             }
 
-            // Load position
-            // Make sure to shift the vertices over 1 scale in case the scale is negative so that the object flips about the center
-            vertices[offset] = sprite.uiObject.transform.position.x + (xAdd * sprite.uiObject.transform.scale.x);
-            if (sprite.uiObject.transform.scale.x < 0) vertices[offset] += sprite.uiObject.transform.scale.x * -1;
-            vertices[offset + 1] = sprite.uiObject.transform.position.y + (yAdd * sprite.uiObject.transform.scale.y);
-            if (sprite.uiObject.transform.scale.y < 0) vertices[offset + 1] += sprite.uiObject.transform.scale.y * -1;
-            vertices[offset + 2] = sprite.uiObject.transform.position.z;
+            Vector4f currentPos = new Vector4f(xAdd, yAdd, 0.0f, 1.0f).mul(transform);
+            vertices[offset] = currentPos.x;
+            vertices[offset + 1] = currentPos.y;
+            vertices[offset + 2] = currentPos.z;
 
             // Load color
             vertices[offset + 3] = color.x;
