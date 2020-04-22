@@ -29,11 +29,12 @@ switch (OperatingSystem.current()) {
 repositories {
     mavenCentral()
     jcenter()
+    flatDir {
+        dirs 'libraries'
+    }
 }
 
 dependencies {
-    // Physics library jReact
-    implementation 'net.smert:jReactPhysics3D:0.4.0'
 
     // Java DearIMGui port
     implementation 'io.imgui.java:binding:1.75-0.7.2'
