@@ -27,7 +27,7 @@ public class ParticleBuoyancy implements ParticleForceGenerator {
     @Override
     public void updateForce(Particle particle, float duration) {
         // Calculate the submersion depth
-        float depth = particle.getPosition().y;
+        float depth = particle.uiObject.transform.position.y;
 
         // Check if we're out of the water
         // axes are flip negative is up in y and positive is down

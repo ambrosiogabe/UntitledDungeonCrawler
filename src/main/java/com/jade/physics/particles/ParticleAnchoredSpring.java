@@ -17,7 +17,7 @@ public class ParticleAnchoredSpring implements ParticleForceGenerator {
     @Override
     public void updateForce(Particle particle, float duration) {
         // Calculate vector of the spring
-        Vector3f force = new Vector3f(particle.getPosition());
+        Vector3f force = new Vector3f(particle.uiObject.transform.position);
         Vector3f tmpAnchor = new Vector3f(anchor);
         force.add(tmpAnchor.mul(-1));
 

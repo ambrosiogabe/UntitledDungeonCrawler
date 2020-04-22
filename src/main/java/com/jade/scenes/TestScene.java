@@ -5,12 +5,16 @@ import com.jade.Transform;
 import com.jade.UIObject;
 import com.jade.Window;
 import com.jade.components.*;
+import com.jade.events.KeyListener;
 import com.jade.physics.particles.*;
 import com.jade.physics.rigidbody.ForceRegistry;
 import com.jade.physics.rigidbody.Rigidbody;
 import com.jade.util.Constants;
+import com.jade.util.JMath;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
 
 public class TestScene extends Scene {
     float cubeVertices[] = {
@@ -59,6 +63,8 @@ public class TestScene extends Scene {
 
     private FontRenderer fpsLabel;
     private FontRenderer msLabel;
+    private UIObject springVisual;
+    private boolean doPhysics = false;
 
     Particle particle;
     Particle particle2;
@@ -82,10 +88,15 @@ public class TestScene extends Scene {
         renderer = new SpriteRenderer(new Sprite("images/defaultSprite.png"));
         renderer.setColor(Constants.GREEN);
         particle3Obj.addComponent(renderer);
-        UIObject particle4Obj = new UIObject("Particle 4", new Vector3f(800, 500, 0), new Vector3f(10, 10, 0));
+        UIObject particle4Obj = new UIObject("Particle 4", new Vector3f(1000, 750, 0), new Vector3f(100, 200, 0));
         renderer = new SpriteRenderer(new Sprite("images/defaultSprite.png"));
         renderer.setColor(Constants.YELLOW);
         particle4Obj.addComponent(renderer);
+
+        this.springVisual = new UIObject("Spring visual", new Vector3f(750, 1000, 0), new Vector3f(1, 100, 0));
+        this.springVisual.addComponent(new SpriteRenderer(new Sprite("images/defaultSprite.png")));
+        this.addUIObject(this.springVisual);
+
         this.addUIObject(particle1Obj);
         this.addUIObject(particle2Obj);
         this.addUIObject(particle3Obj);
@@ -93,17 +104,24 @@ public class TestScene extends Scene {
 
         ParticleGravity gravity = new ParticleGravity(new Vector3f(0.0f, -9.8f, 0.0f));
 
-        particle = new Particle(particle1Obj.transform.position, new Vector3f(0), 0.1f, true);
-        particle2 = new Particle(particle2Obj.transform.position, new Vector3f(0), 10, true);
-        floater = new Particle(particle3Obj.transform.position, new Vector3f(0), 10, true);
-        particle4 = new Particle(particle4Obj.transform.position, new Vector3f(0), 10f, true);
+        particle = new Particle(new Vector3f(0), 0.1f, true);
+        particle1Obj.addComponent(particle);
+
+        particle2 = new Particle(new Vector3f(0), 10, true);
+        particle2Obj.addComponent(particle2);
+
+        floater = new Particle(new Vector3f(0), 10, true);
+        particle3Obj.addComponent(floater);
+
+        particle4 = new Particle(new Vector3f(0), 3f, true);
+        particle4Obj.addComponent(particle4);
 
 //        particleRegistry.add(floater, new ParticleBuoyancy(10.0f, 100.0f, 200.0f, 10.0f));
 //        particleRegistry.add(floater, gravity);
 //        particleRegistry.add(floater, new ParticleDrag(0.01f, 0.1f));
 
         //particleRegistry.add(particle, new ParticleBungee(particle2, 10.0f, 100.0f));
-        particleRegistry.add(particle, new ParticleAnchoredSpring(particle2.getPosition(), 50.0f, 20f));
+        particleRegistry.add(particle, new ParticleAnchoredSpring(particle2Obj.transform.position, 50.0f, 20f));
         //particleRegistry.add(particle2, new ParticleSpring(particle, 10.0f, 50.0f));
 
         particleRegistry.add(particle, gravity);
@@ -113,6 +131,7 @@ public class TestScene extends Scene {
 
         particleRegistry.add(particle4, new ParticleDrag(.47f, 1.2f));
         particleRegistry.add(particle4, new ParticleGroundBounce());
+        particleRegistry.add(particle4, new ParticleTorqueSpring(new Vector2f(750, 1000), 0.2f));
         particleRegistry.add(particle4, gravity);
 
         Window.getScene().camera().transform.position.z = -5.0f;
@@ -192,19 +211,45 @@ public class TestScene extends Scene {
         }
     }
 
+    private float keyDebounce = 0.2f;
+    private float debounceTime = 0.2f;
     @Override
     public void update(float dt) {
+        keyDebounce -= dt;
         fpsLabel.setText(String.format("FPS: %.3f", (1.0f / dt)));
         msLabel.setText(String.format("MS Last Frame: %.3f", dt * 1000.0f));
 
-        float physicsDt = 1 / 60.0f;
-        particleRegistry.updateForces(physicsDt);
+        if (doPhysics) {
+            float physicsDt = 1 / 60.0f;
+            particleRegistry.updateForces(physicsDt);
+        }
+
+        if (!doPhysics && KeyListener.isKeyPressed(GLFW_KEY_SPACE) && keyDebounce < 0) {
+            doPhysics = true;
+            keyDebounce = debounceTime;
+        } else if (doPhysics && KeyListener.isKeyPressed(GLFW_KEY_SPACE) && keyDebounce < 0) {
+            doPhysics = false;
+            keyDebounce = debounceTime;
+            particleRegistry.zeroForces();
+        }
+
+        // Width 100, height 200
+        Vector2f topLeftBox = new Vector2f(particle4.uiObject.transform.position.x - (particle4.uiObject.transform.scale.x / 2.0f),
+                                            particle4.uiObject.transform.position.y + (particle4.uiObject.transform.scale.y / 2.0f));
+        JMath.rotate(topLeftBox, particle4.uiObject.transform.rotation.z, particle4.uiObject.transform.position);
+        Vector3f v2 = new Vector3f(topLeftBox.x, topLeftBox.y, 0);
+        Vector3f v1 = new Vector3f(750, 1000, 0);
+        Vector3f v3 = new Vector3f(v1).sub(v2);
+        float length = v3.length();
+        float theta = (float)Math.toDegrees(Math.atan(Math.abs(v3.y) / Math.abs(v3.x))) + 90;
+        if (v3.x < 0) theta *= -1;
+        if (v3.y < 0) theta *= -1;
+
+        Vector3f center = new Vector3f(v3.x / 2.0f, v3.y / 2.0f, 0);
+        springVisual.transform.scale.y = length;
+        springVisual.transform.position = v1.sub(center);
+        springVisual.transform.rotation.z = theta;
         //forceRegistry.updateForces(physicsDt);
-        particle.update(physicsDt);
-        particle2.update(physicsDt);
-        floater.update(physicsDt);
-        particle4.update(physicsDt);
-        //body.update(physicsDt);
 
         for (GameObject g : gameObjects) {
             g.update(dt);

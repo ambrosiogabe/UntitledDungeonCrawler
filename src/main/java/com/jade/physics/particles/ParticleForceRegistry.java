@@ -31,4 +31,10 @@ public class ParticleForceRegistry {
             fr.fg.updateForce(fr.particle, dt);
         }
     }
+
+    public void zeroForces() {
+        for (ParticleForceRegistration fr : registry) {
+            fr.particle().zeroForces();
+        }
+    }
 }

@@ -17,8 +17,8 @@ public class ParticleBungee implements ParticleForceGenerator {
     @Override
     public void updateForce(Particle particle, float duration) {
         // Calculate the force of the spring
-        Vector3f force = new Vector3f(particle.getPosition());
-        force.add(other.getPosition().mul(-1));
+        Vector3f force = new Vector3f(particle.uiObject.transform.position);
+        force.add(other.uiObject.transform.position.mul(-1));
 
         // Check if the bungee is compressed
         float magnitude = force.length();

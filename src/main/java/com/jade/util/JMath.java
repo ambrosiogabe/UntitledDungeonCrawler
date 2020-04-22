@@ -105,13 +105,16 @@ public class JMath {
     }
 
     public static void rotate(Vector2f vec, float angle, Vector3f origin) {
+        float s = (float)(Math.sin(Math.toRadians(angle)));
+        float c = (float)(Math.cos(Math.toRadians(angle)));
+
         float x = vec.x - origin.x;
         float y = vec.y - origin.y;
 
-        float xPrime = vec.x + ((x * (float)Math.cos(Math.toRadians(angle))) - (y * (float)Math.sin(Math.toRadians(angle))));
-        float yPrime = vec.y + ((x * (float)Math.sin(Math.toRadians(angle))) + (y * (float)Math.cos(Math.toRadians(angle))));
+        float xPrime = x * c - y * s;
+        float yPrime = x * s + y * c;
 
-        vec.x = xPrime;
-        vec.y = yPrime;
+        vec.x = xPrime + origin.x;
+        vec.y = yPrime + origin.y;
     }
 }

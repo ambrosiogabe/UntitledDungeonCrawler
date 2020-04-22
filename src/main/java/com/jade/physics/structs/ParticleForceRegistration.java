@@ -21,4 +21,8 @@ public class ParticleForceRegistration {
         ParticleForceRegistration fr = (ParticleForceRegistration)particle;
         return fr.particle == this.particle && fr.fg == this.fg;
     }
+
+    public Particle particle() {
+        return this.particle;
+    }
 }
