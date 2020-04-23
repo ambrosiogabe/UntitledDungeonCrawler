@@ -104,10 +104,12 @@ public abstract class Scene {
 
     public void setActiveGameObject(int i) {
         this.activeGameObject = i;
+        this.selected = i;
     }
 
     public void setActiveUiObject(int i) {
         this.activeUiObject = i;
+        this.selected = i;
     }
 
     public abstract void update(float dt);

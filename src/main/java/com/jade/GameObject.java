@@ -1,5 +1,6 @@
 package com.jade;
 
+import com.jade.events.KeyListener;
 import com.jade.file.Parser;
 import com.jade.file.Serialize;
 import com.jade.util.Constants;
@@ -10,6 +11,9 @@ import org.joml.Quaternionf;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_CONTROL;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_SHIFT;
 
 public class GameObject extends Serialize {
     private List<Component> components;
@@ -106,19 +110,19 @@ public class GameObject extends Serialize {
         ImGui.text("Position: ");
         ImGui.sameLine();
         ImGui.nextColumn();
-        ImGui.dragFloat3("##xyzPos", xyzPosition);
+        ImGui.dragFloat3("##xyzPos", xyzPosition, KeyListener.isKeyPressed(GLFW_KEY_LEFT_CONTROL) ? 0.05f : 0.1f);
 
         ImGui.nextColumn();
         ImGui.text("Scale: ");
         ImGui.sameLine();
         ImGui.nextColumn();
-        ImGui.dragFloat3("##xyzScale", xyzScale);
+        ImGui.dragFloat3("##xyzScale", xyzScale,  KeyListener.isKeyPressed(GLFW_KEY_LEFT_CONTROL) ? 0.05f : 0.1f);
 
         ImGui.nextColumn();
         ImGui.text("Rotation: ");
         ImGui.sameLine();
         ImGui.nextColumn();
-        ImGui.dragFloat3("##xyzRotation", xyzRotation);
+        ImGui.dragFloat3("##xyzRotation", xyzRotation,  KeyListener.isKeyPressed(GLFW_KEY_LEFT_CONTROL) ? 0.05f : 0.1f);
         ImGui.columns(1);
 
         ImBool imVisible = new ImBool(isVisible);

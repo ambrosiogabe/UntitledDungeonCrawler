@@ -40,10 +40,10 @@ public class Camera {
         this.caluclateAspect();
         projectionMatrix.identity();
         projectionMatrix = projectionMatrix.perspective(fov, (float) Window.getWindow().getWidth() / (float) Window.getWindow().getHeight(),
-                0.1f, 100.0f);
+                0.1f, 100000.0f);
 
         orthoProjection.identity();
-        orthoProjection.ortho(0, 1080.0f * aspect, 0, 1080.0f, 0.0f, 100.0f);
+        orthoProjection.ortho(0, 1080.0f * aspect, 0, 1080.0f, 0.5f, 100.0f);
         orthoInverseProjection.identity();
         orthoProjection.invert(orthoInverseProjection);
     }

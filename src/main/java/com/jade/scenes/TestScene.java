@@ -161,28 +161,28 @@ public class TestScene extends Scene {
         testWall.addComponent(test);
         this.addGameObject(testWall);
 
-        GameObject debugGizmoArrow = new GameObject("Debug Gizmo Arrow", new Transform(new Vector3f(0, 0.0f, 5)));
-        Model debugModel = new Model("mesh-ext/debugGizmo_Arrow.obj", "images/defaultSprite.png");
-        debugModel.setTintColor(new Vector3f(0, 1, 0));
-        debugGizmoArrow.addComponent(debugModel);
-        debugGizmoArrow.setNonserializable();
-        this.addGameObject(debugGizmoArrow);
-
-        debugGizmoArrow = new GameObject("Debug Gizmo Arrow", new Transform(new Vector3f(0, -1f, 4)));
-        debugGizmoArrow.transform.rotation.x = -90;
-        debugModel = new Model("mesh-ext/debugGizmo_Arrow.obj", "images/defaultSprite.png");
-        debugModel.setTintColor(new Vector3f(1, 0, 0));
-        debugGizmoArrow.addComponent(debugModel);
-        debugGizmoArrow.setNonserializable();
-        this.addGameObject(debugGizmoArrow);
-
-        debugGizmoArrow = new GameObject("Debug Gizmo Arrow", new Transform(new Vector3f(1, -1f, 5)));
-        debugGizmoArrow.transform.rotation.z = -90;
-        debugModel = new Model("mesh-ext/debugGizmo_Arrow.obj", "images/defaultSprite.png");
-        debugModel.setTintColor(new Vector3f(0, 0, 1));
-        debugGizmoArrow.addComponent(debugModel);
-        debugGizmoArrow.setNonserializable();
-        this.addGameObject(debugGizmoArrow);
+//        GameObject debugGizmoArrow = new GameObject("Debug Gizmo Arrow", new Transform(new Vector3f(0, 0.0f, 5)));
+//        Model debugModel = new Model("mesh-ext/debugGizmo_Arrow.obj", "images/defaultSprite.png");
+//        debugModel.setTintColor(new Vector3f(0, 1, 0));
+//        debugGizmoArrow.addComponent(debugModel);
+//        debugGizmoArrow.setNonserializable();
+//        this.addGameObject(debugGizmoArrow);
+//
+//        debugGizmoArrow = new GameObject("Debug Gizmo Arrow", new Transform(new Vector3f(0, -1f, 4)));
+//        debugGizmoArrow.transform.rotation.x = -90;
+//        debugModel = new Model("mesh-ext/debugGizmo_Arrow.obj", "images/defaultSprite.png");
+//        debugModel.setTintColor(new Vector3f(1, 0, 0));
+//        debugGizmoArrow.addComponent(debugModel);
+//        debugGizmoArrow.setNonserializable();
+//        this.addGameObject(debugGizmoArrow);
+//
+//        debugGizmoArrow = new GameObject("Debug Gizmo Arrow", new Transform(new Vector3f(1, -1f, 5)));
+//        debugGizmoArrow.transform.rotation.z = -90;
+//        debugModel = new Model("mesh-ext/debugGizmo_Arrow.obj", "images/defaultSprite.png");
+//        debugModel.setTintColor(new Vector3f(0, 0, 1));
+//        debugGizmoArrow.addComponent(debugModel);
+//        debugGizmoArrow.setNonserializable();
+//        this.addGameObject(debugGizmoArrow);
 
         GameObject cube = new GameObject("Test Cube", new Transform(new Vector3f(10.0f, 0.0f, -12.0f)));
         Model cubeModel = new Model("mesh-ext/cube.obj");

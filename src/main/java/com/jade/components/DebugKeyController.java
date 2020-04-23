@@ -19,6 +19,7 @@ public class DebugKeyController extends Component {
 
     private float keyDebounceTime = 0.2f;
     private float keyDebounceLeft = 0.0f;
+    private boolean firstPass = true;
 
     @Override
     public void start() {
@@ -29,6 +30,11 @@ public class DebugKeyController extends Component {
     @Override
     public void update(float dt) {
         this.keyDebounceLeft -= dt;
+
+        if (firstPass) {
+            incrementActiveGameObject();
+            firstPass = false;
+        }
 
         if (KeyListener.isKeyPressed(GLFW_KEY_RIGHT) && this.keyDebounceLeft < 0) {
             incrementActiveGameObject();
@@ -55,6 +61,11 @@ public class DebugKeyController extends Component {
         } else if (this.activeUiObject == this.uiObjects.size() - 1) {
             this.activeUiObject = -1;
             Window.getScene().setActiveUiObject(activeUiObject);
+        }
+
+        if (this.activeGameObject == -1 && this.activeUiObject == -1) {
+            this.activeGameObject = 0;
+            Window.getScene().setActiveGameObject(activeGameObject);
         }
     }
 
