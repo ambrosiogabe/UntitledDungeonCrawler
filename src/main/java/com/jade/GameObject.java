@@ -2,8 +2,11 @@ package com.jade;
 
 import com.jade.file.Parser;
 import com.jade.file.Serialize;
+import com.jade.util.Constants;
+import imgui.ImBool;
 import imgui.ImGui;
 import imgui.enums.ImGuiCond;
+import org.joml.Quaternionf;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +17,7 @@ public class GameObject extends Serialize {
     public Transform transform;
     private String name;
     private boolean serializable = true;
+    private boolean isVisible = true;
 
     public GameObject(String name, Transform transform) {
         this.name = name;
@@ -89,8 +93,8 @@ public class GameObject extends Serialize {
     }
 
     public void imgui() {
-        ImGui.setNextWindowSize(600, Window.getWindow().getHeight(), ImGuiCond.Appearing);
-        ImGui.setNextWindowPos(Window.getWindow().getWidth() - 600, 0, ImGuiCond.Appearing);
+        ImGui.setNextWindowSize(600, Window.getWindow().getHeight(), ImGuiCond.Always);
+        ImGui.setNextWindowPos(Window.getWindow().getWidth() - 600, 0, ImGuiCond.Always);
 
         ImGui.begin(this.name);
         float[] xyzPosition = {this.transform.position.x, this.transform.position.y, this.transform.position.z};
@@ -117,9 +121,19 @@ public class GameObject extends Serialize {
         ImGui.dragFloat3("##xyzRotation", xyzRotation);
         ImGui.columns(1);
 
+        ImBool imVisible = new ImBool(isVisible);
+        if (ImGui.checkbox("Is Visible", imVisible)) {
+            isVisible = !isVisible;
+        }
+
         this.transform.position.set(xyzPosition);
         this.transform.scale.set(xyzScale);
-        this.transform.rotation.set(xyzRotation);
+        if (!this.transform.rotation.equals(xyzRotation[0], xyzRotation[1], xyzRotation[2])) {
+            this.transform.rotation.set(xyzRotation);
+            this.transform.orientation.set(0, 0, 0, 1);
+            this.transform.orientation.rotateXYZ((float)Math.toRadians(this.transform.rotation.x),
+                    (float)Math.toRadians(this.transform.rotation.y), (float)Math.toRadians(this.transform.rotation.z));
+        }
         ImGui.separator();
         //ImGui.endMenu();
 
@@ -204,5 +218,9 @@ public class GameObject extends Serialize {
         Parser.consumeEndObjectProperty();
 
         return go;
+    }
+
+    public boolean isVisible() {
+        return isVisible;
     }
 }

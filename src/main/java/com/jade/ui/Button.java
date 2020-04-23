@@ -36,13 +36,13 @@ public abstract class Button extends Component {
 
     private void calculateMin() {
         this.min.x = uiObject.transform.position.x - (this.uiObject.transform.scale.x / 2.0f);
-        this.min.y = uiObject.transform.position.x - (this.uiObject.transform.scale.y / 2.0f);
+        this.min.y = uiObject.transform.position.y - (this.uiObject.transform.scale.y / 2.0f);
         JMath.rotate(this.min, this.uiObject.transform.rotation.z, this.uiObject.transform.position);
     }
 
     private void calculateMax() {
         this.max.x = uiObject.transform.position.x + (this.uiObject.transform.scale.x / 2.0f);
-        this.max.y = uiObject.transform.position.x + (this.uiObject.transform.scale.y / 2.0f);
+        this.max.y = uiObject.transform.position.y + (this.uiObject.transform.scale.y / 2.0f);
         JMath.rotate(this.max, this.uiObject.transform.rotation.z, this.uiObject.transform.position);
     }
 

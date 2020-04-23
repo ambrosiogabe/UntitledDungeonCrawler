@@ -145,6 +145,10 @@ public class UIBatcher implements Comparable<UIBatcher> {
 
     public void loadVertexProperties(int index) {
         SpriteRenderer sprite = sprites.get(index);
+        if (!sprite.shouldDisplay()) {
+            loadEmptyVertexProperties(index);
+            return;
+        }
         // Add it's transform and stuff to the vertex array
         int offset = index * VERTEX_SIZE * 4;
 
@@ -210,6 +214,32 @@ public class UIBatcher implements Comparable<UIBatcher> {
 
             // Load tex id
             vertices[offset + 9] = texSlot;
+
+
+            offset += VERTEX_SIZE;
+        }
+    }
+
+    public void loadEmptyVertexProperties(int index) {
+        // Add it's transform and stuff to the vertex array
+        int offset = index * VERTEX_SIZE * 4;
+        for (int i=0; i < 4; i++) {
+            vertices[offset] = 0;
+            vertices[offset + 1] = 0;
+            vertices[offset + 2] = 0;
+
+            // Load color
+            vertices[offset + 3] = 0;
+            vertices[offset + 4] = 0;
+            vertices[offset + 5] = 0;
+            vertices[offset + 6] = 0;
+
+            // Load tex coords
+            vertices[offset + 7] = 0;
+            vertices[offset + 8] = 0;
+
+            // Load tex id
+            vertices[offset + 9] = 0;
 
 
             offset += VERTEX_SIZE;

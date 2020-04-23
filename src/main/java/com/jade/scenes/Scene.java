@@ -1,11 +1,10 @@
 package com.jade.scenes;
 
-import com.jade.Camera;
-import com.jade.GameObject;
-import com.jade.Transform;
-import com.jade.UIObject;
+import com.jade.*;
 import com.jade.components.Model;
 import com.jade.renderer.Renderer;
+import imgui.ImGui;
+import imgui.enums.ImGuiCond;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -20,6 +19,7 @@ public abstract class Scene {
 
     protected int activeGameObject = -1;
     protected int activeUiObject = -1;
+    private int selected = -1;
 
     public Scene() {
         this.camera = new Camera(new Vector3f(0, 0, 0));
@@ -60,6 +60,33 @@ public abstract class Scene {
     }
 
     public void imgui() {
+        ImGui.setNextWindowSize(400, Window.getWindow().getHeight(), ImGuiCond.Always);
+        ImGui.setNextWindowPos(Window.getWindow().getWidth() - 1000, 0, ImGuiCond.Always);
+        ImGui.begin("Objects");
+
+        for (int i=0; i < gameObjects.size(); i++) {
+            if (gameObjects.get(i).isSerializable()) {
+                if (ImGui.selectable(gameObjects.get(i).getName(), selected == i && activeUiObject == -1)) {
+                    activeGameObject = i;
+                    selected = activeGameObject;
+                }
+            }
+        }
+        if (selected != activeGameObject) {
+            activeGameObject = -1;
+        }
+
+        for (int i=0; i < uiObjects.size(); i++) {
+            if (ImGui.selectable(uiObjects.get(i).getName(), selected == i && activeGameObject == -1)) {
+                activeUiObject = i;
+                selected = activeUiObject;
+            }
+        }
+        ImGui.end();
+        if (selected != activeUiObject) {
+            activeUiObject = -1;
+        }
+
         if (activeGameObject != -1) {
             gameObjects.get(activeGameObject).imgui();
         } else if (activeUiObject != -1) {

@@ -1,6 +1,7 @@
 package com.jade;
 
 import com.jade.Component;
+import imgui.ImBool;
 import imgui.ImGui;
 import imgui.ImGuiInputTextData;
 import imgui.enums.ImGuiCond;
@@ -16,6 +17,7 @@ public class UIObject {
     public Transform transform;
     private String name;
     private boolean isSerializable = true;
+    private boolean isVisible = true;
 
     public UIObject(String name) {
         this.name = name;
@@ -43,8 +45,8 @@ public class UIObject {
     }
 
     public void imgui() {
-        ImGui.setNextWindowSize(600, Window.getWindow().getHeight(), ImGuiCond.Appearing);
-        ImGui.setNextWindowPos(Window.getWindow().getWidth() - 600, 0, ImGuiCond.Appearing);
+        ImGui.setNextWindowSize(600, Window.getWindow().getHeight(), ImGuiCond.Always);
+        ImGui.setNextWindowPos(Window.getWindow().getWidth() - 600, 0, ImGuiCond.Always);
 
         ImGui.begin(this.name);
         float[] xyzPosition = {this.transform.position.x, this.transform.position.y, this.transform.position.z};
@@ -70,6 +72,11 @@ public class UIObject {
         ImGui.nextColumn();
         ImGui.dragFloat3("##xyzRotation", xyzRotation);
         ImGui.columns(1);
+
+        ImBool imVisible = new ImBool(isVisible);
+        if (ImGui.checkbox("Is Visible", imVisible)) {
+            isVisible = !isVisible;
+        }
 
         this.transform.position.set(xyzPosition);
         this.transform.scale.set(xyzScale);
@@ -138,5 +145,13 @@ public class UIObject {
 
     public String getName() {
         return this.name;
+    }
+
+    public boolean isVisible() {
+        return this.isVisible;
+    }
+
+    public void setVisible(boolean val) {
+        this.isVisible = val;
     }
 }

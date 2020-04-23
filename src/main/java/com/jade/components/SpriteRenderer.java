@@ -13,11 +13,13 @@ public class SpriteRenderer extends Component {
     private Sprite sprite;
     private Vector4f color = JMath.copy(Constants.WHITE);
     private Shader shader = AssetPool.getShader("shaders/default.glsl");
+    private boolean shouldDisplay = true;
 
-    private boolean isDirty = false;
+    private boolean isDirty;
     private boolean shouldDelete = false;
     private Transform lastTransform;
     private int lastSpriteId;
+    private boolean lastVisible;
 
     public SpriteRenderer() {
         this.sprite = new Sprite("images/defaultSprite.png");
@@ -36,6 +38,7 @@ public class SpriteRenderer extends Component {
     @Override
     public void start() {
         this.lastTransform = gameObject != null ? gameObject.transform.copy() : uiObject.transform.copy();
+        this.lastVisible = gameObject != null ? gameObject.isVisible() : uiObject.isVisible();
     }
 
     @Override
@@ -43,6 +46,12 @@ public class SpriteRenderer extends Component {
         if (this.lastSpriteId != this.sprite.getID()) {
             this.isDirty = true;
             this.lastSpriteId = this.sprite.getID();
+        }
+
+        if (this.lastVisible != (this.gameObject != null ? this.gameObject.isVisible() : this.uiObject.isVisible())) {
+            this.lastVisible = this.gameObject != null ? this.gameObject.isVisible() : this.uiObject.isVisible();
+            this.shouldDisplay = this.lastVisible;
+            this.isDirty = true;
         }
 
         if (!this.lastTransform.equals(this.gameObject != null ? this.gameObject.transform : this.uiObject.transform)) {
@@ -79,6 +88,10 @@ public class SpriteRenderer extends Component {
 
     public boolean shouldDelete() {
         return this.shouldDelete;
+    }
+
+    public boolean shouldDisplay() {
+        return this.shouldDisplay;
     }
 
     public void setColor(Vector4f color) {

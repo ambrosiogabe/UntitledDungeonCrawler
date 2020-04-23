@@ -2,13 +2,16 @@ package com.jade;
 
 import com.jade.file.Parser;
 import com.jade.file.Serialize;
+import com.jade.util.Constants;
 import com.jade.util.JMath;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 public class Transform extends Serialize {
     public Vector3f position;
     public Vector3f scale;
     public Vector3f rotation;
+    public Quaternionf orientation;
 
     public Transform() {
         init(new Vector3f(0.0f), new Vector3f(1.0f), new Vector3f(0.0f, 0.0f, 0.0f));
@@ -30,19 +33,20 @@ public class Transform extends Serialize {
         this.position = position;
         this.scale = scale;
         this.rotation = rotation;
+        this.orientation = new Quaternionf().fromAxisAngleDeg(Constants.RIGHT, this.rotation.x);
+        this.orientation.mul(new Quaternionf().fromAxisAngleDeg(Constants.UP, this.rotation.y));
+        this.orientation.mul(new Quaternionf().fromAxisAngleDeg(Constants.FORWARD, this.rotation.z));
     }
 
     public Transform copy() {
-        Transform transform = new Transform(JMath.copy(this.position));
-        transform.scale = JMath.copy(this.scale);
-        transform.rotation = JMath.copy(this.rotation);
-        return transform;
+        return new Transform(JMath.copy(this.position), JMath.copy(this.scale), JMath.copy(this.rotation));
     }
 
     public static void copyValues(Transform from, Transform to) {
         to.position.set(from.position);
         to.scale.set(from.scale);
         to.rotation.set(from.rotation);
+        to.orientation.set(from.orientation);
     }
 
     @Override

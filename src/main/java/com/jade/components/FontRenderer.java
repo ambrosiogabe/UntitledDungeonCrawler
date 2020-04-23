@@ -195,6 +195,7 @@ public class FontRenderer extends Component {
         }
 
         for (UIObject u : uiObjects) {
+            u.setVisible(this.uiObject.isVisible());
             u.update(dt);
         }
     }

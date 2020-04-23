@@ -8,6 +8,7 @@ import com.jade.renderer.Texture;
 import com.jade.util.AssetPool;
 import com.jade.util.Constants;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.assimp.*;
@@ -51,9 +52,10 @@ public class Model extends Component {
         this.modelMatrix.identity();
 
         this.modelMatrix.translate(this.gameObject.transform.position);
-        this.modelMatrix.rotate((float)Math.toRadians(this.gameObject.transform.rotation.x), Constants.RIGHT);
-        this.modelMatrix.rotate((float)Math.toRadians(this.gameObject.transform.rotation.y), Constants.UP);
-        this.modelMatrix.rotate((float)Math.toRadians(this.gameObject.transform.rotation.z), Constants.FORWARD);
+//        this.modelMatrix.rotate((float)Math.toRadians(this.gameObject.transform.rotation.x), Constants.RIGHT);
+//        this.modelMatrix.rotate((float)Math.toRadians(this.gameObject.transform.rotation.y), Constants.UP);
+//        this.modelMatrix.rotate((float)Math.toRadians(this.gameObject.transform.rotation.z), Constants.FORWARD);
+        this.modelMatrix.rotate(this.gameObject.transform.orientation);
         this.modelMatrix.scale(this.gameObject.transform.scale);
     }
 
@@ -70,6 +72,8 @@ public class Model extends Component {
     }
 
     public void render() {
+        if (!gameObject.isVisible()) return;
+
         calculateModelMatrix();
 
         shader.use();

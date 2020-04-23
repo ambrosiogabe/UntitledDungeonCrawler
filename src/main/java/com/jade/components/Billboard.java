@@ -41,6 +41,8 @@ public class Billboard extends Component {
     }
 
     public void render() {
+        if (!this.gameObject.isVisible()) return;
+
         calculateModelMatrix();
 
         shader.use();
