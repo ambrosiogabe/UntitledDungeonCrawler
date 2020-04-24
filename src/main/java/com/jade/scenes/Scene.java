@@ -4,6 +4,7 @@ import com.jade.*;
 import com.jade.components.Model;
 import com.jade.renderer.Renderer;
 import imgui.ImGui;
+import imgui.ImVec2;
 import imgui.enums.ImGuiCond;
 import imgui.enums.ImGuiWindowFlags;
 import org.joml.Vector2f;
@@ -24,6 +25,7 @@ public abstract class Scene {
 
     private float lastConsoleHeight = 200;
     private float lastInspectorWidth = 600;
+    private float windowAspect = 3840f / 2160f;
 
     public Scene() {
         this.camera = new Camera(new Vector3f(0, 0, 0));
@@ -124,13 +126,30 @@ public abstract class Scene {
         // ==================================================================
         // Render game viewport
         // ==================================================================
-        // TODO: Once framebuffer support is added, use that framebuffer here!
-//        float gameViewHeight = Window.getWindow().getHeight() - lastConsoleHeight;
-//        ImGui.setNextWindowSize(consoleWidth, gameViewHeight, ImGuiCond.Always);
-//        ImGui.setNextWindowPos(objectPaneWidth, 0, ImGuiCond.Always);
-//        ImGui.begin("Game View", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
-//        ImGui.image(Window.getWindow().getFramebufferTexID(), consoleWidth, gameViewHeight - 55, 0,1, 1, 0);
-//        ImGui.end();
+        float gameViewHeight = Window.getWindow().getHeight() - lastConsoleHeight;
+        ImGui.setNextWindowSize(consoleWidth, gameViewHeight, ImGuiCond.Always);
+        ImGui.setNextWindowPos(objectPaneWidth, 0, ImGuiCond.Always);
+        ImGui.begin("Game View", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
+        drawFramebufferTexture(consoleWidth, gameViewHeight);
+        ImGui.end();
+    }
+
+    private void drawFramebufferTexture(float consoleWidth, float gameViewHeight) {
+        float textureWidth = consoleWidth;
+        float textureHeight = (textureWidth / windowAspect);
+        if (textureHeight + 55 > gameViewHeight) {
+            textureHeight = gameViewHeight - 55;
+            textureWidth = windowAspect * gameViewHeight;
+        }
+
+        ImVec2 windowSize = new ImVec2();
+        ImVec2 windowPos = new ImVec2();
+        ImGui.getWindowSize(windowSize);
+        ImGui.getWindowPos(windowPos);
+        final float xPoint = windowPos.x + (windowSize.x - textureWidth) / 2.0f;
+        final float yPoint = windowPos.y + (windowSize.y - textureHeight) / 2.0f;
+        ImGui.getWindowDrawList().addImage(Window.getWindow().getFramebufferTexID(),
+                xPoint, yPoint, xPoint + textureWidth, yPoint + textureHeight, 0, 1, 1, 0);
     }
 
     public List<GameObject> getAllGameObjects() {

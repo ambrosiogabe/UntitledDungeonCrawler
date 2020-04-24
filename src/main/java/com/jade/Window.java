@@ -73,7 +73,7 @@ public class Window {
         Window.getWindow().setHeight(height);
         //Window.getWindow().setAspect(width / height);
         if (Window.getScene() != null) {
-            glViewport(0, 0, width, height);
+            glViewport(0, 0, 3840, 2160);
             Window.getScene().camera().adjustPerspective();
         }
     }
@@ -366,6 +366,7 @@ public class Window {
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glViewport(0, 0, 3840, 2160);
 
         // Initialize frame buffer
         createFrameBuffer();
@@ -379,19 +380,18 @@ public class Window {
             float currentTime = Time.getTime();
             dt = (time > 0) ? (currentTime - time) : 1f / 60f;
             time = currentTime;
-
-
-            // TODO: Render this stuff into a framebuffer correctly
-//            glBindFramebuffer(GL_FRAMEBUFFER, fboID);
+            
+            glBindFramebuffer(GL_FRAMEBUFFER, fboID);
             glClearColor(Constants.WINDOW_CLEAR_COLOR.x, Constants.WINDOW_CLEAR_COLOR.y, Constants.WINDOW_CLEAR_COLOR.z, Constants.WINDOW_CLEAR_COLOR.w);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             currentScene.update(dt);
             currentScene.render();
 
-//            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-//            glClearColor(Constants.WINDOW_CLEAR_COLOR.x, Constants.WINDOW_CLEAR_COLOR.y, Constants.WINDOW_CLEAR_COLOR.z, Constants.WINDOW_CLEAR_COLOR.w);
-//            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glClearColor(Constants.WINDOW_CLEAR_COLOR.x, Constants.WINDOW_CLEAR_COLOR.y, Constants.WINDOW_CLEAR_COLOR.z, Constants.WINDOW_CLEAR_COLOR.w);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
             // ============================================================================================================
             // ImGUI stuff
             // ============================================================================================================
@@ -444,8 +444,9 @@ public class Window {
 
         // Create renderbuffer to store depth_stencil info
         int rboID = glGenRenderbuffers();
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 3840, 2160);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboID);
+        glBindRenderbuffer(GL_RENDERBUFFER, rboID);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, 3840, 2160);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboID);
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
             assert false : "Error: Framebuffer is not complete.";
