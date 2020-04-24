@@ -2,6 +2,7 @@ package com.jade;
 
 import com.jade.events.KeyListener;
 import com.jade.events.MouseListener;
+import com.jade.renderer.Texture;
 import com.jade.scenes.MenuScene;
 import com.jade.scenes.Scene;
 import com.jade.scenes.TestScene;
@@ -20,6 +21,7 @@ import org.lwjgl.opengl.GL;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window {
@@ -30,6 +32,9 @@ public class Window {
     private String title;
     private static Scene currentScene = null;
     private static boolean cursorIsLocked = false;
+
+    private int fboID;
+    private Texture framebufferTex;
 
     // =================================================================
     // IMGUI stuff
@@ -138,6 +143,8 @@ public class Window {
     }
 
     private void destroyGlfw() {
+        glDeleteFramebuffers(fboID);
+
         // Free the memory
         glfwFreeCallbacks(glfwWindow);
         glfwDestroyWindow(glfwWindow);
@@ -359,6 +366,9 @@ public class Window {
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        // Initialize frame buffer
+        createFrameBuffer();
     }
 
     private void loop() {
@@ -370,16 +380,22 @@ public class Window {
             dt = (time > 0) ? (currentTime - time) : 1f / 60f;
             time = currentTime;
 
+
+            // TODO: Render this stuff into a framebuffer correctly
+//            glBindFramebuffer(GL_FRAMEBUFFER, fboID);
             glClearColor(Constants.WINDOW_CLEAR_COLOR.x, Constants.WINDOW_CLEAR_COLOR.y, Constants.WINDOW_CLEAR_COLOR.z, Constants.WINDOW_CLEAR_COLOR.w);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             currentScene.update(dt);
             currentScene.render();
 
+//            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//            glClearColor(Constants.WINDOW_CLEAR_COLOR.x, Constants.WINDOW_CLEAR_COLOR.y, Constants.WINDOW_CLEAR_COLOR.z, Constants.WINDOW_CLEAR_COLOR.w);
+//            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             // ============================================================================================================
             // ImGUI stuff
             // ============================================================================================================
-//            // Get window size properties and mouse position
+            // Get window size properties and mouse position
             glfwGetWindowSize(glfwWindow, winWidth, winHeight);
             glfwGetFramebufferSize(glfwWindow, fbWidth, fbHeight);
             glfwGetCursorPos(glfwWindow, mousePosX, mousePosY);
@@ -415,6 +431,30 @@ public class Window {
             // Poll events
             glfwPollEvents();
         }
+    }
+
+    private void createFrameBuffer() {
+        // Generate framebuffer
+        fboID = glGenFramebuffers();
+        glBindFramebuffer(GL_FRAMEBUFFER, fboID);
+
+        // Create texture to render data too and attach it to framebuffer
+        this.framebufferTex = new Texture(3840, 2160);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this.framebufferTex.getID(), 0);
+
+        // Create renderbuffer to store depth_stencil info
+        int rboID = glGenRenderbuffers();
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 3840, 2160);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboID);
+
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+            assert false : "Error: Framebuffer is not complete.";
+        }
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    public int getFramebufferTexID() {
+        return this.fboID;
     }
 
     public int getWidth() {

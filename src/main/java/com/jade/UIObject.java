@@ -45,10 +45,8 @@ public class UIObject {
     }
 
     public void imgui() {
-        ImGui.setNextWindowSize(600, Window.getWindow().getHeight(), ImGuiCond.Always);
-        ImGui.setNextWindowPos(Window.getWindow().getWidth() - 600, 0, ImGuiCond.Always);
+        ImGui.labelText("##uiObjectName", this.name);
 
-        ImGui.begin(this.name);
         float[] xyzPosition = {this.transform.position.x, this.transform.position.y, this.transform.position.z};
         float[] xyzScale = {this.transform.scale.x, this.transform.scale.y, this.transform.scale.z};
         float[] xyzRotation = {this.transform.rotation.x, this.transform.rotation.y, this.transform.rotation.z};
@@ -86,8 +84,6 @@ public class UIObject {
         for (int i=0; i < this.components.size(); i++) {
             this.components.get(i).imgui();
         }
-
-        ImGui.end();
     }
 
     public void update(float dt) {

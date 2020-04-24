@@ -150,12 +150,12 @@ public class TestScene extends Scene {
         ms.setNonSerializable();
         this.addUIObject(ms);
 
-        GameObject testLight = new GameObject("Test Light", new Transform(new Vector3f(12.0f, 8.0f, -5.0f)));
+        GameObject testLight = new GameObject("Test Light", new Transform(new Vector3f(24, 0, 19)));
         PointLight testLightComp = new PointLight(new Vector3f(1.0f, 0.95f, 0.71f), 1.0f);
         testLight.addComponent(testLightComp);
         this.addGameObject(testLight);
 
-        GameObject testWall = new GameObject("Test wall", new Transform(new Vector3f(0.0f, 0.0f, 0.0f)));
+        GameObject testWall = new GameObject("Test wall", new Transform(new Vector3f(18, -4, 30), new Vector3f(1), new Vector3f(0, -90, 0)));
         Model test = new Model("mesh-ext/brickWall.obj", "images/BrickPaint.png");
         test.addPointLight(testLightComp);
         testWall.addComponent(test);
@@ -184,7 +184,7 @@ public class TestScene extends Scene {
 //        debugGizmoArrow.setNonserializable();
 //        this.addGameObject(debugGizmoArrow);
 
-        GameObject cube = new GameObject("Test Cube", new Transform(new Vector3f(10.0f, 0.0f, -12.0f)));
+        GameObject cube = new GameObject("Test Cube", new Transform(new Vector3f(32, -5, 17), new Vector3f(1), new Vector3f(0, 45, 0)));
         Model cubeModel = new Model("mesh-ext/cube.obj");
         cubeModel.addPointLight(testLightComp);
         cube.addComponent(cubeModel);
