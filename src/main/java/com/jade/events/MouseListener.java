@@ -115,6 +115,14 @@ public class MouseListener {
         get().deviceX = getNormX();
         get().deviceY = -getNormY();
 
+        // TODO: GET MORE PERMANENT SOLUTION FOR PROJECTING TO WINDOW VIEW
+        float gameHeight = (Window.getScene().getGameViewDisplayHeight() / Window.getWindow().getHeight()) * 2.0f;
+        float y0 = -(((Window.getScene().getGameViewYPos() / Window.getWindow().getHeight()) * 2.0f) - 1.0f) - gameHeight;
+        get().deviceY = ((get().deviceY - y0) / gameHeight) * 2.0f - 1.0f;
+        float gameWidth = (Window.getScene().getGameViewDisplayWidth() / Window.getWindow().getWidth()) * 2.0f;
+        float x0 = (((Window.getScene().getGameViewXPos() / Window.getWindow().getWidth())) * 2.0f) - 1.0f;
+        get().deviceX = ((get().deviceX - x0) / gameWidth) * 2.0f - 1.0f;
+
         get().screenPosCoords.z = 0.0f;
         get().screenPosCoords.x = (float)get().deviceX;
         get().screenPosCoords.y = (float)get().deviceY;

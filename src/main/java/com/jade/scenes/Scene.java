@@ -26,6 +26,10 @@ public abstract class Scene {
     private float lastConsoleHeight = 200;
     private float lastInspectorWidth = 600;
     private float windowAspect = 3840f / 2160f;
+    private float gameViewDisplayWidth = 0.0f;
+    private float gameViewDisplayHeight = 0.0f;
+    private float gameViewXPos = 0.0f;
+    private float gameViewYPos = 0.0f;
 
     public Scene() {
         this.camera = new Camera(new Vector3f(0, 0, 0));
@@ -150,6 +154,27 @@ public abstract class Scene {
         final float yPoint = windowPos.y + (windowSize.y - textureHeight) / 2.0f;
         ImGui.getWindowDrawList().addImage(Window.getWindow().getFramebufferTexID(),
                 xPoint, yPoint, xPoint + textureWidth, yPoint + textureHeight, 0, 1, 1, 0);
+
+        this.gameViewDisplayWidth = textureWidth;
+        this.gameViewDisplayHeight = textureHeight;
+        this.gameViewXPos = xPoint;
+        this.gameViewYPos = yPoint;
+    }
+
+    public float getGameViewDisplayWidth() {
+        return this.gameViewDisplayWidth;
+    }
+
+    public float getGameViewDisplayHeight() {
+        return this.gameViewDisplayHeight;
+    }
+
+    public float getGameViewXPos() {
+        return this.gameViewXPos;
+    }
+
+    public float getGameViewYPos() {
+        return this.gameViewYPos;
     }
 
     public List<GameObject> getAllGameObjects() {

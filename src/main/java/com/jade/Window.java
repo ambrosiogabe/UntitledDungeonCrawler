@@ -380,7 +380,7 @@ public class Window {
             float currentTime = Time.getTime();
             dt = (time > 0) ? (currentTime - time) : 1f / 60f;
             time = currentTime;
-            
+
             glBindFramebuffer(GL_FRAMEBUFFER, fboID);
             glClearColor(Constants.WINDOW_CLEAR_COLOR.x, Constants.WINDOW_CLEAR_COLOR.y, Constants.WINDOW_CLEAR_COLOR.z, Constants.WINDOW_CLEAR_COLOR.w);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
