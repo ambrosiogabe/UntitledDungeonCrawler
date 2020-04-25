@@ -3,6 +3,7 @@ package com.jade.util;
 import com.jade.file.Parser;
 import com.jade.file.Serialize;
 import com.jade.util.enums.DataType;
+import org.joml.Matrix3f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -116,5 +117,15 @@ public class JMath {
 
         vec.x = xPrime + origin.x;
         vec.y = yPrime + origin.y;
+    }
+
+    public static Matrix3f createRectanglularPrismInertiaTensor(float mass, Vector3f dimensions) {
+        float xy00 = (1.0f / 12.0f) * mass * (dimensions.y * dimensions.y + dimensions.z * dimensions.z);
+        float xy11 = (1.0f / 12.0f) * mass * (dimensions.x * dimensions.x + dimensions.z * dimensions.z);
+        float xy22 = (1.0f / 12.0f) * mass * (dimensions.x * dimensions.x + dimensions.y * dimensions.y);
+
+        return new Matrix3f(xy00, 0, 0,
+                      0, xy11, 0,
+                      0, 0, xy22);
     }
 }

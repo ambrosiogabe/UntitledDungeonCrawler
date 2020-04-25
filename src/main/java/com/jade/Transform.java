@@ -109,6 +109,7 @@ public class Transform extends Serialize {
         Transform other = (Transform)o;
         return other.position.equals(this.position) &&
                 other.scale.equals(this.scale) &&
-                other.rotation.equals(this.rotation);
+                other.rotation.equals(this.rotation) &&
+                this.orientation.equals(other.orientation);
     }
 }

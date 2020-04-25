@@ -19,6 +19,8 @@ public class GameObject extends Serialize {
     private List<Component> components;
 
     public Transform transform;
+
+    private Transform lastTransform;
     private String name;
     private boolean serializable = true;
     private boolean isVisible = true;
@@ -27,6 +29,8 @@ public class GameObject extends Serialize {
         this.name = name;
         this.transform = transform;
         this.components = new ArrayList<>();
+        this.lastTransform = new Transform();
+        Transform.copyValues(this.transform, this.lastTransform);
     }
 
     public String getName() {
@@ -135,6 +139,9 @@ public class GameObject extends Serialize {
             this.transform.orientation.set(0, 0, 0, 1);
             this.transform.orientation.rotateXYZ((float)Math.toRadians(this.transform.rotation.x),
                     (float)Math.toRadians(this.transform.rotation.y), (float)Math.toRadians(this.transform.rotation.z));
+        } else if (!this.transform.orientation.equals(this.lastTransform.orientation)) {
+            Transform.copyValues(this.transform, this.lastTransform);
+            this.transform.orientation.getEulerAnglesXYZ(this.transform.rotation);
         }
         ImGui.separator();
         //ImGui.endMenu();

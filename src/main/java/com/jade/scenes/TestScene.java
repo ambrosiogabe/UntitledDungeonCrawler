@@ -11,6 +11,7 @@ import com.jade.physics.rigidbody.ForceRegistry;
 import com.jade.physics.rigidbody.Rigidbody;
 import com.jade.util.Constants;
 import com.jade.util.JMath;
+import org.joml.Matrix3f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -73,6 +74,9 @@ public class TestScene extends Scene {
     Rigidbody body;
     ParticleForceRegistry particleRegistry = new ParticleForceRegistry();
     ForceRegistry forceRegistry = new ForceRegistry();
+
+    GameObject testCube;
+    GameObject testWall;
 
     @Override
     public void init() {
@@ -155,10 +159,12 @@ public class TestScene extends Scene {
         testLight.addComponent(testLightComp);
         this.addGameObject(testLight);
 
-        GameObject testWall = new GameObject("Test wall", new Transform(new Vector3f(18, -4, 30), new Vector3f(1), new Vector3f(0, -90, 0)));
+        testWall = new GameObject("Test wall", new Transform(new Vector3f(18, -4, 30), new Vector3f(1), new Vector3f(0, -90, 0)));
         Model test = new Model("mesh-ext/brickWall.obj", "images/BrickPaint.png");
         test.addPointLight(testLightComp);
         testWall.addComponent(test);
+        Matrix3f wallInertiaTensor = JMath.createRectanglularPrismInertiaTensor(15.0f, new Vector3f(0.5f, 4.0f, 7.0f));
+        testWall.addComponent(new Rigidbody(15.0f, 0.3f, 0.3f, wallInertiaTensor));
         this.addGameObject(testWall);
 
 //        GameObject debugGizmoArrow = new GameObject("Debug Gizmo Arrow", new Transform(new Vector3f(0, 0.0f, 5)));
@@ -184,11 +190,13 @@ public class TestScene extends Scene {
 //        debugGizmoArrow.setNonserializable();
 //        this.addGameObject(debugGizmoArrow);
 
-        GameObject cube = new GameObject("Test Cube", new Transform(new Vector3f(32, -5, 17), new Vector3f(1), new Vector3f(0, 45, 0)));
+        testCube = new GameObject("Test Cube", new Transform(new Vector3f(32, -5, 17), new Vector3f(1), new Vector3f(0, 0, 0)));
         Model cubeModel = new Model("mesh-ext/cube.obj");
         cubeModel.addPointLight(testLightComp);
-        cube.addComponent(cubeModel);
-        this.addGameObject(cube);
+        testCube.addComponent(cubeModel);
+        Matrix3f cubeInertiaTensor = JMath.createRectanglularPrismInertiaTensor(10.0f, testCube.transform.scale);
+        testCube.addComponent(new Rigidbody(10.0f, 0.3f, 0.5f, cubeInertiaTensor));
+        this.addGameObject(testCube);
 
         GameObject cameraController = new GameObject("Camera Controller", new Transform());
         cameraController.addComponent(new FlyingCameraController());
@@ -220,6 +228,8 @@ public class TestScene extends Scene {
         msLabel.setText(String.format("MS Last Frame: %.3f", dt * 1000.0f));
 
         if (doPhysics) {
+            testCube.getComponent(Rigidbody.class).addForceAtBodyPoint(new Vector3f(0, 0, 100), new Vector3f(-0.5f, 0.0f, 0.5f));
+            testWall.getComponent(Rigidbody.class).addForceAtBodyPoint(new Vector3f(40, 0, 0), new Vector3f(-0.25f, 2f, 3.5f));
             float physicsDt = 1 / 60.0f;
             particleRegistry.updateForces(physicsDt);
         }
@@ -231,6 +241,7 @@ public class TestScene extends Scene {
             doPhysics = false;
             keyDebounce = debounceTime;
             particleRegistry.zeroForces();
+            testCube.getComponent(Rigidbody.class).zeroForces();
         }
 
         // Width 100, height 200
