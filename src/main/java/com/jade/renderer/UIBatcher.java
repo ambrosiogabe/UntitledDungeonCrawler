@@ -50,7 +50,6 @@ public class UIBatcher implements Comparable<UIBatcher> {
     private List<Texture> textures;
     private float[] vertices;
     private int[] indices;
-    private FloatBuffer verticesBuffer;
     private Shader shader;
     private Renderer renderer;
     private int maxBatchSize;
@@ -69,7 +68,6 @@ public class UIBatcher implements Comparable<UIBatcher> {
 
         // 4 Vertices per quad
         vertices = new float[maxBatchSize * 4 * VERTEX_SIZE];
-        verticesBuffer = BufferUtils.createFloatBuffer(vertices.length);
 
         // 6 indices per quad (3 per triangle)
         indices = new int[maxBatchSize * 6];
@@ -89,9 +87,6 @@ public class UIBatcher implements Comparable<UIBatcher> {
         vaoID = glGenVertexArrays();
         glBindVertexArray(vaoID);
 
-        // Create a FloatBuffer of vertices
-        verticesBuffer.put(vertices).flip();
-
         // Create an IntBuffer of the indices
         IntBuffer indicesBuffer = BufferUtils.createIntBuffer(indices.length);
         indicesBuffer.put(indices).flip();
@@ -99,7 +94,7 @@ public class UIBatcher implements Comparable<UIBatcher> {
         // Create a Buffer Object and upload the vertices buffer
         vboID = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vboID);
-        glBufferData(GL_ARRAY_BUFFER, verticesBuffer, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, vertices.length * Float.BYTES, GL_DYNAMIC_DRAW);
 
         // Create another buffer object for the indices, then upload the indices
         eboID = glGenBuffers();
@@ -275,7 +270,6 @@ public class UIBatcher implements Comparable<UIBatcher> {
         }
 
         if (rebufferData) {
-            verticesBuffer.put(vertices).flip();
             glBindBuffer(GL_ARRAY_BUFFER, vboID);
             glBufferSubData(GL_ARRAY_BUFFER, 0, Arrays.copyOfRange(vertices, 0, sprites.size() * VERTEX_SIZE * 4));
         }

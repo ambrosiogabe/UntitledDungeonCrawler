@@ -6,10 +6,12 @@ import com.jade.UIObject;
 import com.jade.Window;
 import com.jade.components.*;
 import com.jade.events.KeyListener;
+import com.jade.physics.colliders.BoxCollider;
 import com.jade.physics.particles.*;
 import com.jade.physics.rigidbody.ForceRegistry;
 import com.jade.physics.rigidbody.Rigidbody;
 import com.jade.util.Constants;
+import com.jade.util.DebugDraw;
 import com.jade.util.JMath;
 import org.joml.Matrix3f;
 import org.joml.Vector2f;
@@ -82,29 +84,29 @@ public class TestScene extends Scene {
     public void init() {
         UIObject particle1Obj = new UIObject("Particle 1", new Vector3f(585, 780, 0), new Vector3f(10, 10, 0));
         SpriteRenderer renderer = new SpriteRenderer(new Sprite("images/defaultSprite.png"));
-        renderer.setColor(Constants.BLUE);
+        renderer.setColor(Constants.COLOR4_BLUE);
         particle1Obj.addComponent(renderer);
         UIObject particle2Obj = new UIObject("Particle 2", new Vector3f(585, 800, 0), new Vector3f(10, 10, 0));
         renderer = new SpriteRenderer(new Sprite("images/defaultSprite.png"));
-        renderer.setColor(Constants.RED);
+        renderer.setColor(Constants.COLOR4_RED);
         particle2Obj.addComponent(renderer);
         UIObject particle3Obj = new UIObject("Particle 3", new Vector3f(800, 230, 0), new Vector3f(10, 10, 0));
         renderer = new SpriteRenderer(new Sprite("images/defaultSprite.png"));
-        renderer.setColor(Constants.GREEN);
+        renderer.setColor(Constants.COLOR4_GREEN);
         particle3Obj.addComponent(renderer);
         UIObject particle4Obj = new UIObject("Particle 4", new Vector3f(1000, 750, 0), new Vector3f(100, 200, 0));
         renderer = new SpriteRenderer(new Sprite("images/defaultSprite.png"));
-        renderer.setColor(Constants.YELLOW);
+        renderer.setColor(Constants.COLOR4_YELLOW);
         particle4Obj.addComponent(renderer);
 
         this.springVisual = new UIObject("Spring visual", new Vector3f(750, 1000, 0), new Vector3f(1, 100, 0));
         this.springVisual.addComponent(new SpriteRenderer(new Sprite("images/defaultSprite.png")));
-        this.addUIObject(this.springVisual);
 
-        this.addUIObject(particle1Obj);
-        this.addUIObject(particle2Obj);
-        this.addUIObject(particle3Obj);
-        this.addUIObject(particle4Obj);
+//        this.addUIObject(this.springVisual);
+//        this.addUIObject(particle1Obj);
+//        this.addUIObject(particle2Obj);
+//        this.addUIObject(particle3Obj);
+//        this.addUIObject(particle4Obj);
 
         ParticleGravity gravity = new ParticleGravity(new Vector3f(0.0f, -9.8f, 0.0f));
 
@@ -163,9 +165,11 @@ public class TestScene extends Scene {
         Model test = new Model("mesh-ext/brickWall.obj", "images/BrickPaint.png");
         test.addPointLight(testLightComp);
         testWall.addComponent(test);
-        Matrix3f wallInertiaTensor = JMath.createRectanglularPrismInertiaTensor(15.0f, new Vector3f(0.5f, 4.0f, 7.0f));
-        testWall.addComponent(new Rigidbody(15.0f, 0.3f, 0.3f, wallInertiaTensor));
+        testWall.addComponent(new BoxCollider(new Vector3f(0.5f, 4.0f, 7.0f), new Vector3f()));
+        testWall.addComponent(new Rigidbody(15.0f, 0.3f, 0.3f));
         this.addGameObject(testWall);
+
+//        DebugDraw.addLine(new Vector3f(25, 0, 0), new Vector3f(25, 0, 10), 0.1f, Constants.COLOR3_RED, 60 * 5);
 
 //        GameObject debugGizmoArrow = new GameObject("Debug Gizmo Arrow", new Transform(new Vector3f(0, 0.0f, 5)));
 //        Model debugModel = new Model("mesh-ext/debugGizmo_Arrow.obj", "images/defaultSprite.png");
@@ -194,8 +198,8 @@ public class TestScene extends Scene {
         Model cubeModel = new Model("mesh-ext/cube.obj");
         cubeModel.addPointLight(testLightComp);
         testCube.addComponent(cubeModel);
-        Matrix3f cubeInertiaTensor = JMath.createRectanglularPrismInertiaTensor(10.0f, testCube.transform.scale);
-        testCube.addComponent(new Rigidbody(10.0f, 0.3f, 0.5f, cubeInertiaTensor));
+        testCube.addComponent(new BoxCollider(new Vector3f(1), new Vector3f()));
+        testCube.addComponent(new Rigidbody(10.0f, 0.3f, 0.5f));
         this.addGameObject(testCube);
 
         GameObject cameraController = new GameObject("Camera Controller", new Transform());
@@ -237,11 +241,13 @@ public class TestScene extends Scene {
         if (!doPhysics && KeyListener.isKeyPressed(GLFW_KEY_SPACE) && keyDebounce < 0) {
             doPhysics = true;
             keyDebounce = debounceTime;
+            this.turnPhysicsOn();
         } else if (doPhysics && KeyListener.isKeyPressed(GLFW_KEY_SPACE) && keyDebounce < 0) {
             doPhysics = false;
             keyDebounce = debounceTime;
             particleRegistry.zeroForces();
             testCube.getComponent(Rigidbody.class).zeroForces();
+            this.turnPhysicsOff();
         }
 
         // Width 100, height 200
@@ -268,6 +274,10 @@ public class TestScene extends Scene {
 
         for (UIObject u : uiObjects) {
             u.update(dt);
+        }
+
+        if (activeGameObject >= 0) {
+            gameObjects.get(activeGameObject).drawGizmo();
         }
     }
 }

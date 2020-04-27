@@ -29,7 +29,7 @@ public class FontRenderer extends Component {
     private Transform lastTransform;
 
     public FontRenderer(FontTexture fontTexture, String text) {
-        this.color = Constants.WHITE;
+        this.color = Constants.COLOR4_WHITE;
 
         this.fontTexture = fontTexture;
         this.text = text;

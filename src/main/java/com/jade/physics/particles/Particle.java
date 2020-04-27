@@ -45,7 +45,7 @@ public class Particle extends Component {
         this.isInfinite = isInfinite;
 
         this.forceAccum = new Vector3f(0.0f, 0.0f, 0.0f);
-        this.color = Constants.RED;
+        this.color = Constants.COLOR4_RED;
         this.acceleration = forceAccum;
     }
 

@@ -11,7 +11,7 @@ import org.joml.Vector4f;
 public class SpriteRenderer extends Component {
 
     private Sprite sprite;
-    private Vector4f color = JMath.copy(Constants.WHITE);
+    private Vector4f color = JMath.copy(Constants.COLOR4_WHITE);
     private Shader shader = AssetPool.getShader("shaders/default.glsl");
     private boolean shouldDisplay = true;
 

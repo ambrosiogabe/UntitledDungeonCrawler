@@ -29,12 +29,21 @@ public class Constants {
     // COLORS
     // ======================================================================================================
     public static Vector4f WINDOW_CLEAR_COLOR = new Vector4f(0.15f, 0.25f, 0.41f, 1.0f);
-    public static final Vector4f WHITE = new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
-    public static final Vector4f RED = new Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
-    public static final Vector4f GREEN = new Vector4f(0.0f, 1.0f, 0.0f, 1.0f);
-    public static final Vector4f BLUE = new Vector4f(0.0f, 0.0f, 1.0f, 1.0f);
-    public static final Vector4f YELLOW = new Vector4f(1.0f, 1.0f, 0.0f, 1.0f);
-    public static final Vector4f CYAN = new Vector4f(0.0f, 1.0f, 1.0f, 1.0f);
-    public static final Vector4f PURPLE = new Vector4f(1.0f, 0.0f, 1.0f, 1.0f);
-    public static final Vector4f BLACK = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
+    public static final Vector4f COLOR4_WHITE = new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
+    public static final Vector4f COLOR4_RED = new Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
+    public static final Vector4f COLOR4_GREEN = new Vector4f(0.0f, 1.0f, 0.0f, 1.0f);
+    public static final Vector4f COLOR4_BLUE = new Vector4f(0.0f, 0.0f, 1.0f, 1.0f);
+    public static final Vector4f COLOR4_YELLOW = new Vector4f(1.0f, 1.0f, 0.0f, 1.0f);
+    public static final Vector4f COLOR4_CYAN = new Vector4f(0.0f, 1.0f, 1.0f, 1.0f);
+    public static final Vector4f COLOR4_PURPLE = new Vector4f(1.0f, 0.0f, 1.0f, 1.0f);
+    public static final Vector4f COLOR4_BLACK = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
+
+    public static final Vector3f COLOR3_WHITE = new Vector3f(1.0f, 1.0f, 1.0f);
+    public static final Vector3f COLOR3_RED = new Vector3f(1.0f, 0.0f, 0.0f);
+    public static final Vector3f COLOR3_GREEN = new Vector3f(0.0f, 1.0f, 0.0f);
+    public static final Vector3f COLOR3_BLUE = new Vector3f(0.0f, 0.0f, 1.0f);
+    public static final Vector3f COLOR3_YELLOW = new Vector3f(1.0f, 1.0f, 0.0f);
+    public static final Vector3f COLOR3_CYAN = new Vector3f(0.0f, 1.0f, 1.0f);
+    public static final Vector3f COLOR3_PURPLE = new Vector3f(1.0f, 0.0f, 1.0f);
+    public static final Vector3f COLOR3_BLACK = new Vector3f(0.0f, 0.0f, 0.0f);
 }

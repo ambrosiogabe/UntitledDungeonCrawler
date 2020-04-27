@@ -11,6 +11,7 @@ public class Transform extends Serialize {
     public Vector3f position;
     public Vector3f scale;
     public Vector3f rotation;
+    public Vector3f forward;
     public Quaternionf orientation;
 
     public Transform() {
@@ -36,6 +37,9 @@ public class Transform extends Serialize {
         this.orientation = new Quaternionf().fromAxisAngleDeg(Constants.RIGHT, this.rotation.x);
         this.orientation.mul(new Quaternionf().fromAxisAngleDeg(Constants.UP, this.rotation.y));
         this.orientation.mul(new Quaternionf().fromAxisAngleDeg(Constants.FORWARD, this.rotation.z));
+
+        this.forward = new Vector3f();
+        this.orientation.positiveZ(this.forward).negate();
     }
 
     public Transform copy() {
@@ -47,6 +51,7 @@ public class Transform extends Serialize {
         to.scale.set(from.scale);
         to.rotation.set(from.rotation);
         to.orientation.set(from.orientation);
+        to.forward.set(from.forward);
     }
 
     @Override

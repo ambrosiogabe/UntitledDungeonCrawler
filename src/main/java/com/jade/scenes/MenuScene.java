@@ -46,13 +46,13 @@ public class MenuScene extends Scene {
 
         UIObject startGameText = new UIObject("Start Label", new Vector3f(800.0f, 520.0f, 0.0f));
         FontRenderer playGameLabel = new FontRenderer(Constants.DEFAULT_FONT, "Start Game");
-        playGameLabel.setColor(Constants.BLACK);
+        playGameLabel.setColor(Constants.COLOR4_BLACK);
         startGameText.addComponent(playGameLabel);
         this.addUIObject(startGameText);
 
         UIObject exitGameText = new UIObject("Exit Label", new Vector3f(890.0f, 320.0f, 0.0f));
         FontRenderer exitGameLabel = new FontRenderer(Constants.DEFAULT_FONT, "Exit");
-        exitGameLabel.setColor(Constants.BLACK);
+        exitGameLabel.setColor(Constants.COLOR4_BLACK);
         exitGameText.addComponent(exitGameLabel);
         this.addUIObject(exitGameText);
 

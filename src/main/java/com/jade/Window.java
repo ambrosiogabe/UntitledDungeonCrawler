@@ -8,6 +8,7 @@ import com.jade.scenes.Scene;
 import com.jade.scenes.TestScene;
 import com.jade.scenes.WorldScene;
 import com.jade.util.Constants;
+import com.jade.util.DebugDraw;
 import com.jade.util.Time;
 import imgui.*;
 import imgui.callbacks.ImStrConsumer;
@@ -381,12 +382,16 @@ public class Window {
             dt = (time > 0) ? (currentTime - time) : 1f / 60f;
             time = currentTime;
 
+            DebugDraw.beginFrame();
+
             glBindFramebuffer(GL_FRAMEBUFFER, fboID);
             glClearColor(Constants.WINDOW_CLEAR_COLOR.x, Constants.WINDOW_CLEAR_COLOR.y, Constants.WINDOW_CLEAR_COLOR.z, Constants.WINDOW_CLEAR_COLOR.w);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             currentScene.update(dt);
             currentScene.render();
+
+            DebugDraw.endFrame();
 
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glClearColor(Constants.WINDOW_CLEAR_COLOR.x, Constants.WINDOW_CLEAR_COLOR.y, Constants.WINDOW_CLEAR_COLOR.z, Constants.WINDOW_CLEAR_COLOR.w);

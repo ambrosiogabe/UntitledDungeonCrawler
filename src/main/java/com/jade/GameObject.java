@@ -137,11 +137,15 @@ public class GameObject extends Serialize {
         if (!this.transform.rotation.equals(xyzRotation[0], xyzRotation[1], xyzRotation[2])) {
             this.transform.rotation.set(xyzRotation);
             this.transform.orientation.set(0, 0, 0, 1);
-            this.transform.orientation.rotateXYZ((float)Math.toRadians(this.transform.rotation.x),
-                    (float)Math.toRadians(this.transform.rotation.y), (float)Math.toRadians(this.transform.rotation.z));
+            this.transform.orientation.rotateAxis((float)Math.toRadians(this.transform.rotation.x), Constants.RIGHT);
+            this.transform.orientation.rotateAxis((float)Math.toRadians(this.transform.rotation.y), Constants.UP);
+            this.transform.orientation.rotateAxis((float)Math.toRadians(this.transform.rotation.z), Constants.FORWARD);
+            this.transform.orientation.positiveZ(this.transform.forward).negate();
+            Transform.copyValues(this.transform, this.lastTransform);
         } else if (!this.transform.orientation.equals(this.lastTransform.orientation)) {
             Transform.copyValues(this.transform, this.lastTransform);
             this.transform.orientation.getEulerAnglesXYZ(this.transform.rotation);
+            this.transform.orientation.positiveZ(this.transform.forward).negate();
         }
         ImGui.separator();
         //ImGui.endMenu();
@@ -158,6 +162,13 @@ public class GameObject extends Serialize {
         for (int i=0; i < this.components.size(); i++) {
             Component c = this.components.get(i);
             c.start();
+        }
+    }
+
+    public void drawGizmo() {
+        for (int i=0; i < this.components.size(); i++) {
+            Component c = this.components.get(i);
+            c.drawGizmo();
         }
     }
 

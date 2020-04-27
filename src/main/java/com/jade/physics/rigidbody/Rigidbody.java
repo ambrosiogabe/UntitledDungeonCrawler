@@ -1,9 +1,13 @@
 package com.jade.physics.rigidbody;
 
 import com.jade.Component;
+import com.jade.Window;
+import com.jade.components.Collider;
+import com.jade.scenes.TestScene;
 import org.joml.*;
 
 import java.lang.Math;
+import java.util.Collections;
 
 public class Rigidbody extends Component {
     private float inverseMass, mass;
@@ -21,11 +25,11 @@ public class Rigidbody extends Component {
 
     private Vector3f lastFrameAcceleration, acceleration;
 
-    public Rigidbody(float mass, float linearDamping, float angularDamping, Matrix3f inertiaTensor) {
-        init(mass, linearDamping, angularDamping, inertiaTensor);
+    public Rigidbody(float mass, float linearDamping, float angularDamping) {
+        init(mass, linearDamping, angularDamping);
     }
 
-    private void init(float mass, float linearDamping, float angularDamping, Matrix3f inertiaTensor) {
+    private void init(float mass, float linearDamping, float angularDamping) {
         this.mass = mass;
         this.inverseMass = this.mass <= 0.0f ? 0 : 1.0f / this.mass;
         this.linearDamping = linearDamping;
@@ -33,8 +37,8 @@ public class Rigidbody extends Component {
         this.angularVelocity = new Vector3f();
 
         this.transformMatrix = new Matrix4f().identity();
-        this.inverseInertiaTensor = new Matrix3f().identity();
-        inertiaTensor.invert(this.inverseInertiaTensor);
+//        this.inverseInertiaTensor = new Matrix3f().identity();
+//        inertiaTensor.invert(this.inverseInertiaTensor);
 
         //inverseInertiaTensorWorld = new Matrix4f().identity();
         this.forceAccum = new Vector3f();
@@ -42,6 +46,12 @@ public class Rigidbody extends Component {
         this.lastFrameAcceleration = new Vector3f();
         this.acceleration = new Vector3f();
         this.velocity = new Vector3f();
+    }
+
+    @Override
+    public void start() {
+        this.inverseInertiaTensor = new Matrix3f().identity();
+        this.gameObject.getComponent(Collider.class).getInertiaTensor(this.mass).invert(this.inverseInertiaTensor);
     }
 
     public boolean hasInfiniteMass() {
@@ -54,6 +64,10 @@ public class Rigidbody extends Component {
 
     @Override
     public void update(float dt) {
+        if (!Window.getScene().doPhysics()) {
+            return;
+        }
+
         // Calculate the linear acceleration from force inputs
         lastFrameAcceleration = acceleration;
         lastFrameAcceleration.add(forceAccum.mul(inverseMass));

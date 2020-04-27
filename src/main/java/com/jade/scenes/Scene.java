@@ -31,6 +31,8 @@ public abstract class Scene {
     private float gameViewXPos = 0.0f;
     private float gameViewYPos = 0.0f;
 
+    private boolean doPhysics = false;
+
     public Scene() {
         this.camera = new Camera(new Vector3f(0, 0, 0));
         this.renderer = new Renderer(this.camera);
@@ -199,5 +201,17 @@ public abstract class Scene {
 
     public Camera camera() {
         return this.camera;
+    }
+
+    public boolean doPhysics() {
+        return doPhysics;
+    }
+
+    public void turnPhysicsOn() {
+        this.doPhysics = true;
+    }
+
+    public void turnPhysicsOff() {
+        this.doPhysics = false;
     }
 }

@@ -19,5 +19,9 @@ public abstract class Component extends Serialize {
 
     }
 
+    public void drawGizmo() {
+
+    }
+
     public abstract Component copy();
 }
