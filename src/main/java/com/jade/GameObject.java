@@ -129,6 +129,16 @@ public class GameObject extends Serialize {
         ImGui.dragFloat3("##xyzRotation", xyzRotation,  KeyListener.isKeyPressed(GLFW_KEY_LEFT_CONTROL) ? 0.05f : 0.1f);
         ImGui.columns(1);
 
+        if (ImGui.button("Reset Rotation")) {
+            this.transform.orientation.identity();
+            this.transform.rotation.zero();
+            xyzRotation[0] = 0;
+            xyzRotation[1] = 0;
+            xyzRotation[2] = 0;
+            applyEulerRotation(0, 0, 0);
+            Transform.copyValues(this.transform, this.lastTransform);
+        }
+
         ImBool imVisible = new ImBool(isVisible);
         if (ImGui.checkbox("Is Visible", imVisible)) {
             isVisible = !isVisible;
@@ -137,17 +147,20 @@ public class GameObject extends Serialize {
         this.transform.position.set(xyzPosition);
         this.transform.scale.set(xyzScale);
         if (!this.transform.rotation.equals(xyzRotation[0], xyzRotation[1], xyzRotation[2])) {
-            this.transform.rotation.set(xyzRotation);
-            this.transform.orientation.set(0, 0, 0, 1);
-            this.transform.orientation.rotateAxis((float)Math.toRadians(this.transform.rotation.x), Constants.RIGHT);
-            this.transform.orientation.rotateAxis((float)Math.toRadians(this.transform.rotation.y), Constants.UP);
-            this.transform.orientation.rotateAxis((float)Math.toRadians(this.transform.rotation.z), Constants.FORWARD);
-            this.transform.orientation.positiveZ(this.transform.forward).negate();
-            Transform.copyValues(this.transform, this.lastTransform);
+            float dx = this.transform.rotation.x - xyzRotation[0];
+            float dy = this.transform.rotation.y - xyzRotation[1];
+            float dz = this.transform.rotation.z - xyzRotation[2];
+            applyEulerRotation(dx, dy, dz);
         } else if (!this.transform.orientation.equals(this.lastTransform.orientation)) {
             Transform.copyValues(this.transform, this.lastTransform);
             this.transform.orientation.getEulerAnglesXYZ(this.transform.rotation);
-            this.transform.orientation.positiveZ(this.transform.forward).negate();
+
+            this.transform.forward.set(Constants.FORWARD);
+            this.transform.orientation.transform(this.transform.forward);
+            this.transform.up.set(Constants.UP);
+            this.transform.orientation.transform(this.transform.up);
+            this.transform.right.set(Constants.RIGHT);
+            this.transform.orientation.transform(this.transform.right);
         }
         ImGui.separator();
         //ImGui.endMenu();
@@ -160,6 +173,40 @@ public class GameObject extends Serialize {
         }
     }
 
+    private void applyEulerRotation(float dx, float dy, float dz) {
+        Quaternionf rotationAmount;
+        Vector3f axis;
+        float angle;
+        if (dx != 0.0f) {
+            axis = transform.right;
+            angle = dx;
+        } else if (dy != 0.0f) {
+            axis = Constants.UP;
+            angle = dy;
+        } else {
+            axis= transform.forward;
+            angle = dz;
+        }
+
+        rotationAmount = new Quaternionf().fromAxisAngleDeg(axis, angle);
+        rotationAmount.mul(transform.orientation, transform.orientation);
+//        transform.orientation.mul(rotationAmount);
+
+//        float thetaX = (float)Math.atan2(transform.orientation.x, transform.orientation.w);
+//        float thetaY = (float)Math.atan2(transform.orientation.y, transform.orientation.w);
+//        float thetaZ = (float)Math.atan2(transform.orientation.z, transform.orientation.w);
+//        this.transform.rotation.set(thetaX, thetaY, thetaZ).mul((float)(180.0f / Math.PI));
+        this.transform.orientation.getEulerAnglesXYZ(this.transform.rotation).mul((float)(180.0f / Math.PI));
+
+        this.transform.forward.set(Constants.FORWARD);
+        this.transform.orientation.transform(this.transform.forward);
+        this.transform.up.set(Constants.UP);
+        this.transform.orientation.transform(this.transform.up);
+        this.transform.right.set(Constants.RIGHT);
+        this.transform.orientation.transform(this.transform.right);
+        Transform.copyValues(this.transform, this.lastTransform);
+    }
+
     public void start() {
         for (int i=0; i < this.components.size(); i++) {
             Component c = this.components.get(i);
@@ -168,7 +215,7 @@ public class GameObject extends Serialize {
     }
 
     public void drawGizmo() {
-        DebugDraw.addLine(this.transform.position, new Vector3f(this.transform.position).add(new Vector3f(this.transform.forward).mul(10)), 0.1f, Constants.COLOR3_RED);
+        //DebugDraw.addLine(this.transform.position, new Vector3f(this.transform.position).add(new Vector3f(this.transform.forward).mul(10)), 0.1f, Constants.COLOR3_RED);
 
         for (int i=0; i < this.components.size(); i++) {
             Component c = this.components.get(i);

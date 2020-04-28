@@ -2,12 +2,10 @@ package com.jade.physics.rigidbody;
 
 import com.jade.Component;
 import com.jade.Window;
-import com.jade.components.Collider;
-import com.jade.scenes.TestScene;
+import com.jade.physics.colliders.Collider;
 import org.joml.*;
 
 import java.lang.Math;
-import java.util.Collections;
 
 public class Rigidbody extends Component {
     private float inverseMass, mass;

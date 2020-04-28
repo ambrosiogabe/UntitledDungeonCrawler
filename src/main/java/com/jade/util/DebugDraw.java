@@ -1,5 +1,6 @@
 package com.jade.util;
 
+import com.jade.Transform;
 import com.jade.Window;
 import com.jade.renderer.Line;
 import com.jade.renderer.Shader;
@@ -223,25 +224,26 @@ public class DebugDraw {
     // =======================================================================================================
     // Add rectangular prism methods
     // =======================================================================================================
-    public static void addBox(Vector3f center, Vector3f dimensions, Vector3f forward) {
-        addBox(center, dimensions, forward,0.5f, Constants.COLOR3_GREEN, 1);
+    public static void addBox(Vector3f center, Vector3f dimensions, Transform transform) {
+        addBox(center, dimensions, transform,0.5f, Constants.COLOR3_GREEN, 1);
     }
 
-    public static void addBox(Vector3f center, Vector3f dimensions, Vector3f forward, float strokeWidth) {
-        addBox(center, dimensions, forward, strokeWidth, Constants.COLOR3_GREEN, 1);
+    public static void addBox(Vector3f center, Vector3f dimensions, Transform transform, float strokeWidth) {
+        addBox(center, dimensions, transform, strokeWidth, Constants.COLOR3_GREEN, 1);
     }
 
-    public static void addBox(Vector3f center, Vector3f dimensions, Vector3f forward, float strokeWidth, Vector3f color) {
-        addBox(center, dimensions, forward, strokeWidth, color, 1);
+    public static void addBox(Vector3f center, Vector3f dimensions, Transform transform, float strokeWidth, Vector3f color) {
+        addBox(center, dimensions, transform, strokeWidth, color, 1);
     }
 
-    public static void addBox(Vector3f center, Vector3f dimensions, Vector3f forward, float strokeWidth, Vector3f color, int lifetime) {
-        forward = new Vector3f(forward);
-        // If line is pointing in world UP or DOWN, make sure to cross with a different axis
-        // to ensure no zero vectors
-        Vector3f right = !forward.equals(Constants.UP) && !forward.equals(Constants.DOWN) ?
-                new Vector3f(forward).cross(Constants.UP) : new Vector3f(forward).cross(Constants.BACK);
-        Vector3f up = new Vector3f(right).cross(forward);
+    public static void addBox(Vector3f center, Vector3f dimensions, Transform transform, float strokeWidth, Vector3f color, int lifetime) {
+        Vector3f forward = new Vector3f(transform.forward);
+        Vector3f up = new Vector3f(transform.up);
+        Vector3f right = new Vector3f(transform.right);
+
+        addLine(center, new Vector3f(center).add(forward), 0.1f, Constants.COLOR3_GREEN);
+        addLine(center, new Vector3f(center).add(right), 0.1f, Constants.COLOR3_RED);
+        addLine(center, new Vector3f(center).add(up), 0.1f, Constants.COLOR3_BLUE);
 
         float halfWidth = dimensions.x / 2.0f;
         float halfHeight = dimensions.y / 2.0f;

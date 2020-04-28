@@ -1,7 +1,6 @@
 package com.jade.physics.colliders;
 
 import com.jade.Component;
-import com.jade.components.Collider;
 import com.jade.util.Constants;
 import com.jade.util.DebugDraw;
 import com.jade.util.JMath;
@@ -31,7 +30,7 @@ public class BoxCollider extends Collider {
 
     @Override
     public void drawGizmo() {
-        DebugDraw.addBox(this.gameObject.transform.position, this.dimensions, this.gameObject.transform.forward, 0.1f, Constants.COLOR3_GREEN, 1);
+        DebugDraw.addBox(this.gameObject.transform.position, this.dimensions, this.gameObject.transform, 0.1f, Constants.COLOR3_GREEN, 1);
     }
 
     @Override

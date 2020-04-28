@@ -11,7 +11,10 @@ public class Transform extends Serialize {
     public Vector3f position;
     public Vector3f scale;
     public Vector3f rotation;
+
     public Vector3f forward;
+    public Vector3f up;
+    public Vector3f right;
     public Quaternionf orientation;
 
     public Transform() {
@@ -31,6 +34,10 @@ public class Transform extends Serialize {
     }
 
     private void init(Vector3f position, Vector3f scale, Vector3f rotation) {
+        this.forward = new Vector3f();
+        this.right = new Vector3f();
+        this.up = new Vector3f();
+
         this.position = position;
         this.scale = scale;
         this.rotation = rotation;
@@ -38,8 +45,12 @@ public class Transform extends Serialize {
         this.orientation.mul(new Quaternionf().fromAxisAngleDeg(Constants.UP, this.rotation.y));
         this.orientation.mul(new Quaternionf().fromAxisAngleDeg(Constants.FORWARD, this.rotation.z));
 
-        this.forward = new Vector3f();
-        this.orientation.positiveZ(this.forward).negate();
+        this.forward.set(Constants.FORWARD);
+        this.orientation.transform(this.forward);
+        this.up.set(Constants.UP);
+        this.orientation.transform(this.up);
+        this.right.set(Constants.RIGHT);
+        this.orientation.transform(this.right);
     }
 
     public Transform copy() {
@@ -52,6 +63,8 @@ public class Transform extends Serialize {
         to.rotation.set(from.rotation);
         to.orientation.set(from.orientation);
         to.forward.set(from.forward);
+        to.right.set(from.right);
+        to.up.set(from.up);
     }
 
     @Override
