@@ -4,10 +4,12 @@ import com.jade.events.KeyListener;
 import com.jade.file.Parser;
 import com.jade.file.Serialize;
 import com.jade.util.Constants;
+import com.jade.util.DebugDraw;
 import imgui.ImBool;
 import imgui.ImGui;
 import imgui.enums.ImGuiCond;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -166,6 +168,8 @@ public class GameObject extends Serialize {
     }
 
     public void drawGizmo() {
+        DebugDraw.addLine(this.transform.position, new Vector3f(this.transform.position).add(new Vector3f(this.transform.forward).mul(10)), 0.1f, Constants.COLOR3_RED);
+
         for (int i=0; i < this.components.size(); i++) {
             Component c = this.components.get(i);
             c.drawGizmo();
