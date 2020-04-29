@@ -10,12 +10,14 @@ import org.joml.Vector3f;
 
 public class BoxCollider extends Collider {
 
-    Vector3f dimensions;
-    Vector3f offset;
+    private Vector3f dimensions;
+    private Vector3f offset;
+    private Vector3f tmp;
 
     public BoxCollider(Vector3f dimensions, Vector3f offset) {
-        this.dimensions = new Vector3f();
-        this.offset = new Vector3f();
+        this.dimensions = dimensions;
+        this.offset = offset;
+        this.tmp = new Vector3f();
     }
 
     @Override
@@ -30,7 +32,8 @@ public class BoxCollider extends Collider {
 
     @Override
     public void drawGizmo() {
-        DebugDraw.addBox(this.gameObject.transform.position, this.dimensions, this.gameObject.transform, 0.1f, Constants.COLOR3_GREEN, 1);
+        DebugDraw.addBox(tmp.set(this.gameObject.transform.position).add(this.offset),
+                this.dimensions, this.gameObject.transform, 0.1f, Constants.COLOR3_GREEN, 1);
     }
 
     @Override
@@ -39,7 +42,7 @@ public class BoxCollider extends Collider {
         float[] offXYZ = {offset.x, offset.y, offset.z};
 
         ImGui.dragFloat3("Dimensions", dimXYZ);
-        ImGui.dragFloat("Offset", offXYZ);
+        ImGui.dragFloat3("Offset", offXYZ);
 
         if (!dimensions.equals(dimXYZ[0], dimXYZ[1], dimXYZ[2])) {
             dimensions.set(dimXYZ[0], dimXYZ[1], dimXYZ[2]);

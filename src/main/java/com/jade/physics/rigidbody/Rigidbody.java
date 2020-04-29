@@ -3,6 +3,8 @@ package com.jade.physics.rigidbody;
 import com.jade.Component;
 import com.jade.Window;
 import com.jade.physics.colliders.Collider;
+import com.jade.util.Constants;
+import com.jade.util.DebugDraw;
 import org.joml.*;
 
 import java.lang.Math;
@@ -137,20 +139,22 @@ public class Rigidbody extends Component {
     // Useful for external forces acting on the body
     public void addForceAtPoint(Vector3f force, Vector3f point) {
         // Convert to coordinates relative to center of mass
-        Vector3f pt = point;
+        Vector3f pt = new Vector3f(point);
         pt.sub(this.gameObject.transform.position);
 
-        forceAccum.add(force);
-        torqueAccum.add(pt.cross(force));
-
-        isAwake = true;
+        addForceAtBodyPoint(force, pt);
     }
 
     // Add a force in the model's local coordinates
     // Useful for springs and such attached to the body
     public void addForceAtBodyPoint(Vector3f force, Vector3f point) {
-        // Convert to coordinates relative to center of mass
         forceAccum.add(force);
+
+        if (Constants.DEBUG_BUILD) {
+            Vector3f pointWorld = this.gameObject.transform.orientation.transform(new Vector3f(point)).add(this.gameObject.transform.position);
+            DebugDraw.addLine(new Vector3f(pointWorld), new Vector3f(pointWorld).add(force), 0.1f, Constants.COLOR3_GREEN);
+        }
+
         torqueAccum.add(point.cross(force));
 
         isAwake = true;

@@ -166,7 +166,7 @@ public class TestScene extends Scene {
         Model test = new Model("mesh-ext/brickWall.obj", "images/BrickPaint.png");
         test.addPointLight(testLightComp);
         testWall.addComponent(test);
-        testWall.addComponent(new BoxCollider(new Vector3f(0.5f, 4.0f, 7.0f), new Vector3f()));
+        testWall.addComponent(new BoxCollider(new Vector3f(23f, 7f, 2f), new Vector3f()));
         testWall.addComponent(new Rigidbody(15.0f, 0.3f, 0.3f));
         this.addGameObject(testWall);
 
@@ -199,7 +199,7 @@ public class TestScene extends Scene {
         Model cubeModel = new Model("mesh-ext/cube.obj");
         cubeModel.addPointLight(testLightComp);
         testCube.addComponent(cubeModel);
-        testCube.addComponent(new BoxCollider(new Vector3f(1), new Vector3f()));
+        testCube.addComponent(new BoxCollider(new Vector3f(2), new Vector3f()));
         testCube.addComponent(new Rigidbody(10.0f, 0.3f, 0.5f));
         this.addGameObject(testCube);
 
@@ -233,8 +233,6 @@ public class TestScene extends Scene {
         msLabel.setText(String.format("MS Last Frame: %.3f", dt * 1000.0f));
 
         if (doPhysics) {
-            testCube.getComponent(Rigidbody.class).addForceAtBodyPoint(new Vector3f(0, 0, 100), new Vector3f(-0.5f, 0.0f, 0.5f));
-            testWall.getComponent(Rigidbody.class).addForceAtBodyPoint(new Vector3f(40, 0, 0), new Vector3f(-0.25f, 2f, 3.5f));
             float physicsDt = 1 / 60.0f;
             particleRegistry.updateForces(physicsDt);
         }

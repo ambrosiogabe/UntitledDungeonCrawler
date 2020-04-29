@@ -52,14 +52,8 @@ public class Model extends Component {
         this.modelMatrix.identity();
 
         this.modelMatrix.translate(this.gameObject.transform.position);
-//        this.modelMatrix.rotate((float)Math.toRadians(this.gameObject.transform.rotation.x), Constants.RIGHT);
-//        this.modelMatrix.rotate((float)Math.toRadians(this.gameObject.transform.rotation.y), Constants.UP);
-//        this.modelMatrix.rotate((float)Math.toRadians(this.gameObject.transform.rotation.z), Constants.FORWARD);
         this.modelMatrix.rotate(this.gameObject.transform.orientation);
         this.modelMatrix.scale(this.gameObject.transform.scale);
-        if (this.gameObject.getName().equals("Test Cube")) {
-//            System.out.println(this.gameObject.transform.orientation);
-        }
     }
 
     public Matrix4f getModelMatrix() {

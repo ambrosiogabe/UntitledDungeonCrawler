@@ -7,6 +7,8 @@ import org.joml.Vector4f;
 import java.awt.Font;
 
 public class Constants {
+    public static final boolean DEBUG_BUILD = true;
+
     public static final int INITIAL_WINDOW_WIDTH = 2560;
     public static final int INITIAL_WINDOW_HEIGHT = 1440;
     public static final String WINDOW_TITLE = "Minecraft";
@@ -21,9 +23,9 @@ public class Constants {
     // ======================================================================================================
     // FONTS
     // ======================================================================================================
-    public static FontTexture DEFAULT_FONT = new FontTexture(new Font("LLPixel", Font.PLAIN, 48), "US-ASCII");
-    public static FontTexture EXTRA_LARGE_FONT = new FontTexture(new Font("LLPixel", Font.PLAIN, 96), "US-ASCII");
-    public static FontTexture DEBUG_FONT = new FontTexture(new Font("Arial", Font.PLAIN, 24), "US-ASCII");
+    public static final FontTexture DEFAULT_FONT = new FontTexture(new Font("LLPixel", Font.PLAIN, 48), "US-ASCII");
+    public static final FontTexture EXTRA_LARGE_FONT = new FontTexture(new Font("LLPixel", Font.PLAIN, 96), "US-ASCII");
+    public static final FontTexture DEBUG_FONT = new FontTexture(new Font("Arial", Font.PLAIN, 24), "US-ASCII");
 
     // ======================================================================================================
     // COLORS

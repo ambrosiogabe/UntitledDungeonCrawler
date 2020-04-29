@@ -379,8 +379,12 @@ public class Window {
 
         while (!glfwWindowShouldClose(glfwWindow)) {
             float currentTime = Time.getTime();
-            dt = (time > 0) ? (currentTime - time) : 1f / 60f;
+            dt = currentTime - time;
             time = currentTime;
+            if (dt < (1f / 60f) - (0.1f) || dt <= 0) {
+                System.out.println("FPS: '" + dt + "'. Missed target frame rate.");
+                dt = 1f / 60f;
+            }
 
             DebugDraw.beginFrame();
 
