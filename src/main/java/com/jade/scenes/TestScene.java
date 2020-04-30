@@ -8,8 +8,8 @@ import com.jade.components.*;
 import com.jade.events.KeyListener;
 import com.jade.physics.colliders.BoxCollider;
 import com.jade.physics.particles.*;
-import com.jade.physics.rigidbody.ForceRegistry;
-import com.jade.physics.rigidbody.Rigidbody;
+import com.jade.physics.rigidbody.*;
+import com.jade.util.AssetPool;
 import com.jade.util.Constants;
 import com.jade.util.DebugDraw;
 import com.jade.util.JMath;
@@ -74,12 +74,12 @@ public class TestScene extends Scene {
     Particle particle2;
     Particle particle4;
     Particle floater;
-    Rigidbody body;
     ParticleForceRegistry particleRegistry = new ParticleForceRegistry();
     ForceRegistry forceRegistry = new ForceRegistry();
 
     GameObject testCube;
     GameObject testWall;
+    Vector3f springStart, springEnd;
 
     @Override
     public void init() {
@@ -200,8 +200,23 @@ public class TestScene extends Scene {
         cubeModel.addPointLight(testLightComp);
         testCube.addComponent(cubeModel);
         testCube.addComponent(new BoxCollider(new Vector3f(2), new Vector3f()));
-        testCube.addComponent(new Rigidbody(10.0f, 0.3f, 0.5f));
+        Rigidbody cubeRb = new Rigidbody(10.0f, 0.9f, 0.5f);
+        testCube.addComponent(cubeRb);
         this.addGameObject(testCube);
+        this.springEnd = new Vector3f(testCube.transform.position).add(-0.75f, 1f, 0.75f);
+
+        GameObject otherCube = new GameObject("Other Cube", new Transform(new Vector3f(32, 0, 17), new Vector3f(0.5f)));
+        otherCube.addComponent(new Model("mesh-ext/cube.obj"));
+        otherCube.getComponent(Model.class).addPointLight(testLightComp);
+        Rigidbody otherCubeRb = new Rigidbody(10f, 0.1f, 0.3f);
+        otherCube.addComponent(otherCubeRb);
+        otherCube.addComponent(new BoxCollider(new Vector3f(1), new Vector3f()));
+        this.addGameObject(otherCube);
+        this.springStart = new Vector3f(otherCube.transform.position).add(new Vector3f(0f, -0.5f, 0f));
+
+        forceRegistry.add(cubeRb, new Gravity(new Vector3f(0f, -10f, 0f)));
+        forceRegistry.add(cubeRb, new Spring(new Vector3f(-0.75f, 1f, 0.75f), otherCubeRb, new Vector3f(0f, -0.5f, 0f), 25f, 1f));
+        forceRegistry.add(cubeRb, new Drag(-100f));
 
         GameObject cameraController = new GameObject("Camera Controller", new Transform());
         cameraController.addComponent(new FlyingCameraController());
@@ -235,7 +250,10 @@ public class TestScene extends Scene {
         if (doPhysics) {
             float physicsDt = 1 / 60.0f;
             particleRegistry.updateForces(physicsDt);
+            forceRegistry.updateForces(physicsDt);
         }
+        this.springEnd.set(testCube.transform.position).add(testCube.transform.orientation.transform(new Vector3f(-0.75f, 1f, 0.75f)));
+        DebugDraw.addLine(springStart, springEnd, 0.1f, Constants.COLOR3_WHITE);
 
         if (!doPhysics && KeyListener.isKeyPressed(GLFW_KEY_SPACE) && keyDebounce < 0) {
             doPhysics = true;
@@ -245,7 +263,7 @@ public class TestScene extends Scene {
             doPhysics = false;
             keyDebounce = debounceTime;
             particleRegistry.zeroForces();
-            testCube.getComponent(Rigidbody.class).zeroForces();
+            forceRegistry.zeroForces();
             this.turnPhysicsOff();
         }
 

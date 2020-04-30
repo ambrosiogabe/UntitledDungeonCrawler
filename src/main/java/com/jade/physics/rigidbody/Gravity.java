@@ -14,6 +14,6 @@ public class Gravity implements ForceGenerator {
         // Check that we do not have infinite mass
         if (body.hasInfiniteMass()) return;
 
-        body.addForce(gravity.mul(body.getMass()));
+        body.addForce(new Vector3f(gravity).mul(body.getMass()));
     }
 }

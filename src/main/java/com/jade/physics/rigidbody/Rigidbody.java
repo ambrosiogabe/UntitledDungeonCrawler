@@ -8,6 +8,7 @@ import com.jade.util.DebugDraw;
 import org.joml.*;
 
 import java.lang.Math;
+import java.util.Collections;
 
 public class Rigidbody extends Component {
     private float inverseMass, mass;
@@ -15,9 +16,8 @@ public class Rigidbody extends Component {
 
     private Vector3f velocity;
     private Vector3f angularVelocity;
-    private Matrix4f transformMatrix;
+    private Matrix4f transformMatrix, inverseTransform;
     private Matrix3f inverseInertiaTensor;
-    //Matrix4f inverseInertiaTensorWorld;
 
     private boolean isAwake;
     private Vector3f forceAccum;
@@ -37,10 +37,7 @@ public class Rigidbody extends Component {
         this.angularVelocity = new Vector3f();
 
         this.transformMatrix = new Matrix4f().identity();
-//        this.inverseInertiaTensor = new Matrix3f().identity();
-//        inertiaTensor.invert(this.inverseInertiaTensor);
-
-        //inverseInertiaTensorWorld = new Matrix4f().identity();
+        this.inverseTransform = new Matrix4f().identity();
         this.forceAccum = new Vector3f();
         this.torqueAccum = new Vector3f();
         this.lastFrameAcceleration = new Vector3f();
@@ -68,19 +65,13 @@ public class Rigidbody extends Component {
             return;
         }
 
-        // Calculate the linear acceleration from force inputs
-        lastFrameAcceleration = acceleration;
-        lastFrameAcceleration.add(forceAccum.mul(inverseMass));
-
-        // Calculate the acceleration from torque inputs
-        Vector3f angularAcceleration = torqueAccum;//inverseInertiaTensorWorld.transform(torqueAccum);
-
         // Adjust velocities
         // Update linear velocity from both acceleration and impulse
-        velocity.add(lastFrameAcceleration.mul(dt));
+        velocity.add(acceleration.add(new Vector3f(forceAccum).mul(dt).mul(inverseMass)));
 
         // Update angular velocity from both acceleration and impulse
-        this.angularVelocity.add(angularAcceleration.mul(dt));
+        Vector3f angularAcceleration = new Vector3f(inverseInertiaTensor.transform(torqueAccum));
+        angularVelocity.fma(dt * dt * dt, angularAcceleration);
 
         // Impose drag
         velocity.mul((float)Math.pow(linearDamping, dt));
@@ -91,8 +82,9 @@ public class Rigidbody extends Component {
         this.gameObject.transform.position.add(velocity.mul(dt));
 
         // Update angular position
-        Vector3f tmp = this.angularVelocity.mul(dt);
-        this.gameObject.transform.orientation.add(tmp.x, tmp.y, tmp.z, 0.0f);
+        Quaternionf q = new Quaternionf(angularVelocity.x, angularVelocity.y, angularVelocity.z, 0);
+        q.scale(0.5f).mul(this.gameObject.transform.orientation);
+        this.gameObject.transform.orientation.add(q);
 
         // Normalize the orientation, and update the matrices with the new
         // position and orientation
@@ -112,6 +104,7 @@ public class Rigidbody extends Component {
         this.transformMatrix.identity();
         this.transformMatrix.translate(this.gameObject.transform.position);
         this.transformMatrix.rotate(this.gameObject.transform.orientation);
+        this.transformMatrix.invert(this.inverseTransform);
         // TODO: INCLUDE SCALE IN CALCULATIONS
         //this.transformMatrix.scale(this.gameObject.transform.scale);
     }
@@ -139,10 +132,7 @@ public class Rigidbody extends Component {
     // Useful for external forces acting on the body
     public void addForceAtPoint(Vector3f force, Vector3f point) {
         // Convert to coordinates relative to center of mass
-        Vector3f pt = new Vector3f(point);
-        pt.sub(this.gameObject.transform.position);
-
-        addForceAtBodyPoint(force, pt);
+        // TODO: GET THIS DONE
     }
 
     // Add a force in the model's local coordinates
@@ -151,18 +141,46 @@ public class Rigidbody extends Component {
         forceAccum.add(force);
 
         if (Constants.DEBUG_BUILD) {
-            Vector3f pointWorld = this.gameObject.transform.orientation.transform(new Vector3f(point)).add(this.gameObject.transform.position);
-            DebugDraw.addLine(new Vector3f(pointWorld), new Vector3f(pointWorld).add(force), 0.1f, Constants.COLOR3_GREEN);
+//            Vector3f forceWorld = applyRotation(force);
+//
+//            Vector3f pointWorld = getPointInWorldSpace(point);
+//            DebugDraw.addLine(new Vector3f(pointWorld), new Vector3f(pointWorld).add(forceWorld), 0.1f, Constants.COLOR3_GREEN);
+//            Vector3f tmpForce = new Vector3f(forceWorld).cross(pointWorld);
+//            DebugDraw.addLine(new Vector3f(pointWorld), new Vector3f(pointWorld).add(tmpForce), 0.1f, Constants.COLOR3_CYAN);
         }
 
-        torqueAccum.add(point.cross(force));
+        torqueAccum.add(force.cross(point).mul(-1));
+
+        isAwake = true;
+    }
+
+    public void addGlobalForceAtLocalBodyPoint(Vector3f globalForce, Vector3f localPoint) {
+        forceAccum.add(globalForce);
+
+        if (Constants.DEBUG_BUILD) {
+//            Vector3f pointWorld = getPointInWorldSpace(localPoint);
+//            DebugDraw.addLine(new Vector3f(pointWorld), new Vector3f(pointWorld).add(globalForce), 0.1f, Constants.COLOR3_GREEN);
+//            Vector3f tmpForce = new Vector3f(globalForce).cross(pointWorld);
+//            DebugDraw.addLine(new Vector3f(pointWorld), new Vector3f(pointWorld).add(tmpForce), 0.1f, Constants.COLOR3_CYAN);
+        }
+
+        globalForce = applyInverseRotation(globalForce);
+        torqueAccum.add(globalForce.cross(localPoint).mul(-1));
 
         isAwake = true;
     }
 
     public Vector3f getPointInWorldSpace(Vector3f point) {
-        Vector4f tmp = transformMatrix.transform(new Vector4f(point, 0.0f));
+        Vector4f tmp = transformMatrix.transform(new Vector4f(point, 1.0f));
         return new Vector3f(tmp.x, tmp.y, tmp.z);
+    }
+
+    public Vector3f applyRotation(Vector3f point) {
+        return this.gameObject.transform.orientation.transform(new Vector3f(point));
+    }
+
+    public Vector3f applyInverseRotation(Vector3f point) {
+        return this.gameObject.transform.orientation.transformInverse(new Vector3f(point));
     }
 
     public void zeroForces() {
@@ -170,6 +188,12 @@ public class Rigidbody extends Component {
         this.forceAccum.zero();
         this.velocity.zero();
         this.angularVelocity.zero();
+        this.acceleration.zero();
+        this.lastFrameAcceleration.zero();
+    }
+
+    public Vector3f getVelocity() {
+        return this.velocity;
     }
 
     @Override

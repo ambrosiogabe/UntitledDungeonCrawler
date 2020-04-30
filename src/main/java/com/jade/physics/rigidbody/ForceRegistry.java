@@ -31,4 +31,10 @@ public class ForceRegistry {
             fr.fg.updateForce(fr.body, dt);
         }
     }
+
+    public void zeroForces() {
+        for (ForceRegistration fr : registry) {
+            fr.body.zeroForces();
+        }
+    }
 }

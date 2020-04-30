@@ -1,5 +1,7 @@
 package com.jade.physics.rigidbody;
 
+import com.jade.util.Constants;
+import com.jade.util.DebugDraw;
 import org.joml.Vector3f;
 
 public class Spring implements ForceGenerator {
@@ -30,8 +32,8 @@ public class Spring implements ForceGenerator {
         Vector3f lws = body.getPointInWorldSpace(connectionPoint);
         Vector3f ows = other.getPointInWorldSpace(otherConnectionPoint);
 
-        // Calculate the vector of the spring
-        Vector3f force = lws.sub(ows);
+        // Calculate the vector of the spring (in local space)
+        Vector3f force = new Vector3f(lws).sub(ows);
 
         // Calculate the magnitude of the force
         float magnitude = force.length();
@@ -41,6 +43,6 @@ public class Spring implements ForceGenerator {
         // Calculate the final force and apply it
         force.normalize();
         force.mul(-magnitude);
-        body.addForceAtPoint(force, lws);
+        body.addGlobalForceAtLocalBodyPoint(force, connectionPoint);
     }
 }

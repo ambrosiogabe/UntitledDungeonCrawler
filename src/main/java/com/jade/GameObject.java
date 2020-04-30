@@ -88,6 +88,11 @@ public class GameObject extends Serialize {
 
 
     public void update(float dt) {
+        if (!this.transform.orientation.equals(this.lastTransform.orientation)) {
+            Transform.copyValues(this.transform, this.lastTransform);
+            applyEulerRotation(0, 0, 0);
+        }
+
         for (int i=0; i < this.components.size(); i++) {
             Component c = this.components.get(i);
             c.update(dt);
@@ -151,16 +156,6 @@ public class GameObject extends Serialize {
             float dy = this.transform.rotation.y - xyzRotation[1];
             float dz = this.transform.rotation.z - xyzRotation[2];
             applyEulerRotation(dx, dy, dz);
-        } else if (!this.transform.orientation.equals(this.lastTransform.orientation)) {
-            Transform.copyValues(this.transform, this.lastTransform);
-            this.transform.orientation.getEulerAnglesXYZ(this.transform.rotation);
-
-            this.transform.forward.set(Constants.FORWARD);
-            this.transform.orientation.transform(this.transform.forward);
-            this.transform.up.set(Constants.UP);
-            this.transform.orientation.transform(this.transform.up);
-            this.transform.right.set(Constants.RIGHT);
-            this.transform.orientation.transform(this.transform.right);
         }
         ImGui.separator();
         //ImGui.endMenu();
