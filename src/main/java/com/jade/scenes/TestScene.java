@@ -17,8 +17,7 @@ import org.joml.Matrix3f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class TestScene extends Scene {
     float cubeVertices[] = {
@@ -208,7 +207,7 @@ public class TestScene extends Scene {
         GameObject otherCube = new GameObject("Other Cube", new Transform(new Vector3f(32, 0, 17), new Vector3f(0.5f)));
         otherCube.addComponent(new Model("mesh-ext/cube.obj"));
         otherCube.getComponent(Model.class).addPointLight(testLightComp);
-        Rigidbody otherCubeRb = new Rigidbody(10f, 0.1f, 0.3f);
+        Rigidbody otherCubeRb = new Rigidbody(1f, 0.1f, 0.1f);
         otherCube.addComponent(otherCubeRb);
         otherCube.addComponent(new BoxCollider(new Vector3f(1), new Vector3f()));
         this.addGameObject(otherCube);

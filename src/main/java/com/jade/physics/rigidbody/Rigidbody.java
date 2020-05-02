@@ -4,11 +4,9 @@ import com.jade.Component;
 import com.jade.Window;
 import com.jade.physics.colliders.Collider;
 import com.jade.util.Constants;
-import com.jade.util.DebugDraw;
 import org.joml.*;
 
 import java.lang.Math;
-import java.util.Collections;
 
 public class Rigidbody extends Component {
     private float inverseMass, mass;
@@ -132,13 +130,14 @@ public class Rigidbody extends Component {
     // Useful for external forces acting on the body
     public void addForceAtPoint(Vector3f force, Vector3f point) {
         // Convert to coordinates relative to center of mass
-        // TODO: GET THIS DONE
+        Vector3f localPoint = point.sub(gameObject.transform.position);
+        addGlobalForceAtBodyPoint(force, localPoint);
     }
 
     // Add a force in the model's local coordinates
     // Useful for springs and such attached to the body
     public void addForceAtBodyPoint(Vector3f force, Vector3f point) {
-        forceAccum.add(force);
+//        forceAccum.add(force);
 
         if (Constants.DEBUG_BUILD) {
 //            Vector3f forceWorld = applyRotation(force);
@@ -154,7 +153,7 @@ public class Rigidbody extends Component {
         isAwake = true;
     }
 
-    public void addGlobalForceAtLocalBodyPoint(Vector3f globalForce, Vector3f localPoint) {
+    public void addGlobalForceAtBodyPoint(Vector3f globalForce, Vector3f localPoint) {
         forceAccum.add(globalForce);
 
         if (Constants.DEBUG_BUILD) {

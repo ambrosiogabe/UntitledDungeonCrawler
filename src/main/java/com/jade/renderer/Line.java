@@ -1,9 +1,7 @@
 package com.jade.renderer;
 
 import com.jade.util.Constants;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 public class Line {
     private Vector3f from;
@@ -19,34 +17,33 @@ public class Line {
         this.color = color;
         this.stroke = stroke;
         this.lifetime = lifetime;
-//        this.normalXZ = new Vector3f(-(to.z - from.z), 0, (to.x - from.x));
-//        this.normalXY = new Vector3f(-(to.y - from.y), (to.x - from.x), 0);
-//        this.normalYZ = new Vector3f(0, -(to.z - from.z), (to.y - from.y));
-//
-//        this.normalXZ.y = this.normalYZ.y;
-//        this.normalXY.z = this.normalXZ.z;
-//        this.normalYZ.x = this.normalXY.x;
-//
-//        this.normalXZ.normalize();
-//        this.normalXY.normalize();
-//        this.normalYZ.normalize();
+
+        // Calculate the forward, right, and up vectors
         Vector3f forward = new Vector3f(to).sub(from);
         float length = forward.length();
         forward.normalize();
 
-        // If line is pointing in world UP or DOWN, make sure to cross with a different axis
-        // to ensure no zero vectors
-        Vector3f right = !forward.equals(Constants.UP) && !forward.equals(Constants.DOWN) ?
-                new Vector3f(forward).cross(Constants.UP) : new Vector3f(forward).cross(Constants.BACK);
+        // Make sure to cross with non-parallel axis. We check which axis is greater
+        // then our 'tolerance' angle, then cross with that axis
+        float tolerance = 1f;
+        Vector3f right;
+        if (Math.abs(forward.dot(Constants.UP)) > tolerance) {
+            right = new Vector3f(forward).cross(Constants.UP);
+        } else if (Math.abs(forward.dot(Constants.FORWARD)) > tolerance) {
+            right = new Vector3f(forward).cross(Constants.FORWARD);
+        } else {
+            right = new Vector3f(forward).cross(Constants.RIGHT);
+        }
         Vector3f up = new Vector3f(right).cross(forward);
 
+        // Create 8 vertices to store the rectangular prism for the line
         float halfStroke = stroke / 2.0f;
         verts[0] = new Vector3f(from).add(new Vector3f(up).mul(halfStroke)).sub(new Vector3f(right).mul(halfStroke));
         verts[1] = new Vector3f(from).add(new Vector3f(up).mul(halfStroke)).add(new Vector3f(right).mul(halfStroke));
         verts[2] = new Vector3f(verts[0]).sub(new Vector3f(up).mul(stroke));
         verts[3] = new Vector3f(verts[1]).sub(new Vector3f(up).mul(stroke));
 
-        Vector3f addVector = new Vector3f(forward.mul(length));
+        Vector3f addVector = new Vector3f(forward).mul(length);
         verts[4] = new Vector3f(verts[0]).add(addVector);
         verts[5] = new Vector3f(verts[1]).add(addVector);
         verts[6] = new Vector3f(verts[2]).add(addVector);

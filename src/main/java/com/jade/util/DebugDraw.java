@@ -206,7 +206,7 @@ public class DebugDraw {
     // Add line methods
     // =======================================================================================================
     public static void addLine(Vector3f from, Vector3f to) {
-        addLine(from, to, 0.5f, Constants.COLOR3_GREEN, 1);
+        addLine(from, to, 0.1f, Constants.COLOR3_GREEN, 1);
     }
 
     public static void addLine(Vector3f from, Vector3f to, float strokeWidth) {
@@ -214,7 +214,7 @@ public class DebugDraw {
     }
 
     public static void addLine(Vector3f from, Vector3f to, float strokeWidth, Vector3f color) {
-        DebugDraw.lines.add(new Line(from, to, color, strokeWidth, 1));
+        addLine(from, to, strokeWidth, color, 1);
     }
 
     public static void addLine(Vector3f from, Vector3f to, float strokeWidth, Vector3f color, int lifetime) {
@@ -222,7 +222,7 @@ public class DebugDraw {
     }
 
     // =======================================================================================================
-    // Add rectangular prism methods
+    // Add box methods
     // =======================================================================================================
     public static void addBox(Vector3f center, Vector3f dimensions, Transform transform) {
         addBox(center, dimensions, transform,0.5f, Constants.COLOR3_GREEN, 1);
