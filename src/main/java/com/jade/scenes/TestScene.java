@@ -6,14 +6,14 @@ import com.jade.UIObject;
 import com.jade.Window;
 import com.jade.components.*;
 import com.jade.events.KeyListener;
-import com.jade.physics.colliders.BoxCollider;
+import com.jade.physics.rigidbody.boundingVolumes.BoundingSphere;
+import com.jade.physics.rigidbody.colliders.BoxCollider;
 import com.jade.physics.particles.*;
 import com.jade.physics.rigidbody.*;
-import com.jade.util.AssetPool;
+import com.jade.physics.rigidbody.collisions.BVHNode;
 import com.jade.util.Constants;
 import com.jade.util.DebugDraw;
 import com.jade.util.JMath;
-import org.joml.Matrix3f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -79,6 +79,8 @@ public class TestScene extends Scene {
     GameObject testCube;
     GameObject testWall;
     Vector3f springStart, springEnd;
+
+    private BVHNode bvhTree;
 
     @Override
     public void init() {
@@ -213,6 +215,40 @@ public class TestScene extends Scene {
         this.addGameObject(otherCube);
         this.springStart = new Vector3f(otherCube.transform.position).add(new Vector3f(0f, -0.5f, 0f));
 
+
+        // =========================================================================================================
+        // BVH test
+        // =========================================================================================================
+        GameObject cube0 = new GameObject("Cube 0", new Transform(new Vector3f(40, 0, 17)));
+        cube0.addComponent(new Model("mesh-ext/cube.obj"));
+        cube0.getComponent(Model.class).addPointLight(testLightComp);
+        cube0.addComponent(new BoundingSphere(cube0.transform.position, 1.5f));
+        cube0.addComponent(new Rigidbody(10, 0.1f, 0.1f));
+        cube0.addComponent(new BoxCollider(new Vector3f(), new Vector3f()));
+        this.addGameObject(cube0);
+        bvhTree = new BVHNode(null, cube0.getComponent(BoundingSphere.class), cube0.getComponent(Rigidbody.class));
+
+        GameObject cube1 = new GameObject("Cube 1", new Transform(new Vector3f(45, 0, 10)));
+        cube1.addComponent(new Model("mesh-ext/cube.obj"));
+        cube1.getComponent(Model.class).addPointLight(testLightComp);
+        cube1.addComponent(new BoundingSphere(cube1.transform.position, 1.5f));
+        cube1.addComponent(new Rigidbody(10, 0.1f, 0.1f));
+        cube1.addComponent(new BoxCollider(new Vector3f(), new Vector3f()));
+        this.addGameObject(cube1);
+        bvhTree.insert(cube1.getComponent(Rigidbody.class), cube1.getComponent(BoundingSphere.class));
+
+        GameObject cube2 = new GameObject("Cube 2", new Transform(new Vector3f(34, 0, 0)));
+        cube2.addComponent(new Model("mesh-ext/cube.obj"));
+        cube2.getComponent(Model.class).addPointLight(testLightComp);
+        cube2.addComponent(new BoundingSphere(cube2.transform.position, 1.5f));
+        cube2.addComponent(new Rigidbody(10, 0.1f, 0.1f));
+        cube2.addComponent(new BoxCollider(new Vector3f(), new Vector3f()));
+        this.addGameObject(cube2);
+        bvhTree.insert(cube2.getComponent(Rigidbody.class), cube2.getComponent(BoundingSphere.class));
+
+        // =========================================================================================================
+        // =========================================================================================================
+
         forceRegistry.add(cubeRb, new Gravity(new Vector3f(0f, -10f, 0f)));
         forceRegistry.add(cubeRb, new Spring(new Vector3f(-0.75f, 1f, 0.75f), otherCubeRb, new Vector3f(0f, -0.5f, 0f), 25f, 1f));
         forceRegistry.add(cubeRb, new Drag(-100f));
@@ -240,11 +276,18 @@ public class TestScene extends Scene {
 
     private float keyDebounce = 0.2f;
     private float debounceTime = 0.2f;
+    private int labelFrame = 0;
     @Override
     public void update(float dt) {
         keyDebounce -= dt;
-        fpsLabel.setText(String.format("FPS: %.3f", (1.0f / dt)));
-        msLabel.setText(String.format("MS Last Frame: %.3f", dt * 1000.0f));
+        labelFrame--;
+        if (labelFrame < 0) {
+            fpsLabel.setText(String.format("FPS: %.3f", (1.0f / dt)));
+            msLabel.setText(String.format("MS Last Frame: %.3f", dt * 1000.0f));
+            labelFrame = 5;
+        }
+
+        bvhTree.draw(Constants.COLOR3_GREEN);
 
         if (doPhysics) {
             float physicsDt = 1 / 60.0f;

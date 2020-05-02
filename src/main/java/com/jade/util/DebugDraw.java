@@ -276,5 +276,76 @@ public class DebugDraw {
         addLine(verts[1], verts[5], strokeWidth, color, lifetime);
         addLine(verts[3], verts[7], strokeWidth, color, lifetime);
     }
+
+    // =======================================================================================================
+    // Add circle methods
+    // =======================================================================================================
+    public static void addCircle(Vector3f center, Vector3f normal, float radius) {
+        addCircle(center, normal, radius, 0.1f, Constants.COLOR3_GREEN, 1);
+    }
+
+    public static void addCircle(Vector3f center, Vector3f normal, float radius, float strokeWidth) {
+        addCircle(center, normal, radius, strokeWidth, Constants.COLOR3_GREEN, 1);
+    }
+
+    public static void addCircle(Vector3f center, Vector3f normal, float radius, float strokeWidth, Vector3f color) {
+        addCircle(center, normal, radius, strokeWidth, color, 1);
+    }
+
+    public static void addCircle(Vector3f center, Vector3f normal, float radius, float strokeWidth, Vector3f color, int lifetime) {
+        Vector3f forward = new Vector3f(normal);
+        forward.normalize();
+        // Make sure to cross with non-parallel axis. We check which axis is greater
+        // then our 'tolerance' angle, then cross with that axis
+        float tolerance = 0.1f;
+        Vector3f right;
+        if (Math.abs(forward.dot(Constants.UP)) < tolerance) {
+            right = new Vector3f(forward).cross(Constants.UP);
+        } else if (Math.abs(forward.dot(Constants.FORWARD)) < tolerance) {
+            right = new Vector3f(forward).cross(Constants.FORWARD);
+        } else {
+            right = new Vector3f(forward).cross(Constants.RIGHT);
+        }
+        right.normalize();
+
+        Vector3f[] points = new Vector3f[20];
+        Vector3f firstPoint = new Vector3f().add(right).mul(radius);
+        points[0] = new Vector3f(firstPoint).add(center);
+        Quaternionf rotation = new Quaternionf();//.fromAxisAngleDeg(normal.x, normal.y, normal.z, 0);
+
+        int increment = 360 / points.length;
+        int currentAngle = increment;
+        for (int i=1; i < points.length; i++) {
+            rotation.fromAxisAngleDeg(normal.x, normal.y, normal.z, currentAngle);
+            points[i] = rotation.transform(new Vector3f(firstPoint));
+            points[i].add(center);
+
+            addLine(points[i - 1], points[i], strokeWidth, color, lifetime);
+            currentAngle += increment;
+        }
+
+        addLine(points[points.length - 1], points[0], strokeWidth, color, lifetime);
+    }
+
+    // =======================================================================================================
+    // Add sphere methods
+    // =======================================================================================================
+    public static void addSphere(Vector3f center, float radius) {
+        addSphere(center, radius, 0.1f, Constants.COLOR3_GREEN, 1);
+    }
+
+    public static void addSphere(Vector3f center, float radius, float strokeWidth) {
+        addSphere(center, radius, strokeWidth, Constants.COLOR3_GREEN, 1);
+    }
+
+    public static void addSphere(Vector3f center, float radius, float strokeWidth, Vector3f color) {
+        addSphere(center, radius, strokeWidth, color, 1);
+    }
+
+    public static void addSphere(Vector3f center, float radius, float strokeWidth, Vector3f color, int lifetime) {
+        addCircle(center, Constants.UP, radius, strokeWidth, color, lifetime);
+        addCircle(center, Constants.FORWARD, radius, strokeWidth, color, lifetime);
+        addCircle(center, Constants.RIGHT, radius, strokeWidth, color, lifetime);
+    }
 }
 

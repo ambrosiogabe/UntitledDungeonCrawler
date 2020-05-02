@@ -25,11 +25,11 @@ public class Line {
 
         // Make sure to cross with non-parallel axis. We check which axis is greater
         // then our 'tolerance' angle, then cross with that axis
-        float tolerance = 1f;
+        float tolerance = 0.1f;
         Vector3f right;
-        if (Math.abs(forward.dot(Constants.UP)) > tolerance) {
+        if (Math.abs(forward.dot(Constants.UP)) < tolerance) {
             right = new Vector3f(forward).cross(Constants.UP);
-        } else if (Math.abs(forward.dot(Constants.FORWARD)) > tolerance) {
+        } else if (Math.abs(forward.dot(Constants.FORWARD)) < tolerance) {
             right = new Vector3f(forward).cross(Constants.FORWARD);
         } else {
             right = new Vector3f(forward).cross(Constants.RIGHT);

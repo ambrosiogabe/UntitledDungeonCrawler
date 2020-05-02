@@ -1,4 +1,4 @@
-package com.jade.physics.collisions;
+package com.jade.physics.particles.collisions;
 
 import com.jade.physics.particles.Particle;
 import org.joml.Vector2f;

@@ -1,9 +1,9 @@
 package com.jade.physics;
 
-import com.jade.physics.collisions.ParticleContact;
-import com.jade.physics.collisions.ParticleContactResolver;
+import com.jade.physics.particles.collisions.ParticleContact;
+import com.jade.physics.particles.collisions.ParticleContactResolver;
 import com.jade.physics.particles.Particle;
-import com.jade.physics.particles.ParticleContactGenerator;
+import com.jade.physics.particles.collisions.ParticleContactGenerator;
 import com.jade.physics.particles.ParticleForceRegistry;
 
 import java.util.List;

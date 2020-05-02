@@ -1,8 +1,7 @@
-package com.jade.physics.collisions;
+package com.jade.physics.particles.collisions;
 
 
 import com.jade.physics.particles.Particle;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public abstract class ParticleLink { //extends ParticleContactGenerator {

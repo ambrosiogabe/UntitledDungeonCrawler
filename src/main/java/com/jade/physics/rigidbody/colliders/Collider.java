@@ -1,4 +1,4 @@
-package com.jade.physics.colliders;
+package com.jade.physics.rigidbody.colliders;
 
 import com.jade.Component;
 import org.joml.Matrix3f;

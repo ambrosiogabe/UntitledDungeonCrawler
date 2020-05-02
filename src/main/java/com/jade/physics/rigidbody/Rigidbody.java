@@ -2,7 +2,7 @@ package com.jade.physics.rigidbody;
 
 import com.jade.Component;
 import com.jade.Window;
-import com.jade.physics.colliders.Collider;
+import com.jade.physics.rigidbody.colliders.Collider;
 import com.jade.util.Constants;
 import org.joml.*;
 
