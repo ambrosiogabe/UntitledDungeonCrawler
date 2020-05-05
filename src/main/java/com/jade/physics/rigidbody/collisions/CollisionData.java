@@ -8,6 +8,7 @@ public class CollisionData {
 
     private float friction;
     private float restitution;
+    private int numContacts;
 
     public CollisionData() {
         this.contacts = new Contact[100];
@@ -15,10 +16,15 @@ public class CollisionData {
             this.contacts[i] = new Contact();
         }
         this.contactsLeft = contacts.length;
+        numContacts = 0;
     }
 
     public int contactsLeft() {
         return this.contactsLeft;
+    }
+
+    public Contact[] getContacts() {
+        return this.contacts;
     }
 
     public void setContactsLeft(int val) {
@@ -31,6 +37,11 @@ public class CollisionData {
 
     public void addContacts(int num) {
         this.contactsLeft -= num;
+        this.numContacts += num;
+    }
+
+    public int getNumContacts() {
+        return this.numContacts;
     }
 
     public float getFriction() {

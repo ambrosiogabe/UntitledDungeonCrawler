@@ -16,6 +16,11 @@ public class BoundingSphere extends BoundingVolume {
         this.radius = radius;
     }
 
+    @Override
+    public void start() {
+        this.center = gameObject.transform.position;
+    }
+
     /* *******************************************************************
      * Creates a bounding sphere that overlaps the two bounding spheres
      * ******************************************************************* */

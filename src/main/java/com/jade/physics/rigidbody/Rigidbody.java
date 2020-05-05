@@ -21,13 +21,19 @@ public class Rigidbody extends Component {
     private Vector3f forceAccum;
     private Vector3f torqueAccum;
 
+    private boolean isStatic;
+
     private Vector3f lastFrameAcceleration, acceleration;
 
     public Rigidbody(float mass, float linearDamping, float angularDamping) {
-        init(mass, linearDamping, angularDamping);
+        init(mass, linearDamping, angularDamping, false);
     }
 
-    private void init(float mass, float linearDamping, float angularDamping) {
+    public Rigidbody(float mass, float linearDamping, float angularDamping, boolean isStatic) {
+        init(mass, linearDamping, angularDamping, isStatic);
+    }
+
+    private void init(float mass, float linearDamping, float angularDamping, boolean isStatic) {
         this.mass = mass;
         this.inverseMass = this.mass <= 0.0f ? 0 : 1.0f / this.mass;
         this.linearDamping = linearDamping;
@@ -41,6 +47,7 @@ public class Rigidbody extends Component {
         this.lastFrameAcceleration = new Vector3f();
         this.acceleration = new Vector3f();
         this.velocity = new Vector3f();
+        this.isStatic = isStatic;
     }
 
     @Override
@@ -66,6 +73,7 @@ public class Rigidbody extends Component {
         // Adjust velocities
         // Update linear velocity from both acceleration and impulse
         velocity.add(acceleration.add(new Vector3f(forceAccum).mul(dt).mul(inverseMass)));
+        this.lastFrameAcceleration.set(acceleration);
 
         // Update angular velocity from both acceleration and impulse
         Vector3f angularAcceleration = new Vector3f(inverseInertiaTensor.transform(torqueAccum));
@@ -169,6 +177,14 @@ public class Rigidbody extends Component {
         isAwake = true;
     }
 
+    public void addVelocity(Vector3f deltaVelocity) {
+        this.velocity.add(deltaVelocity);
+    }
+
+    public void addAngularVelocity(Vector3f deltaAngularVelocity) {
+        this.angularVelocity.add(deltaAngularVelocity);
+    }
+
     public Vector3f getPointInWorldSpace(Vector3f point) {
         Vector4f tmp = transformMatrix.transform(new Vector4f(point, 1.0f));
         return new Vector3f(tmp.x, tmp.y, tmp.z);
@@ -193,6 +209,26 @@ public class Rigidbody extends Component {
 
     public Vector3f getVelocity() {
         return this.velocity;
+    }
+
+    public float getInverseMass() {
+        return this.inverseMass;
+    }
+
+    public Matrix3f getInverseInertiaTensor() {
+        return this.inverseInertiaTensor;
+    }
+
+    public Vector3f getAngularVelocity() {
+        return this.angularVelocity;
+    }
+
+    public Vector3f getLastFrameAcceleration() {
+        return this.lastFrameAcceleration;
+    }
+
+    public boolean isStatic() {
+        return this.isStatic;
     }
 
     @Override

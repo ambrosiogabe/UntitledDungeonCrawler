@@ -18,7 +18,7 @@ public abstract class Collider extends Component {
     }
 
     public Rigidbody getRigidbody() {
-        return this.body;
+        return this.gameObject.getComponent(Rigidbody.class);
     }
 
     public Vector3f getAxis(int index) {

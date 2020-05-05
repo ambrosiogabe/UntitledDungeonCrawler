@@ -14,6 +14,8 @@ import com.jade.physics.rigidbody.colliders.Plane;
 import com.jade.physics.rigidbody.colliders.SphereCollider;
 import com.jade.physics.rigidbody.collisions.BVHNode;
 import com.jade.physics.rigidbody.collisions.CollisionData;
+import com.jade.physics.rigidbody.collisions.ContactResolver;
+import com.jade.physics.rigidbody.collisions.PotentialContact;
 import com.jade.util.Constants;
 import com.jade.util.DebugDraw;
 import com.jade.util.JMath;
@@ -145,17 +147,17 @@ public class TestScene extends Scene {
         boxCollider0 = new BoxCollider(new Vector3f(2, 2, 2), new Vector3f());
         cube0.addComponent(boxCollider0);
         this.addGameObject(cube0);
-        //bvhTree = new BVHNode(null, cube0.getComponent(BoundingSphere.class), cube0.getComponent(Rigidbody.class));
+        bvhTree = new BVHNode(null, cube0.getComponent(BoundingSphere.class), cube0.getComponent(Rigidbody.class));
 
         cube1 = new GameObject("Cube 1", new Transform(new Vector3f(45, 0, 10)));
         cube1.addComponent(new Model("mesh-ext/cube.obj"));
         cube1.getComponent(Model.class).addPointLight(testLightComp);
         cube1.addComponent(new BoundingSphere(cube1.transform.position, 1.5f));
-        cube1.addComponent(new Rigidbody(10, 0.1f, 0.1f));
+        cube1.addComponent(new Rigidbody(10, 0.1f, 0.1f, true));
         boxCollider1 = new BoxCollider(new Vector3f(2, 2, 2), new Vector3f());
         cube1.addComponent(boxCollider1);
         this.addGameObject(cube1);
-        //bvhTree.insert(cube1.getComponent(Rigidbody.class), cube1.getComponent(BoundingSphere.class));
+        bvhTree.insert(cube1.getComponent(Rigidbody.class), cube1.getComponent(BoundingSphere.class));
 
         cube2 = new GameObject("Cube 2", new Transform(new Vector3f(34, 0, 0)));
         cube2.addComponent(new Model("mesh-ext/cube.obj"));
@@ -191,6 +193,7 @@ public class TestScene extends Scene {
         forceRegistry.add(cubeRb, new Gravity(new Vector3f(0f, -10f, 0f)));
         forceRegistry.add(cubeRb, new Spring(new Vector3f(-0.75f, 1f, 0.75f), otherCubeRb, new Vector3f(0f, -0.5f, 0f), 25f, 1f));
         forceRegistry.add(cubeRb, new Drag(-100f));
+        forceRegistry.add(cube0.getComponent(Rigidbody.class), new Gravity(new Vector3f(0f, -15f, 0f)));
 
         GameObject cameraController = new GameObject("Camera Controller", new Transform());
         cameraController.addComponent(new FlyingCameraController());
@@ -230,7 +233,14 @@ public class TestScene extends Scene {
 
         sphereCollider.debugTestPlaneCollision(planeCollider, data);
         boxCollider0.debugTestBoxCollision(boxCollider1, data);
+
+        bvhTree = new BVHNode(null, cube0.getComponent(BoundingSphere.class), cube0.getComponent(Rigidbody.class));
+        bvhTree.insert(cube1.getComponent(Rigidbody.class), cube1.getComponent(BoundingSphere.class));
         //bvhTree.draw(Constants.COLOR3_GREEN);
+        PotentialContact[] potentialContacts = new PotentialContact[5];
+        bvhTree.getPotentialContacts(potentialContacts, 0, 5);
+        ContactResolver resolver = new ContactResolver();
+        resolver.resolvePotentialContacts(potentialContacts, 1/60.0f);
 
         if (doPhysics) {
             float physicsDt = 1 / 60.0f;
