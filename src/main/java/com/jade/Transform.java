@@ -4,6 +4,7 @@ import com.jade.file.Parser;
 import com.jade.file.Serialize;
 import com.jade.util.Constants;
 import com.jade.util.JMath;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -16,6 +17,9 @@ public class Transform extends Serialize {
     public Vector3f up;
     public Vector3f right;
     public Quaternionf orientation;
+
+    public Matrix4f modelMatrix;
+    private Matrix4f inverseModelMatrix;
 
     public Transform() {
         init(new Vector3f(0.0f), new Vector3f(1.0f), new Vector3f(0.0f, 0.0f, 0.0f));
@@ -34,6 +38,9 @@ public class Transform extends Serialize {
     }
 
     private void init(Vector3f position, Vector3f scale, Vector3f rotation) {
+        this.modelMatrix = new Matrix4f();
+        this.inverseModelMatrix = new Matrix4f();
+
         this.forward = new Vector3f();
         this.right = new Vector3f();
         this.up = new Vector3f();
@@ -51,10 +58,19 @@ public class Transform extends Serialize {
         this.orientation.transform(this.up);
         this.right.set(Constants.RIGHT);
         this.orientation.transform(this.right);
+
+        this.update();
     }
 
     public Transform copy() {
         return new Transform(JMath.copy(this.position), JMath.copy(this.scale), JMath.copy(this.rotation));
+    }
+
+    public void update() {
+        this.modelMatrix.identity();
+        this.modelMatrix.translate(this.position);
+        this.modelMatrix.rotate(this.orientation);
+        this.modelMatrix.scale(this.scale);
     }
 
     public static void copyValues(Transform from, Transform to) {
@@ -129,5 +145,11 @@ public class Transform extends Serialize {
                 other.scale.equals(this.scale) &&
                 other.rotation.equals(this.rotation) &&
                 this.orientation.equals(other.orientation);
+    }
+
+    public Matrix4f getInverseModelMatrix() {
+        inverseModelMatrix.identity();
+        this.modelMatrix.invert(inverseModelMatrix);
+        return inverseModelMatrix;
     }
 }

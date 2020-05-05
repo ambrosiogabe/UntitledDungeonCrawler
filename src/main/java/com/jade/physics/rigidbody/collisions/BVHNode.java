@@ -149,7 +149,7 @@ public class BVHNode {
     public void draw(Vector3f color) {
         if (volume instanceof BoundingSphere) {
             BoundingSphere sphere = (BoundingSphere)volume;
-            DebugDraw.addSphere(sphere.getCenter(), sphere.getRadius(), 0.1f, color);
+            DebugDraw.addSphere(sphere.getCenter(), sphere.getRadius(), 0.05f, color);
         }
 
         if (children[0] != null) {

@@ -206,7 +206,7 @@ public class DebugDraw {
     // Add line methods
     // =======================================================================================================
     public static void addLine(Vector3f from, Vector3f to) {
-        addLine(from, to, 0.1f, Constants.COLOR3_GREEN, 1);
+        addLine(from, to, 0.05f, Constants.COLOR3_GREEN, 1);
     }
 
     public static void addLine(Vector3f from, Vector3f to, float strokeWidth) {
@@ -225,7 +225,7 @@ public class DebugDraw {
     // Add box methods
     // =======================================================================================================
     public static void addBox(Vector3f center, Vector3f dimensions, Transform transform) {
-        addBox(center, dimensions, transform,0.5f, Constants.COLOR3_GREEN, 1);
+        addBox(center, dimensions, transform,0.05f, Constants.COLOR3_GREEN, 1);
     }
 
     public static void addBox(Vector3f center, Vector3f dimensions, Transform transform, float strokeWidth) {
@@ -281,7 +281,7 @@ public class DebugDraw {
     // Add circle methods
     // =======================================================================================================
     public static void addCircle(Vector3f center, Vector3f normal, float radius) {
-        addCircle(center, normal, radius, 0.1f, Constants.COLOR3_GREEN, 1);
+        addCircle(center, normal, radius, 0.05f, Constants.COLOR3_GREEN, 1);
     }
 
     public static void addCircle(Vector3f center, Vector3f normal, float radius, float strokeWidth) {
@@ -331,7 +331,7 @@ public class DebugDraw {
     // Add sphere methods
     // =======================================================================================================
     public static void addSphere(Vector3f center, float radius) {
-        addSphere(center, radius, 0.1f, Constants.COLOR3_GREEN, 1);
+        addSphere(center, radius, 0.05f, Constants.COLOR3_GREEN, 1);
     }
 
     public static void addSphere(Vector3f center, float radius, float strokeWidth) {

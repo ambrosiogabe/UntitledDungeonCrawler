@@ -88,6 +88,8 @@ public class GameObject extends Serialize {
 
 
     public void update(float dt) {
+        this.transform.update();
+
         if (!this.transform.orientation.equals(this.lastTransform.orientation)) {
             Transform.copyValues(this.transform, this.lastTransform);
             applyEulerRotation(0, 0, 0);

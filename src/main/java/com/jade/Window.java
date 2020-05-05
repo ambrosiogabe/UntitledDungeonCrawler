@@ -382,8 +382,9 @@ public class Window {
             dt = currentTime - time;
             time = currentTime;
             if (dt < (1f / 60f) || dt <= 0) {
-                if (dt != 0)
+                if (dt <= 0) {
                     System.out.println("FPS: '" + (1f / dt) + "'. Missed target frame rate.");
+                }
                 dt = 1f / 60f;
             }
 

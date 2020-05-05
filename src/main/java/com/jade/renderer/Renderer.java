@@ -73,7 +73,6 @@ public class Renderer {
     }
 
     public void render() {
-        glEnable(GL_DEPTH_TEST);
         for (GameObject go : gameObjects) {
             Model model = go.getComponent(Model.class);
             Billboard billboard;
@@ -88,6 +87,7 @@ public class Renderer {
         for (UIBatcher batch : uiBatches) {
             batch.render();
         }
+        glEnable(GL_DEPTH_TEST);
     }
 
     public Camera camera() {

@@ -119,6 +119,10 @@ public class JMath {
         vec.y = yPrime + origin.y;
     }
 
+    public static float project(Vector3f a, Vector3f b) {
+        return a.dot(new Vector3f(b).normalize());
+    }
+
     public static Matrix3f createRectanglularPrismInertiaTensor(float mass, Vector3f dimensions) {
         float xy00 = (1.0f / 12.0f) * mass * (dimensions.y * dimensions.y + dimensions.z * dimensions.z);
         float xy11 = (1.0f / 12.0f) * mass * (dimensions.x * dimensions.x + dimensions.z * dimensions.z);
@@ -127,5 +131,25 @@ public class JMath {
         return new Matrix3f(xy00, 0, 0,
                       0, xy11, 0,
                       0, 0, xy22);
+    }
+
+    public static Matrix3f createSphereInertiaTensor(float mass, float radius) {
+        float xy00 = (2f / 5f) * mass * (radius * radius);
+        float xy11 = xy00;
+        float xy22 = xy00;
+
+        return new Matrix3f(xy00, 0, 0,
+                0, xy11, 0,
+                0, 0, xy22);
+    }
+
+    public static Matrix3f createPlaneInertiaTensor(float mass, Vector2f dimensions) {
+        float xy00 = (1.0f / 12.0f) * mass * (dimensions.y * dimensions.y);
+        float xy11 = (1.0f / 12.0f) * mass * (dimensions.x * dimensions.x);
+        float xy22 = (1.0f / 12.0f) * mass * (dimensions.x * dimensions.x + dimensions.y * dimensions.y);
+
+        return new Matrix3f(xy00, 0, 0,
+                0, xy11, 0,
+                0, 0, xy22);
     }
 }
