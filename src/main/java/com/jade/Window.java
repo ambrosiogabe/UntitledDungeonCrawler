@@ -92,18 +92,21 @@ public class Window {
                     currentScene.reset();
                 currentScene = new MenuScene();
                 currentScene.init();
+                currentScene.start();
                 break;
             case 1:
                 if (currentScene != null)
                     currentScene.reset();
                 currentScene = new WorldScene();
                 currentScene.init();
+                currentScene.start();
                 break;
             case 2:
                 if (currentScene != null)
                     currentScene.reset();
                 currentScene = new TestScene();
                 currentScene.init();
+                currentScene.start();
                 break;
             default:
                 assert false : "Unknown scene '" + newScene + "'";

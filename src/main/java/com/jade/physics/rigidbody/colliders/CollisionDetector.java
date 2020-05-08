@@ -66,7 +66,7 @@ public class CollisionDetector {
         contact.setContactNormal(new Vector3f(plane.getNormal()));
         contact.setPenetrationDepth(-ballDistance);
         contact.setContactPoint(spherePosition.mul(ballDistance + sphere.getRadius()));
-        contact.setBodyData(sphere.getRigidbody(), null, data.getFriction(), data.getRestitution());
+        contact.setBodyData(sphere.getRigidbody(), plane.getRigidbody(), data.getFriction(), data.getRestitution());
 
         data.addContacts(1);
         return 1;
@@ -107,7 +107,7 @@ public class CollisionDetector {
                 contact.setPenetrationDepth(plane.getOffset() - vertexDistance);
 
                 // Write the appropriate data
-                contact.setBodyData(box.getRigidbody(), null, data.getFriction(), data.getRestitution());
+                contact.setBodyData(box.getRigidbody(), plane.getRigidbody(), data.getFriction(), data.getRestitution());
 
                 // Move on to the next contact
                 contactsUsed++;

@@ -25,50 +25,6 @@ import org.joml.Vector3f;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class TestScene extends Scene {
-    float cubeVertices[] = {
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,  0.0f,  0.0f, -1.0f,
-            0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f,  0.0f, -1.0f,
-            0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 0.0f,  0.0f, -1.0f,
-            0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 0.0f,  0.0f, -1.0f,
-            -0.5f,  0.5f, -0.5f, 0.0f, 0.0f,  0.0f,  0.0f, -1.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,  0.0f,  0.0f, -1.0f,
-
-            -0.5f, -0.5f,  0.5f, 0.0f, 0.0f,  0.0f,  0.0f,  1.0f,
-            0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f,  0.0f,  1.0f,
-            0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f,  0.0f,  1.0f,
-            0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f,  0.0f,  1.0f,
-            -0.5f,  0.5f,  0.5f, 0.0f, 0.0f,  0.0f,  0.0f,  1.0f,
-            -0.5f, -0.5f,  0.5f, 0.0f, 0.0f,  0.0f,  0.0f,  1.0f,
-
-            -0.5f,  0.5f,  0.5f, 0.0f, 0.0f, -1.0f,  0.0f,  0.0f,
-            -0.5f,  0.5f, -0.5f, 0.0f, 0.0f, -1.0f,  0.0f,  0.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,  0.0f,  0.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,  0.0f,  0.0f,
-            -0.5f, -0.5f,  0.5f, 0.0f, 0.0f, -1.0f,  0.0f,  0.0f,
-            -0.5f,  0.5f,  0.5f, 0.0f, 0.0f, -1.0f,  0.0f,  0.0f,
-
-            0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  0.0f,  0.0f,
-            0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 1.0f,  0.0f,  0.0f,
-            0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 1.0f,  0.0f,  0.0f,
-            0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 1.0f,  0.0f,  0.0f,
-            0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  0.0f,  0.0f,
-            0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  0.0f,  0.0f,
-
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,  0.0f, -1.0f,  0.0f,
-            0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f, -1.0f,  0.0f,
-            0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, -1.0f,  0.0f,
-            0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, -1.0f,  0.0f,
-            -0.5f, -0.5f,  0.5f, 0.0f, 0.0f,  0.0f, -1.0f,  0.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,  0.0f, -1.0f,  0.0f,
-
-            -0.5f,  0.5f, -0.5f, 0.0f, 0.0f,  0.0f,  1.0f,  0.0f,
-            0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 0.0f,  1.0f,  0.0f,
-            0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f,  1.0f,  0.0f,
-            0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f,  1.0f,  0.0f,
-            -0.5f,  0.5f,  0.5f, 0.0f, 0.0f,  0.0f,  1.0f,  0.0f,
-            -0.5f,  0.5f, -0.5f, 0.0f, 0.0f,  0.0f,  1.0f,  0.0f
-    };
-
     private FontRenderer fpsLabel;
     private FontRenderer msLabel;
     private boolean doPhysics = false;
@@ -78,12 +34,6 @@ public class TestScene extends Scene {
     GameObject cube0, cube1, cube2, sphere, plane;
     GameObject testWall;
     Vector3f springStart, springEnd;
-
-    private BVHNode bvhTree;
-    SphereCollider sphereCollider;
-    Plane planeCollider;
-    BoxCollider boxCollider0, boxCollider1, boxCollider2;
-    CollisionData data = new CollisionData();
 
     @Override
     public void init() {
@@ -144,37 +94,34 @@ public class TestScene extends Scene {
         cube0.getComponent(Model.class).addPointLight(testLightComp);
         cube0.addComponent(new BoundingSphere(cube0.transform.position, 1.5f));
         cube0.addComponent(new Rigidbody(10, 0.1f, 0.1f));
-        boxCollider0 = new BoxCollider(new Vector3f(2, 2, 2), new Vector3f());
+        BoxCollider boxCollider0 = new BoxCollider(new Vector3f(2, 2, 2), new Vector3f());
         cube0.addComponent(boxCollider0);
         this.addGameObject(cube0);
-        bvhTree = new BVHNode(null, cube0.getComponent(BoundingSphere.class), cube0.getComponent(Rigidbody.class));
 
         cube1 = new GameObject("Cube 1", new Transform(new Vector3f(45, 0, 10)));
         cube1.addComponent(new Model("mesh-ext/cube.obj"));
         cube1.getComponent(Model.class).addPointLight(testLightComp);
         cube1.addComponent(new BoundingSphere(cube1.transform.position, 1.5f));
         cube1.addComponent(new Rigidbody(10, 0.1f, 0.5f, true));
-        boxCollider1 = new BoxCollider(new Vector3f(2, 2, 2), new Vector3f());
+        BoxCollider boxCollider1 = new BoxCollider(new Vector3f(2, 2, 2), new Vector3f());
         cube1.addComponent(boxCollider1);
         this.addGameObject(cube1);
-        bvhTree.insert(cube1.getComponent(Rigidbody.class), cube1.getComponent(BoundingSphere.class));
 
         cube2 = new GameObject("Cube 2", new Transform(new Vector3f(34, 0, 0)));
         cube2.addComponent(new Model("mesh-ext/cube.obj"));
         cube2.getComponent(Model.class).addPointLight(testLightComp);
         cube2.addComponent(new BoundingSphere(cube2.transform.position, 1.5f));
         cube2.addComponent(new Rigidbody(10, 0.1f, 0.1f));
-        boxCollider2 = new BoxCollider(new Vector3f(2, 2, 2), new Vector3f());
+        BoxCollider boxCollider2 = new BoxCollider(new Vector3f(2, 2, 2), new Vector3f());
         cube2.addComponent(boxCollider2);
         this.addGameObject(cube2);
-        //bvhTree.insert(cube2.getComponent(Rigidbody.class), cube2.getComponent(BoundingSphere.class));
 
         plane = new GameObject("Plane", new Transform(new Vector3f(30, -6, 4), new Vector3f(50, 50, 1), new Vector3f(90, 0, 0)));
         plane.addComponent(new Model("mesh-ext/plane.obj"));
         plane.getComponent(Model.class).addPointLight(testLightComp);
-        plane.addComponent(new BoundingSphere(plane.transform.position, 5f));
-        plane.addComponent(new Rigidbody(1, 0.1f, 0.1f));
-        planeCollider = new Plane(new Vector3f(Constants.UP), 0);
+        plane.addComponent(new BoundingSphere(plane.transform.position, plane.transform.scale.x));
+        plane.addComponent(new Rigidbody(1, 0.1f, 0.1f, true));
+        Plane planeCollider = new Plane(new Vector3f(Constants.UP), 0);
         plane.addComponent(planeCollider);
         this.addGameObject(plane);
 
@@ -183,7 +130,7 @@ public class TestScene extends Scene {
         sphere.getComponent(Model.class).addPointLight(testLightComp);
         sphere.addComponent(new BoundingSphere(sphere.transform.position, 1));
         sphere.addComponent(new Rigidbody(1, 0.1f, 0.1f));
-        sphereCollider = new SphereCollider(1);
+        SphereCollider sphereCollider = new SphereCollider(1);
         sphere.addComponent(sphereCollider);
         this.addGameObject(sphere);
 
@@ -204,16 +151,6 @@ public class TestScene extends Scene {
         debugKeyController.addComponent(new DebugKeyController());
         debugKeyController.setNonserializable();
         this.addGameObject(debugKeyController);
-
-        for (int i=0; i < this.gameObjects.size(); i++) {
-            GameObject g = this.gameObjects.get(i);
-            g.start();
-        }
-
-        for (int i=0; i < this.uiObjects.size(); i++) {
-            UIObject u = this.uiObjects.get(i);
-            u.start();
-        }
     }
 
     private float keyDebounce = 0.2f;
@@ -221,8 +158,6 @@ public class TestScene extends Scene {
     private int labelFrame = 0;
     @Override
     public void update(float dt) {
-        data.reset();
-
         keyDebounce -= dt;
         labelFrame--;
         if (labelFrame < 0) {
@@ -231,20 +166,8 @@ public class TestScene extends Scene {
             labelFrame = 5;
         }
 
-        sphereCollider.debugTestPlaneCollision(planeCollider, data);
-        boxCollider0.debugTestBoxCollision(boxCollider1, data);
-
-        bvhTree = new BVHNode(null, cube0.getComponent(BoundingSphere.class), cube0.getComponent(Rigidbody.class));
-        bvhTree.insert(cube1.getComponent(Rigidbody.class), cube1.getComponent(BoundingSphere.class));
-        //bvhTree.draw(Constants.COLOR3_GREEN);
-        PotentialContact[] potentialContacts = new PotentialContact[5];
-        bvhTree.getPotentialContacts(potentialContacts, 0, 5);
-        ContactResolver resolver = new ContactResolver();
-        resolver.resolvePotentialContacts(potentialContacts, 1/60.0f);
-
         if (doPhysics) {
-            float physicsDt = 1 / 60.0f;
-            forceRegistry.updateForces(physicsDt);
+            physics.update(dt);
         }
 //        this.springEnd.set(testCube.transform.position).add(testCube.transform.orientation.transform(new Vector3f(-0.75f, 1f, 0.75f)));
 //        DebugDraw.addLine(springStart, springEnd, 0.1f, Constants.COLOR3_WHITE);
@@ -259,24 +182,6 @@ public class TestScene extends Scene {
             forceRegistry.zeroForces();
             this.turnPhysicsOff();
         }
-
-        // Width 100, height 200
-//        Vector2f topLeftBox = new Vector2f(particle4.uiObject.transform.position.x - (particle4.uiObject.transform.scale.x / 2.0f),
-//                                            particle4.uiObject.transform.position.y + (particle4.uiObject.transform.scale.y / 2.0f));
-//        JMath.rotate(topLeftBox, particle4.uiObject.transform.rotation.z, particle4.uiObject.transform.position);
-//        Vector3f v2 = new Vector3f(topLeftBox.x, topLeftBox.y, 0);
-//        Vector3f v1 = new Vector3f(750, 1000, 0);
-//        Vector3f v3 = new Vector3f(v1).sub(v2);
-//        float length = v3.length();
-//        float theta = (float)Math.toDegrees(Math.atan(Math.abs(v3.y) / Math.abs(v3.x))) + 90;
-//        if (v3.x < 0) theta *= -1;
-//        if (v3.y < 0) theta *= -1;
-//
-//        Vector3f center = new Vector3f(v3.x / 2.0f, v3.y / 2.0f, 0);
-//        springVisual.transform.scale.y = length;
-//        springVisual.transform.position = v1.sub(center);
-//        springVisual.transform.rotation.z = theta;
-        //forceRegistry.updateForces(physicsDt);
 
         for (GameObject g : gameObjects) {
             g.update(dt);

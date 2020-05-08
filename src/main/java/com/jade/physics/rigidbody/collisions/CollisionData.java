@@ -11,6 +11,7 @@ public class CollisionData {
     private int numContacts;
 
     public CollisionData() {
+        // TODO: TWEAK THE AMOUNT OF CONTACTS THAT SHOULD BE SOLVABLE PER FRAME
         this.contacts = new Contact[100];
         for (int i=0; i < contacts.length; i++) {
             this.contacts[i] = new Contact();
@@ -56,5 +57,6 @@ public class CollisionData {
 
     public void reset() {
         this.contactsLeft = this.contacts.length;
+        this.numContacts = 0;
     }
 }

@@ -28,6 +28,19 @@ public class BVHNode {
         this.body = body;
     }
 
+    public void updatePositions() {
+        if (children[0] != null) {
+            children[0].updatePositions();
+        }
+        if (children[1] != null) {
+            children[1].updatePositions();
+        }
+
+        if (isLeaf()) {
+            recalculateBoundingVolume();
+        }
+    }
+
     public int getPotentialContacts(PotentialContact[] contacts, int index, int limit) {
         // Early out if we don't have room for contacts, or if we're a leaf node
         if (isLeaf() || limit == 0) return 0;

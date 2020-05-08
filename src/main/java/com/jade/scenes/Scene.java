@@ -2,6 +2,7 @@ package com.jade.scenes;
 
 import com.jade.*;
 import com.jade.components.Model;
+import com.jade.physics.Physics;
 import com.jade.renderer.Renderer;
 import imgui.ImGui;
 import imgui.ImVec2;
@@ -15,6 +16,8 @@ import java.util.List;
 
 public abstract class Scene {
     private Renderer renderer;
+    protected Physics physics;
+
     protected List<GameObject> gameObjects;
     protected List<UIObject> uiObjects;
     private Camera camera;
@@ -33,10 +36,14 @@ public abstract class Scene {
 
     private boolean doPhysics = false;
 
+    private boolean isRunning = false;
+
     public Scene() {
         this.camera = new Camera(new Vector3f(0, 0, 0));
         this.renderer = new Renderer(this.camera);
         renderer.init();
+
+        this.physics = new Physics();
 
         this.gameObjects = new ArrayList<>();
         this.uiObjects = new ArrayList<>();
@@ -51,6 +58,22 @@ public abstract class Scene {
         this.uiObjects.clear();
         this.camera.transform = new Transform();
         this.renderer.reset();
+        isRunning = false;
+    }
+
+    public void start() {
+        for (GameObject go : gameObjects) {
+            go.start();
+            physics.addGameObject(go);
+            renderer.addGameObject(go);
+        }
+
+        for (UIObject uiObj : uiObjects) {
+            uiObj.start();
+            renderer.addUIObject(uiObj);
+        }
+
+        isRunning = true;
     }
 
     public void init() {
@@ -58,13 +81,22 @@ public abstract class Scene {
     }
 
     public void addGameObject(GameObject g) {
-        this.gameObjects.add(g);
-        this.renderer.addGameObject(g);
+        if (!isRunning) {
+            this.gameObjects.add(g);
+        } else {
+            this.gameObjects.add(g);
+            this.renderer.addGameObject(g);
+            this.physics.addGameObject(g);
+        }
     }
 
     public void addUIObject(UIObject u) {
-        this.uiObjects.add(u);
-        this.renderer.addUIObject(u);
+        if (!isRunning) {
+            this.uiObjects.add(u);
+        } else {
+            this.uiObjects.add(u);
+            this.renderer.addUIObject(u);
+        }
     }
 
     public void render() {
