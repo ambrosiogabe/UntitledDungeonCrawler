@@ -159,6 +159,8 @@ public class DebugDraw {
         int index = 0;
         for (Line line : lines) {
             Vector3f[] verts = line.getVerts();
+            if (index >= vertexArray.length) break;
+
             for (int i=0; i < 8; i++) {
                 vertexArray[index] = verts[i].x;
                 vertexArray[index + 1] = verts[i].y;
@@ -218,6 +220,7 @@ public class DebugDraw {
     }
 
     public static void addLine(Vector3f from, Vector3f to, float strokeWidth, Vector3f color, int lifetime) {
+        if (lines.size() >= MAX_LINES) return;
         DebugDraw.lines.add(new Line(from, to, color, strokeWidth, lifetime));
     }
 

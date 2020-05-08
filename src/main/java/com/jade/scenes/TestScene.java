@@ -153,7 +153,7 @@ public class TestScene extends Scene {
         cube1.addComponent(new Model("mesh-ext/cube.obj"));
         cube1.getComponent(Model.class).addPointLight(testLightComp);
         cube1.addComponent(new BoundingSphere(cube1.transform.position, 1.5f));
-        cube1.addComponent(new Rigidbody(10, 0.1f, 0.1f, true));
+        cube1.addComponent(new Rigidbody(10, 0.1f, 0.5f, true));
         boxCollider1 = new BoxCollider(new Vector3f(2, 2, 2), new Vector3f());
         cube1.addComponent(boxCollider1);
         this.addGameObject(cube1);

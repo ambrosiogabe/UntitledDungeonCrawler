@@ -6,9 +6,9 @@ import org.joml.Vector3f;
 
 public class ContactResolver {
 
-    private int velocityIterations = 20;
+    private int velocityIterations = 1;
     private int velocityEpsilon = Integer.MIN_VALUE;
-    private int positionIterations = 20;
+    private int positionIterations = 1;
     private int positionEpsilon = Integer.MIN_VALUE;
 
 

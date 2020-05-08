@@ -17,6 +17,8 @@ public class CollisionData {
         }
         this.contactsLeft = contacts.length;
         numContacts = 0;
+        this.friction = 0;
+        this.restitution = 0.2f;
     }
 
     public int contactsLeft() {

@@ -1,6 +1,8 @@
 package com.jade.physics.rigidbody.collisions;
 
 import com.jade.physics.rigidbody.Rigidbody;
+import com.jade.util.Constants;
+import com.jade.util.DebugDraw;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -74,38 +76,6 @@ public class Contact {
         contactToWorld = new Matrix3f(contactNormal, contactTangent[0], contactTangent[1]);
     }
 
-    private Vector3f calculateFrictionlessImpulse(Matrix3f[] inverseInertiaTensor) {
-        // Build a vector that shows the change in velocity in world space
-        // for a unit impulse in the direction of the contact normal.
-        Vector3f deltaVelWorld = new Vector3f(relativeContactPosition[0]).cross(contactNormal);
-        inverseInertiaTensor[0].transform(deltaVelWorld);
-        deltaVelWorld.cross(relativeContactPosition[0]);
-
-        // Work out the change in velocity in contact coordinates
-        float deltaVelocity = deltaVelWorld.dot(contactNormal);
-
-        // Add the linear component of velocity change
-        deltaVelocity += bodyOne.getInverseMass();
-
-        // Check as necessary the second body's data
-        if (bodyTwo != null && !bodyTwo.isStatic()) {
-            // Go through the same transformation sequence again
-            deltaVelWorld = new Vector3f(relativeContactPosition[1]).cross(contactNormal);
-            inverseInertiaTensor[1].transform(deltaVelWorld);
-            deltaVelWorld.cross(relativeContactPosition[1]);
-
-            // Add the change in body due to the rotation
-            deltaVelocity += deltaVelWorld.dot(contactNormal);
-
-            // Add the change in velocity due to linear motion.
-            deltaVelocity += bodyTwo.getInverseMass();
-        }
-
-        // Calculate the required size of the impulse
-        Vector3f impulseContact = new Vector3f(desiredDeltaVelocity / deltaVelocity, 0, 0);
-        return impulseContact;
-    }
-
     public void applyPositionChange(Vector3f[] linearChange, Vector3f[] angularChange, float penetration) {
         float angularLimit = 0.2f;
         float[] angularMove = new float[2];
@@ -122,9 +92,9 @@ public class Contact {
             if (body != null) {
                 Matrix3f inverseInertiaTensor = body.getInverseInertiaTensor();
 
-                // Use the smae procedure as for calculating frictionless velocity
+                // Use the same procedure as for calculating frictionless velocity
                 // change to work out the angular inertia
-                Vector3f angularInertiaWorld = relativeContactPosition[i].cross(contactNormal);
+                Vector3f angularInertiaWorld = new Vector3f(relativeContactPosition[i]).cross(contactNormal);
                 inverseInertiaTensor.transform(angularInertiaWorld);
                 angularInertiaWorld.cross(relativeContactPosition[i]);
                 angularInertia[i] = angularInertiaWorld.dot(contactNormal);
@@ -192,7 +162,7 @@ public class Contact {
                 // Now we can start to apply the values we've calculated.
                 // Apply the linear movement
                 Vector3f pos = body.gameObject.transform.position;
-                pos.fma(linearMove[i], contactNormal);
+                pos.add(linearChange[i]);
 
                 // And the change in orientation
                 // TODO: PROBABLY WRONG (this calculation probably isn't right, should be scale add vector)
@@ -211,7 +181,7 @@ public class Contact {
 
     public void calculateInternals(float duration) {
         // Check if the first object is null, and swap if it is
-        if (bodyOne == null) swapBodies();
+        if (bodyOne == null || bodyOne.isStatic()) swapBodies();
         assert bodyOne != null : "Error: Calculating internals, two null bodies in collision...";
 
         // Calculate a set of axes at the contact point
@@ -225,7 +195,7 @@ public class Contact {
 
         // Find the relative velocity of the bodies at the contact point.
         contactVelocity = calculateLocalVelocity(0, duration);
-        if (bodyTwo != null) {
+        if (bodyTwo != null && !bodyTwo.isStatic()) {
             contactVelocity.sub(calculateLocalVelocity(1, duration));
         }
 
@@ -245,13 +215,25 @@ public class Contact {
         contactToWorld.transformTranspose(velocity, contactVelocity);
 
         // Calculate the amount of velocity that is due to forces without reactions
-        Vector3f accVelocity = new Vector3f(thisBody.getLastFrameAcceleration()).mul(duration);
+        //Vector3f accVelocity = new Vector3f(thisBody.getLastFrameAcceleration()).mul(duration);
+
+        // We ignore any component of acceleration in the contact normal
+        // direction, we are only interested in planar acceleration
+        //accVelocity.x = 0;
+
+        // Add the planar velocities - if there's enough friction they will
+        // be removed during velocity resolution
+        //contactVelocity.add(accVelocity);
 
         // And return it
         return contactVelocity;
     }
 
     public void caluclateDesiredDeltaVelocity(float duration) {
+
+        float velocityFromAcc = 0;
+        velocityFromAcc += new Vector3f(bodyOne.getLastFrameAcceleration()).mul(duration).dot(contactNormal);
+
         // If the velocity is very slow, limit the restitution
         float thisRestitution = restitution;
         float velocityLimit = 0.25f;
@@ -260,15 +242,76 @@ public class Contact {
         }
 
         // Combine the bounce velocity with the removed acceleration velocity
-        desiredDeltaVelocity = -contactVelocity.x - thisRestitution * contactVelocity.x;
+        desiredDeltaVelocity = -contactVelocity.x * (1 + thisRestitution);
+    }
+
+    private Vector3f calculateFrictionlessImpulse(Matrix3f[] inverseInertiaTensor) {
+        // Build a vector that shows the change in velocity in world space
+        // for a unit impulse in the direction of the contact normal.
+        Vector3f deltaVelWorld = new Vector3f(relativeContactPosition[0]).cross(contactNormal);
+        inverseInertiaTensor[0].transform(deltaVelWorld);
+        deltaVelWorld.cross(relativeContactPosition[0]);
+
+        // Work out the change in velocity in contact coordinates
+        float deltaVelocity = deltaVelWorld.dot(contactNormal);
+
+        // Add the linear component of velocity change
+        deltaVelocity += bodyOne.getInverseMass();
+
+        // Check as necessary the second body's data
+        if (bodyTwo != null && !bodyTwo.isStatic()) {
+            // Go through the same transformation sequence again
+            deltaVelWorld = new Vector3f(relativeContactPosition[1]).cross(contactNormal);
+            inverseInertiaTensor[1].transform(deltaVelWorld);
+            deltaVelWorld.cross(relativeContactPosition[1]);
+
+            // Add the change in body due to the rotation
+            deltaVelocity += deltaVelWorld.dot(contactNormal);
+
+            // Add the change in velocity due to linear motion.
+            deltaVelocity += bodyTwo.getInverseMass();
+        }
+
+        // Calculate the required size of the impulse
+        Vector3f impulseContact = new Vector3f(desiredDeltaVelocity / deltaVelocity, 0, 0);
+        return impulseContact;
+    }
+
+    public Vector3f myCalculateFrictionlessImpulse(Matrix3f[] inverseInertiaTensor) {
+        Vector3f relativeVel = contactVelocity;
+        if (bodyTwo != null && !bodyTwo.isStatic()) {
+            relativeVel.add(bodyTwo.getVelocity());
+        }
+        float contactVelocity = relativeVel.dot(contactNormal);
+
+        if (contactVelocity < 0) {
+            return new Vector3f();
+        }
+
+        // Impulse scalar
+        float j = -(1f + restitution) * contactVelocity;
+        float totalMass = bodyOne.getInverseMass();
+        if (bodyTwo != null && !bodyTwo.isStatic()) {
+            totalMass += bodyTwo.getInverseMass();
+        }
+        //j /= totalMass;
+
+        Vector3f impulse = new Vector3f(contactNormal).mul(j);
+
+//        Vector3f relativePoint = new Vector3f(contactPoint).sub(bodyOne.gameObject.transform.position);
+//        Vector3f rotationalImpulse = inverseInertiaTensor[0].transform(new Vector3f(relativePoint).cross(contactNormal).mul(j));
+//        System.out.println(rotationalImpulse);
+//        bodyOne.addAngularVelocity(rotationalImpulse);
+        System.out.println("J: " + j);
+        return impulse;
     }
 
     public void applyVelocityChange(Vector3f[] velocityChange, Vector3f[] angularVelocityChange) {
         // Get hold of the inverse mass and inverse inertia tensor, both in world coordinates
         Matrix3f[] inverseInertiaTensor = new Matrix3f[2];
-        inverseInertiaTensor[0] = bodyOne.getInverseInertiaTensor();
+        inverseInertiaTensor[0] = bodyOne.getInverseInertiaTensorWorld();
         if (bodyTwo != null && !bodyTwo.isStatic()) {
-            inverseInertiaTensor[1] = bodyTwo.getInverseInertiaTensor();
+            inverseInertiaTensor[1] = bodyTwo.getInverseInertiaTensorWorld();
         }
 
         // We will calculate the impulse for each contact axis
@@ -277,8 +320,8 @@ public class Contact {
         // Convert impulse to world coordinates
         Vector3f impulse = contactToWorld.transform(new Vector3f(impulseContact));
 
-        // Split in the impulse into linear and rotational components
-        Vector3f impulsiveTorque = new Vector3f(relativeContactPosition[0]).cross(impulse);
+        // Split the impulse into linear and rotational components
+        Vector3f impulsiveTorque = new Vector3f(new Vector3f(relativeContactPosition[0])).cross(new Vector3f(impulse));
         angularVelocityChange[0] = new Vector3f(impulsiveTorque);
         inverseInertiaTensor[0].transform(angularVelocityChange[0]);
         velocityChange[0].zero();
@@ -287,6 +330,7 @@ public class Contact {
         // Apply the changes
         bodyOne.addVelocity(velocityChange[0]);
         bodyOne.addAngularVelocity(angularVelocityChange[0]);
+        bodyOne.zeroAcceleration();
 
         if (bodyTwo != null && !bodyTwo.isStatic()) {
             // Work out body one's linear and angular changes
@@ -299,6 +343,7 @@ public class Contact {
             // Apply the changes
             bodyTwo.addVelocity(velocityChange[1]);
             bodyTwo.addAngularVelocity(angularVelocityChange[1]);
+            bodyTwo.zeroAcceleration();
         }
     }
 

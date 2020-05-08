@@ -2,6 +2,8 @@ package com.jade.physics.rigidbody.colliders;
 
 import com.jade.physics.rigidbody.collisions.CollisionData;
 import com.jade.physics.rigidbody.collisions.Contact;
+import com.jade.util.Constants;
+import com.jade.util.DebugDraw;
 import com.jade.util.JMath;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -187,7 +189,6 @@ public class CollisionDetector {
         if (!tryAxis(boxOne, boxTwo, boxTwo.getAxis(1), toCenter, 4, values)) return 0;
         if (!tryAxis(boxOne, boxTwo, boxTwo.getAxis(2), toCenter, 5, values)) return 0;
 
-        penetration = values.x;
         best = (int)values.y;
 
         // Store the best axis-major, in case we run into almost parallel edge collisions later
@@ -237,7 +238,7 @@ public class CollisionDetector {
             // The axis should point from box one to bxo two.
             if (axis.dot(toCenter) > 0) axis.mul(-1.0f);
 
-            // We hvae the axes, but not the edges: each axis has 4 edges parallel to it,
+            // We have the axes, but not the edges: each axis has 4 edges parallel to it,
             // we need to find which of the 4 for each object. We do that by finding the
             // point in the center of the edge. We know its component in the direction of
             // the box's collision axis is zero (its a mid-point) and we determine which of
@@ -294,13 +295,15 @@ public class CollisionDetector {
         // Work out which vertex of box two we're colliding with.
         // Using toCenter doesn't work!
         Vector3f vertex = new Vector3f(two.getHalfSize());
-        if (two.getAxis(0).dot(normal) < 0) vertex.x = -vertex.x;
-        if (two.getAxis(1).dot(normal) < 0) vertex.y = -vertex.y;
-        if (two.getAxis(2).dot(normal) < 0) vertex.z = -vertex.z;
+        if (two.getAxis(0).dot(toCenter) > 0) vertex.x = -vertex.x;
+        if (two.getAxis(1).dot(toCenter) > 0) vertex.y = -vertex.y;
+        if (two.getAxis(2).dot(toCenter) > 0) vertex.z = -vertex.z;
 
         // Create contact point
         Vector4f tmp = two.gameObject.transform.modelMatrix.transform(new Vector4f(vertex, 1));
         Vector3f contactPoint = new Vector3f(tmp.x, tmp.y, tmp.z);
+        /// TODO: REMOVE THIS AFTER FINISH TESTING
+        //DebugDraw.addLine(contactPoint, new Vector3f(contactPoint).add(Constants.UP), 0.05f, Constants.COLOR3_YELLOW, 60 * 5);
 
         // Create the contact data
         contact.setContactNormal(normal);
@@ -348,7 +351,9 @@ public class CollisionDetector {
 
     private static boolean tryAxis(BoxCollider one, BoxCollider two, Vector3f axis, Vector3f toCenter, int index, Vector2f modifiableValues) {
         // Make sure we have normalized axis, and don't check almost parallel axes
-        if (axis.lengthSquared() < 0.0001) return true;
+        if (axis.lengthSquared() < 0.0001f) {
+            return true;
+        }
         axis.normalize();
 
         float penetration = penetrationOnAxis(one, two, axis, toCenter);

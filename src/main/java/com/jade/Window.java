@@ -383,7 +383,7 @@ public class Window {
             time = currentTime;
             if (dt < (1f / 60f) || dt <= 0) {
                 if (dt <= 0) {
-                    System.out.println("FPS: '" + (1f / dt) + "'. Missed target frame rate.");
+                    //System.out.println("FPS: '" + (1f / dt) + "'. Missed target frame rate.");
                 }
                 dt = 1f / 60f;
             }
@@ -397,7 +397,9 @@ public class Window {
             currentScene.update(dt);
             currentScene.render();
 
+            glDisable(GL_DEPTH_TEST);
             DebugDraw.endFrame();
+            glEnable(GL_DEPTH_TEST);
 
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glClearColor(Constants.WINDOW_CLEAR_COLOR.x, Constants.WINDOW_CLEAR_COLOR.y, Constants.WINDOW_CLEAR_COLOR.z, Constants.WINDOW_CLEAR_COLOR.w);

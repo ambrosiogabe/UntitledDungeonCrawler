@@ -15,7 +15,7 @@ public class Rigidbody extends Component {
     private Vector3f velocity;
     private Vector3f angularVelocity;
     private Matrix4f transformMatrix, inverseTransform;
-    private Matrix3f inverseInertiaTensor;
+    private Matrix3f inverseInertiaTensor, inverseInertiaTensorWorld;
 
     private boolean isAwake;
     private Vector3f forceAccum;
@@ -42,6 +42,7 @@ public class Rigidbody extends Component {
 
         this.transformMatrix = new Matrix4f().identity();
         this.inverseTransform = new Matrix4f().identity();
+        this.inverseInertiaTensorWorld = new Matrix3f().identity();
         this.forceAccum = new Vector3f();
         this.torqueAccum = new Vector3f();
         this.lastFrameAcceleration = new Vector3f();
@@ -113,6 +114,14 @@ public class Rigidbody extends Component {
         this.transformMatrix.invert(this.inverseTransform);
         // TODO: INCLUDE SCALE IN CALCULATIONS
         //this.transformMatrix.scale(this.gameObject.transform.scale);
+
+        this.inverseInertiaTensorWorld.set(inverseInertiaTensor);
+        Matrix4f tmp = new Matrix4f(this.inverseInertiaTensor.m00, this.inverseInertiaTensor.m01, this.inverseInertiaTensor.m02, 0,
+                                    this.inverseInertiaTensor.m10, this.inverseInertiaTensor.m11, this.inverseInertiaTensor.m12, 0,
+                                    this.inverseInertiaTensor.m20, this.inverseInertiaTensor.m21, this.inverseInertiaTensor.m22, 0,
+                                    0, 0, 0, 1);
+        tmp.mul(this.gameObject.transform.modelMatrix);
+        this.inverseInertiaTensorWorld.set(tmp.m00(), tmp.m01(), tmp.m02(), tmp.m10(), tmp.m11(), tmp.m12(), tmp.m20(), tmp.m21(), tmp.m22());
     }
 
     public void setInertiaTensor(Matrix3f inertiaTensor) {
@@ -225,6 +234,14 @@ public class Rigidbody extends Component {
 
     public Vector3f getLastFrameAcceleration() {
         return this.lastFrameAcceleration;
+    }
+
+    public Matrix3f getInverseInertiaTensorWorld() {
+        return inverseInertiaTensorWorld;
+    }
+
+    public void zeroAcceleration() {
+        this.acceleration.zero();
     }
 
     public boolean isStatic() {
