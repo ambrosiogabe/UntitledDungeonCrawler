@@ -6,7 +6,7 @@ import org.joml.Vector3f;
 
 public class ContactResolver {
 
-    private int velocityIterations = 1;
+    private int velocityIterations = 10;
     private int velocityEpsilon = Integer.MIN_VALUE;
     private int positionIterations = 1;
     private int positionEpsilon = Integer.MIN_VALUE;
@@ -22,7 +22,7 @@ public class ContactResolver {
         adjustPositions(contacts, numContacts, duration);
 
         // Resolve the velocity problems with the contacts
-        adjustVelocities(contacts, numContacts, duration);
+        //adjustVelocities(contacts, numContacts, duration);
     }
 
     private void prepareContacts(Contact[] contacts, int numContacts, float duration) {
@@ -99,8 +99,10 @@ public class ContactResolver {
         float max;
         Vector3f deltaVel;
 
-        for (i=0; i < numContacts; i++) {
-            contacts[i].applyVelocityChange(velocityChange, angularVelocityChange);
+        for (int velIteration=0; velIteration < velocityIterations; velIteration++) {
+            for (i = 0; i < numContacts; i++) {
+                contacts[i].applyVelocityChange(velocityChange, angularVelocityChange);
+            }
         }
 
         // Iteratively resolve interpenetrations in order of severity

@@ -1,5 +1,6 @@
 package com.jade.physics.rigidbody.colliders;
 
+import com.jade.Window;
 import com.jade.physics.rigidbody.collisions.CollisionData;
 import com.jade.physics.rigidbody.collisions.Contact;
 import com.jade.util.Constants;
@@ -53,13 +54,13 @@ public class CollisionDetector {
         if (data.contactsLeft() <= 0) return 0;
 
         // Cache the sphere position
-        Vector3f spherePosition = sphere.getPosition();
+        Vector3f spherePosition = new Vector3f(sphere.gameObject.transform.position);
         Vector3f planePosition = plane.gameObject.transform.position;
 
         // Find the distance from the plane
         float ballDistance = plane.getNormal().dot(new Vector3f(spherePosition).sub(planePosition)) - sphere.getRadius() - plane.getOffset();
 
-        if (ballDistance >= 0) return 0;
+        if (ballDistance > plane.getOffset()) return 0;
 
         // Create the contact. It has a normal in the plane's normal direction
         Contact contact = data.getCurrentContact();
@@ -97,6 +98,7 @@ public class CollisionDetector {
 
             // Compare this to the plane's offset
             if (vertexDistance <= plane.getOffset()) {
+                //DebugDraw.addLine(vertexPos, new Vector3f(vertexPos).add(new Vector3f(plane.getNormal()).mul(plane.getOffset() - vertexDistance)), 0.05f, Constants.COLOR3_CYAN);
                 // Create the contact data
 
                 // The contact point is halfway between the vertex and the plane. We
@@ -113,6 +115,7 @@ public class CollisionDetector {
                 contactsUsed++;
                 data.addContacts(1);
                 contact = data.getCurrentContact();
+                if (true) return 1;
                 if (data.contactsLeft() <= 0) return contactsUsed;
             }
         }

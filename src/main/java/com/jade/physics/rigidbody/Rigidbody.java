@@ -65,15 +65,15 @@ public class Rigidbody extends Component {
         return this.mass;
     }
 
-    @Override
-    public void update(float dt) {
+    public void applyForces(float dt) {
         if (!Window.getScene().doPhysics()) {
             return;
         }
 
         // Adjust velocities
         // Update linear velocity from both acceleration and impulse
-        velocity.add(acceleration.add(new Vector3f(forceAccum).mul(dt).mul(inverseMass)));
+        acceleration = new Vector3f(forceAccum).mul(inverseMass);
+        velocity.add(new Vector3f(acceleration).mul(dt));
         this.lastFrameAcceleration.set(acceleration);
 
         // Update angular velocity from both acceleration and impulse
@@ -84,6 +84,15 @@ public class Rigidbody extends Component {
         velocity.mul((float)Math.pow(linearDamping, dt));
         this.angularVelocity.mul((float)Math.pow(angularDamping, dt));
 
+        // Normalize the orientation, and update the matrices with the new
+        // position and orientation
+        calculateDerivedData();
+
+        // Clear accumulators
+        clearAccumulators();
+    }
+
+    public void integrate(float dt) {
         // Adjust positions
         // Update linear positions
         this.gameObject.transform.position.add(velocity.mul(dt));
@@ -92,13 +101,6 @@ public class Rigidbody extends Component {
         Quaternionf q = new Quaternionf(angularVelocity.x, angularVelocity.y, angularVelocity.z, 0);
         q.scale(0.5f).mul(this.gameObject.transform.orientation);
         this.gameObject.transform.orientation.add(q);
-
-        // Normalize the orientation, and update the matrices with the new
-        // position and orientation
-        calculateDerivedData();
-
-        // Clear accumulators
-        clearAccumulators();
     }
 
     @Override
@@ -136,11 +138,6 @@ public class Rigidbody extends Component {
     public void clearAccumulators() {
         forceAccum.zero();
         torqueAccum.zero();
-    }
-
-    public void integrate(float duration) {
-        // Clear accumulators
-        clearAccumulators();
     }
 
     // Add a force at world coordinates

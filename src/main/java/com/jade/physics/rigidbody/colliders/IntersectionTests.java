@@ -6,9 +6,9 @@ import org.joml.Vector3f;
 public class IntersectionTests {
 
     public static boolean boxAndHalfSpace(BoxCollider box, Plane plane) {
-        float projectedRadius = box.getHalfSize().x * Math.abs(plane.getNormal().dot(new Vector3f(box.gameObject.transform.position.x, 0, 0))) +
-                            box.getHalfSize().y * Math.abs(plane.getNormal().dot(new Vector3f(0, box.gameObject.transform.position.y, 0))) +
-                            box.getHalfSize().z * Math.abs(plane.getNormal().dot(new Vector3f(0, 0, box.gameObject.transform.position.z)));
+        float projectedRadius = box.getHalfSize().x * Math.abs(plane.getNormal().dot(box.getAxis(0))) +
+                            box.getHalfSize().y * Math.abs(plane.getNormal().dot(box.getAxis(1))) +
+                            box.getHalfSize().z * Math.abs(plane.getNormal().dot(box.getAxis(2)));
 
         float boxDistance = plane.getNormal().dot(new Vector3f(box.gameObject.transform.position).sub(plane.gameObject.transform.position)) - projectedRadius;
 

@@ -1,10 +1,7 @@
 package com.jade.physics;
 
 import com.jade.GameObject;
-import com.jade.physics.rigidbody.Drag;
-import com.jade.physics.rigidbody.ForceRegistry;
-import com.jade.physics.rigidbody.Gravity;
-import com.jade.physics.rigidbody.Rigidbody;
+import com.jade.physics.rigidbody.*;
 import com.jade.physics.rigidbody.boundingVolumes.BoundingVolume;
 import com.jade.physics.rigidbody.colliders.*;
 import com.jade.physics.rigidbody.collisions.*;
@@ -20,7 +17,7 @@ public class Physics {
     private CollisionData data;
     private ForceRegistry registry;
 
-    private Gravity gravity = new Gravity(new Vector3f(0, -10, 0));
+    private Gravity gravity = new Gravity(new Vector3f(0, -100, 0));
     private BVHNode bvhTree = null;
     private PotentialContact[] potentialContacts;
 
@@ -36,6 +33,10 @@ public class Physics {
         this.bodies = new ArrayList<>();
     }
 
+    public void zeroForces() {
+        this.registry.zeroForces();
+    }
+
     public void addGameObject(GameObject go) {
         Rigidbody rb;
         Collider coll;
@@ -45,6 +46,9 @@ public class Physics {
         if ((rb = go.getComponent(Rigidbody.class)) != null && (coll = go.getComponent(Collider.class)) != null && (volume = go.getComponent(BoundingVolume.class)) != null) {
             if (!rb.isStatic()) {
                 registry.add(rb, gravity);
+            }
+            if (coll instanceof SphereCollider) {
+                registry.add(rb, new TempForce());
             }
 
             this.bodies.add(rb);
@@ -58,6 +62,9 @@ public class Physics {
 
     public void update(float dt) {
         registry.updateForces(physicsTimestep);
+        for (Rigidbody rb : bodies) {
+            rb.applyForces(dt);
+        }
 
         bvhTree.updatePositions();
         //bvhTree.draw(Constants.COLOR3_GREEN);
@@ -67,6 +74,10 @@ public class Physics {
 
         Contact[] realContacts = data.getContacts();
         resolver.resolveContacts(realContacts, data.getNumContacts(), physicsTimestep);
+
+        for (Rigidbody rb : bodies) {
+            rb.integrate(dt);
+        }
     }
 
     private void narrowPhase(int numContacts) {
@@ -114,6 +125,9 @@ public class Physics {
                 if (body != otherBody) {
                     potentialContacts[index] = new PotentialContact(body, otherBody);
                     index++;
+                    if (index >= potentialContacts.length) {
+                        return index - 1;
+                    }
                 }
             }
         }

@@ -20,7 +20,7 @@ public class Contact {
     private Vector3f contactNormal;
     private float penetrationDepth;
     private float friction;
-    private float restitution;
+    private float restitution = 0.2f;
 
     public Contact() {
         this.bodyTwo = null;
@@ -29,7 +29,6 @@ public class Contact {
         this.contactNormal = null;
         this.penetrationDepth = 0;
         this.friction = 0;
-        this.restitution = 0;
     }
 
     public Contact(Vector3f contactPoint, Vector3f contactNormal, float penetrationDepth) {
@@ -90,7 +89,7 @@ public class Contact {
         for (int i=0; i < 2; i++) {
             Rigidbody body = i == 0 ? bodyOne : bodyTwo;
             if (body != null) {
-                Matrix3f inverseInertiaTensor = body.getInverseInertiaTensor();
+                Matrix3f inverseInertiaTensor = body.getInverseInertiaTensorWorld();
 
                 // Use the same procedure as for calculating frictionless velocity
                 // change to work out the angular inertia
@@ -117,8 +116,8 @@ public class Contact {
 
             // The linear and angular movements required are in proportion to the two inverse inertias
             float sign = (i == 0) ? 1 : -1;
-            angularMove[i] = sign * penetration * (angularInertia[i] / totalInertia);
-            linearMove[i] = sign * penetration * (linearInertia[i] / totalInertia);
+            angularMove[i] = 0;//sign * penetration * (angularInertia[i] / totalInertia);
+            linearMove[i] = sign * penetration;// * (linearInertia[i] / totalInertia);
 
             // To avoid angular projections that are too great (when mass is large but inertia
             // tensor is small) limit the angular move
@@ -166,9 +165,9 @@ public class Contact {
 
                 // And the change in orientation
                 // TODO: PROBABLY WRONG (this calculation probably isn't right, should be scale add vector)
-                Quaternionf q = new Quaternionf(angularChange[i].x, angularChange[i].y, angularChange[i].z, 0);
-                q.scale(1.0f).mul(body.gameObject.transform.orientation);
-                body.gameObject.transform.orientation.add(q);
+//                Quaternionf q = new Quaternionf(angularChange[i].x, angularChange[i].y, angularChange[i].z, 0);
+//                q.scale(1.0f).mul(body.gameObject.transform.orientation);
+//                body.gameObject.transform.orientation.add(q);
 
                 // We need to calculate the derived data for any body that is asleep
                 // so that the changes are reflected in the object's data. Otherwise
@@ -273,37 +272,8 @@ public class Contact {
         }
 
         // Calculate the required size of the impulse
-        Vector3f impulseContact = new Vector3f(desiredDeltaVelocity / deltaVelocity, 0, 0);
+        Vector3f impulseContact = new Vector3f(deltaVelocity / desiredDeltaVelocity, 0, 0);
         return impulseContact;
-    }
-
-    public Vector3f myCalculateFrictionlessImpulse(Matrix3f[] inverseInertiaTensor) {
-        Vector3f relativeVel = contactVelocity;
-        if (bodyTwo != null && !bodyTwo.isStatic()) {
-            relativeVel.add(bodyTwo.getVelocity());
-        }
-        float contactVelocity = relativeVel.dot(contactNormal);
-
-        if (contactVelocity < 0) {
-            return new Vector3f();
-        }
-
-        // Impulse scalar
-        float j = -(1f + restitution) * contactVelocity;
-        float totalMass = bodyOne.getInverseMass();
-        if (bodyTwo != null && !bodyTwo.isStatic()) {
-            totalMass += bodyTwo.getInverseMass();
-        }
-        //j /= totalMass;
-
-        Vector3f impulse = new Vector3f(contactNormal).mul(j);
-
-//        Vector3f relativePoint = new Vector3f(contactPoint).sub(bodyOne.gameObject.transform.position);
-//        Vector3f rotationalImpulse = inverseInertiaTensor[0].transform(new Vector3f(relativePoint).cross(contactNormal).mul(j));
-//        System.out.println(rotationalImpulse);
-//        bodyOne.addAngularVelocity(rotationalImpulse);
-        System.out.println("J: " + j);
-        return impulse;
     }
 
     public void applyVelocityChange(Vector3f[] velocityChange, Vector3f[] angularVelocityChange) {
@@ -329,12 +299,11 @@ public class Contact {
 
         // Apply the changes
         bodyOne.addVelocity(velocityChange[0]);
-        bodyOne.addAngularVelocity(angularVelocityChange[0]);
-        bodyOne.zeroAcceleration();
+//        bodyOne.addAngularVelocity(angularVelocityChange[0]);
 
         if (bodyTwo != null && !bodyTwo.isStatic()) {
-            // Work out body one's linear and angular changes
-            impulsiveTorque = new Vector3f(impulse).cross(relativeContactPosition[1]);
+            // Work out body two's linear and angular changes
+            impulsiveTorque = new Vector3f(relativeContactPosition[1]).cross(new Vector3f(impulse));
             angularVelocityChange[1] = new Vector3f(impulsiveTorque);
             inverseInertiaTensor[1].transform(angularVelocityChange[1]);
             velocityChange[1].zero();
@@ -342,8 +311,7 @@ public class Contact {
 
             // Apply the changes
             bodyTwo.addVelocity(velocityChange[1]);
-            bodyTwo.addAngularVelocity(angularVelocityChange[1]);
-            bodyTwo.zeroAcceleration();
+//            bodyTwo.addAngularVelocity(angularVelocityChange[1]);
         }
     }
 

@@ -381,7 +381,7 @@ public class Window {
         float dt;
 
         while (!glfwWindowShouldClose(glfwWindow)) {
-            float currentTime = Time.getTime();
+            float currentTime = (float)glfwGetTime();
             dt = currentTime - time;
             time = currentTime;
             if (dt < (1f / 60f) || dt <= 0) {
