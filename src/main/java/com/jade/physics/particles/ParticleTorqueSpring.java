@@ -18,12 +18,12 @@ public class ParticleTorqueSpring implements ParticleForceGenerator {
 
     @Override
     public void updateForce(Particle particle, float duration) {
-        Vector2f topLeft = new Vector2f(particle.uiObject.transform.position.x - (particle.uiObject.transform.scale.x / 2.0f),
-                            particle.uiObject.transform.position.y + (particle.uiObject.transform.scale.y / 2.0f));
-        JMath.rotate(topLeft, particle.uiObject.transform.rotation.z, particle.uiObject.transform.position);
+        Vector2f topLeft = new Vector2f(particle.gameObject.transform.position.x - (particle.gameObject.transform.scale.x / 2.0f),
+                            particle.gameObject.transform.position.y + (particle.gameObject.transform.scale.y / 2.0f));
+        JMath.rotate(topLeft, particle.gameObject.transform.rotation.z, particle.gameObject.transform.position);
 
         Vector2f springForce = new Vector2f(topLeft).sub(spring).mul(-1 * stiffness);
-        Vector2f r = new Vector2f(particle.uiObject.transform.position.x, particle.uiObject.transform.position.y).sub(topLeft);
+        Vector2f r = new Vector2f(particle.gameObject.transform.position.x, particle.gameObject.transform.position.y).sub(topLeft);
         float rxf = r.x * springForce.y - r.y * springForce.x;
 
         // Spring torque

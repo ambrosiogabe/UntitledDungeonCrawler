@@ -19,7 +19,6 @@ public abstract class Scene {
     protected Physics physics;
 
     protected List<GameObject> gameObjects;
-    protected List<UIObject> uiObjects;
     private Camera camera;
 
     protected int activeGameObject = -1;
@@ -46,7 +45,6 @@ public abstract class Scene {
         this.physics = new Physics();
 
         this.gameObjects = new ArrayList<>();
-        this.uiObjects = new ArrayList<>();
     }
 
     public Renderer getRenderer() {
@@ -55,7 +53,6 @@ public abstract class Scene {
 
     public void reset() {
         this.gameObjects.clear();
-        this.uiObjects.clear();
         this.camera.transform = new Transform();
         this.renderer.reset();
         isRunning = false;
@@ -66,11 +63,6 @@ public abstract class Scene {
             go.start();
             physics.addGameObject(go);
             renderer.addGameObject(go);
-        }
-
-        for (UIObject uiObj : uiObjects) {
-            uiObj.start();
-            renderer.addUIObject(uiObj);
         }
 
         isRunning = true;
@@ -87,15 +79,6 @@ public abstract class Scene {
             this.gameObjects.add(g);
             this.renderer.addGameObject(g);
             this.physics.addGameObject(g);
-        }
-    }
-
-    public void addUIObject(UIObject u) {
-        if (!isRunning) {
-            this.uiObjects.add(u);
-        } else {
-            this.uiObjects.add(u);
-            this.renderer.addUIObject(u);
         }
     }
 
@@ -123,13 +106,6 @@ public abstract class Scene {
         if (selected != activeGameObject) {
             activeGameObject = -1;
         }
-
-        for (int i=0; i < uiObjects.size(); i++) {
-            if (ImGui.selectable(uiObjects.get(i).getName(), selected == i && activeGameObject == -1)) {
-                activeUiObject = i;
-                selected = activeUiObject;
-            }
-        }
         ImGui.end();
         if (selected != activeUiObject) {
             activeUiObject = -1;
@@ -145,8 +121,6 @@ public abstract class Scene {
         lastInspectorWidth = inspectorPaneWidth;
         if (activeGameObject != -1) {
             gameObjects.get(activeGameObject).imgui();
-        } else if (activeUiObject != -1) {
-            uiObjects.get(activeUiObject).imgui();
         }
         ImGui.end();
 
@@ -213,10 +187,6 @@ public abstract class Scene {
 
     public List<GameObject> getAllGameObjects() {
         return this.gameObjects;
-    }
-
-    public List<UIObject> getAllUIObjects() {
-        return this.uiObjects;
     }
 
     public void setActiveGameObject(int i) {

@@ -292,4 +292,8 @@ public class GameObject extends Serialize {
     public boolean isVisible() {
         return isVisible;
     }
+
+    public void setVisible(boolean val) {
+        this.isVisible = val;
+    }
 }

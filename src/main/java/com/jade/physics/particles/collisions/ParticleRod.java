@@ -20,7 +20,7 @@ public class ParticleRod extends ParticleLink {
         contact.particle[1] = particle[1];
 
         // Calculate the normal
-        Vector3f normal = particle[1].uiObject.transform.position.sub(particle[0].uiObject.transform.position);
+        Vector3f normal = particle[1].gameObject.transform.position.sub(particle[0].gameObject.transform.position);
         normal.normalize();
 
         // The contact normal depends on whether we're extending or compressing

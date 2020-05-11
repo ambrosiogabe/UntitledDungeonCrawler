@@ -152,4 +152,13 @@ public class JMath {
                 0, xy11, 0,
                 0, 0, xy22);
     }
+
+    // Compares two floating point numbers and returns whether they are almost equal
+    public static boolean compare(float x, float y) {
+        return Math.abs(x - y) <= Float.MIN_VALUE * Math.max(1.0f, Math.max(Math.abs(x), Math.abs(y)));
+    }
+
+    public static Vector2f vector2fFrom3f(Vector3f vec) {
+        return new Vector2f(vec.x, vec.y);
+    }
 }

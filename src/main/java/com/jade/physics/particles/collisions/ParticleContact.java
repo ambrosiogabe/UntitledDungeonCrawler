@@ -50,10 +50,10 @@ public class ParticleContact {
         }
 
         // Apply the penetration resolution
-        particle[0].uiObject.transform.position.add(particleMovement[0]);
+        particle[0].gameObject.transform.position.add(particleMovement[0]);
 
         if (particle[1] != null) {
-                particle[1].uiObject.transform.position.add(particleMovement[1]);
+                particle[1].gameObject.transform.position.add(particleMovement[1]);
         }
     }
 

@@ -2,7 +2,6 @@ package com.jade.renderer;
 
 import com.jade.Camera;
 import com.jade.GameObject;
-import com.jade.UIObject;
 import com.jade.components.*;
 
 import java.util.ArrayList;
@@ -41,14 +40,13 @@ public class Renderer {
     }
 
     public void addGameObject(GameObject g) {
-        this.gameObjects.add(g);
-    }
+        SpriteRenderer spriteRenderer = g.getComponent(SpriteRenderer.class);
+        FontRenderer fontRenderer;
 
-    public void addUIObject(UIObject u) {
-        SpriteRenderer spriteRenderer;
-        boolean wasAdded = false;
-
-        if ((spriteRenderer = u.getComponent(SpriteRenderer.class)) != null) {
+        // Check if it is 2D object, if it has no 2D rendering components
+        // it must be a 3D object
+        if (spriteRenderer != null) {
+            boolean wasAdded = false;
             for (int i = 0; i < uiBatches.size(); i++) {
                 UIBatcher batch = uiBatches.get(i);
                 if (batch.hasRoom() && batch.hasTexture(spriteRenderer.getSprite().getTexture())) {
@@ -63,13 +61,13 @@ public class Renderer {
                 batch.start();
                 batch.add(spriteRenderer);
                 uiBatches.add(batch);
-                wasAdded = true;
             }
-        } else if (u.getComponent(FontRenderer.class) != null) {
-            wasAdded = true;
+        } else if((fontRenderer = g.getComponent(FontRenderer.class)) != null) {
+            // Must be a 2D object
+            return;
+        } else {
+            this.gameObjects.add(g);
         }
-
-        assert wasAdded : "Object was never added to renderer.";
     }
 
     public void render() {

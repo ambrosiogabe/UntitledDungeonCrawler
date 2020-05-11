@@ -3,10 +3,7 @@ package com.jade;
 import com.jade.events.KeyListener;
 import com.jade.events.MouseListener;
 import com.jade.renderer.Texture;
-import com.jade.scenes.MenuScene;
-import com.jade.scenes.Scene;
-import com.jade.scenes.TestScene;
-import com.jade.scenes.WorldScene;
+import com.jade.scenes.*;
 import com.jade.util.Constants;
 import com.jade.util.DebugDraw;
 import com.jade.util.Time;
@@ -105,6 +102,13 @@ public class Window {
                 if (currentScene != null)
                     currentScene.reset();
                 currentScene = new TestScene();
+                currentScene.init();
+                currentScene.start();
+                break;
+            case 3:
+                if (currentScene != null)
+                    currentScene.reset();
+                currentScene = new TestScene2D();
                 currentScene.init();
                 currentScene.start();
                 break;

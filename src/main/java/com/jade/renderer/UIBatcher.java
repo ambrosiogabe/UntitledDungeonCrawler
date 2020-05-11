@@ -176,9 +176,9 @@ public class UIBatcher implements Comparable<UIBatcher> {
         // Get transform matrix to apply transformations
         // TODO: Test this, consider making it faster by doing operations by hand
         Matrix4f transform = new Matrix4f();
-        transform.translate(sprite.uiObject.transform.position);
-        transform.rotate((float)Math.toRadians(sprite.uiObject.transform.rotation.z), Constants.FORWARD);
-        transform.scale(sprite.uiObject.transform.scale);
+        transform.translate(sprite.gameObject.transform.position);
+        transform.rotate((float)Math.toRadians(sprite.gameObject.transform.rotation.z), Constants.FORWARD);
+        transform.scale(sprite.gameObject.transform.scale);
 
         // Add 4 vertices with the appropriate properties to vertex array
         float xAdd = 0.5f;

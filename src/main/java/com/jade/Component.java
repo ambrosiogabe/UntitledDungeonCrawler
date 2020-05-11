@@ -5,7 +5,6 @@ import com.jade.file.Serialize;
 public abstract class Component extends Serialize {
 
     public GameObject gameObject = null;
-    public UIObject uiObject = null;
 
     public void start() {
         return;

@@ -1,7 +1,6 @@
 package com.jade.ui;
 
 import com.jade.Component;
-import com.jade.UIObject;
 import com.jade.Window;
 import com.jade.components.Sprite;
 import com.jade.components.SpriteRenderer;
@@ -31,19 +30,19 @@ public abstract class Button extends Component {
 
     @Override
     public void start() {
-        this.renderer = uiObject.getComponent(SpriteRenderer.class);
+        this.renderer = gameObject.getComponent(SpriteRenderer.class);
     }
 
     private void calculateMin() {
-        this.min.x = uiObject.transform.position.x - (this.uiObject.transform.scale.x / 2.0f);
-        this.min.y = uiObject.transform.position.y - (this.uiObject.transform.scale.y / 2.0f);
-        JMath.rotate(this.min, this.uiObject.transform.rotation.z, this.uiObject.transform.position);
+        this.min.x = gameObject.transform.position.x - (this.gameObject.transform.scale.x / 2.0f);
+        this.min.y = gameObject.transform.position.y - (this.gameObject.transform.scale.y / 2.0f);
+        JMath.rotate(this.min, this.gameObject.transform.rotation.z, this.gameObject.transform.position);
     }
 
     private void calculateMax() {
-        this.max.x = uiObject.transform.position.x + (this.uiObject.transform.scale.x / 2.0f);
-        this.max.y = uiObject.transform.position.y + (this.uiObject.transform.scale.y / 2.0f);
-        JMath.rotate(this.max, this.uiObject.transform.rotation.z, this.uiObject.transform.position);
+        this.max.x = gameObject.transform.position.x + (this.gameObject.transform.scale.x / 2.0f);
+        this.max.y = gameObject.transform.position.y + (this.gameObject.transform.scale.y / 2.0f);
+        JMath.rotate(this.max, this.gameObject.transform.rotation.z, this.gameObject.transform.position);
     }
 
     public abstract void clicked();

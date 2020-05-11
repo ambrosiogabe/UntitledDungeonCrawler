@@ -27,7 +27,7 @@ public class ParticleCable extends ParticleLink {
 
         // Calculate the normal
         Vector3f normal = new Vector3f();
-        particle[1].uiObject.transform.position.sub(particle[0].uiObject.transform.position, normal);
+        particle[1].gameObject.transform.position.sub(particle[0].gameObject.transform.position, normal);
         normal.normalize();
         contact.contactNormal = normal;
 

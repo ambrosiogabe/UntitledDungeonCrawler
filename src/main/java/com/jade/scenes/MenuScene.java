@@ -2,7 +2,6 @@ package com.jade.scenes;
 
 import com.jade.GameObject;
 import com.jade.Transform;
-import com.jade.UIObject;
 import com.jade.Window;
 import com.jade.components.*;
 import com.jade.events.KeyListener;
@@ -26,7 +25,7 @@ public class MenuScene extends Scene {
         Window.getScene().camera().transform.position.x = 25.0f;
         Window.getScene().camera().transform.rotation.y = 90.0f;
 
-        UIObject startMenuButton = new UIObject("Start Button", new Vector3f(930.0f, 510.0f, 0.0f), new Vector3f(400, 100, 0f));
+        GameObject startMenuButton = new GameObject("Start Button", new Transform(new Vector3f(930.0f, 510.0f, 0.0f), new Vector3f(400, 100, 0f)));
         Sprite noHover = new Sprite("images/button-no-hover.png");
         Sprite hover = new Sprite("images/button-hover.png");
         Sprite press = new Sprite("images/button-press.png");
@@ -35,31 +34,31 @@ public class MenuScene extends Scene {
         SpriteRenderer menuButtonRenderer = new SpriteRenderer(noHover);
         startMenuButton.addComponent(menuButtonRenderer);
         startMenuButton.addComponent(button);
-        this.addUIObject(startMenuButton);
+        this.addGameObject(startMenuButton);
 
-        UIObject exitGameButton = new UIObject("Exit Button", new Vector3f(930.0f, 310.0f, 0.0f), new Vector3f(400, 100, 0f));
+        GameObject exitGameButton = new GameObject("Exit Button", new Transform(new Vector3f(930.0f, 310.0f, 0.0f), new Vector3f(400, 100, 0f)));
         noHover = (Sprite)noHover.copy();
         Button exitButton = new ExitGameButton(noHover, (Sprite)hover.copy(), (Sprite)press.copy());
         exitGameButton.addComponent(exitButton);
         exitGameButton.addComponent(new SpriteRenderer(noHover));
-        this.addUIObject(exitGameButton);
+        this.addGameObject(exitGameButton);
 
-        UIObject startGameText = new UIObject("Start Label", new Vector3f(800.0f, 520.0f, 0.0f));
+        GameObject startGameText = new GameObject("Start Label", new Transform(new Vector3f(800.0f, 520.0f, 0.0f)));
         FontRenderer playGameLabel = new FontRenderer(Constants.DEFAULT_FONT, "Start Game");
         playGameLabel.setColor(Constants.COLOR4_BLACK);
         startGameText.addComponent(playGameLabel);
-        this.addUIObject(startGameText);
+        this.addGameObject(startGameText);
 
-        UIObject exitGameText = new UIObject("Exit Label", new Vector3f(890.0f, 320.0f, 0.0f));
+        GameObject exitGameText = new GameObject("Exit Label", new Transform(new Vector3f(890.0f, 320.0f, 0.0f)));
         FontRenderer exitGameLabel = new FontRenderer(Constants.DEFAULT_FONT, "Exit");
         exitGameLabel.setColor(Constants.COLOR4_BLACK);
         exitGameText.addComponent(exitGameLabel);
-        this.addUIObject(exitGameText);
+        this.addGameObject(exitGameText);
 
-        UIObject gameTitle = new UIObject("Game Title", new Vector3f(545.0f, 800.0f, 0.0f));
+        GameObject gameTitle = new GameObject("Game Title", new Transform(new Vector3f(545.0f, 800.0f, 0.0f)));
         FontRenderer gameTitleLabel = new FontRenderer(Constants.EXTRA_LARGE_FONT, "Dungeon Crawler!");
         gameTitle.addComponent(gameTitleLabel);
-        this.addUIObject(gameTitle);
+        this.addGameObject(gameTitle);
 
         GameObject debugKeyController = new GameObject("Debug Key Controller", new Transform());
         debugKeyController.addComponent(new DebugKeyController());
@@ -69,11 +68,6 @@ public class MenuScene extends Scene {
         for (int i=0; i < this.gameObjects.size(); i++) {
             GameObject g = this.gameObjects.get(i);
             g.start();
-        }
-
-        for (int i=0; i < this.uiObjects.size(); i++) {
-            UIObject u = this.uiObjects.get(i);
-            u.start();
         }
     }
 
@@ -85,10 +79,6 @@ public class MenuScene extends Scene {
 
         for (GameObject g : gameObjects) {
             g.update(dt);
-        }
-
-        for (UIObject u : uiObjects) {
-            u.update(dt);
         }
     }
 }

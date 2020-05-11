@@ -37,8 +37,8 @@ public class SpriteRenderer extends Component {
 
     @Override
     public void start() {
-        this.lastTransform = gameObject != null ? gameObject.transform.copy() : uiObject.transform.copy();
-        this.lastVisible = gameObject != null ? gameObject.isVisible() : uiObject.isVisible();
+        this.lastTransform = gameObject.transform.copy();
+        this.lastVisible = gameObject.isVisible();
     }
 
     @Override
@@ -48,15 +48,15 @@ public class SpriteRenderer extends Component {
             this.lastSpriteId = this.sprite.getID();
         }
 
-        if (this.lastVisible != (this.gameObject != null ? this.gameObject.isVisible() : this.uiObject.isVisible())) {
-            this.lastVisible = this.gameObject != null ? this.gameObject.isVisible() : this.uiObject.isVisible();
+        if (this.lastVisible != this.gameObject.isVisible()) {
+            this.lastVisible = this.gameObject.isVisible();
             this.shouldDisplay = this.lastVisible;
             this.isDirty = true;
         }
 
-        if (!this.lastTransform.equals(this.gameObject != null ? this.gameObject.transform : this.uiObject.transform)) {
+        if (!this.lastTransform.equals(this.gameObject.transform)) {
             this.isDirty = true;
-            Transform.copyValues(this.gameObject != null ? this.gameObject.transform : this.uiObject.transform, this.lastTransform);
+            Transform.copyValues(this.gameObject.transform, this.lastTransform);
         }
     }
 

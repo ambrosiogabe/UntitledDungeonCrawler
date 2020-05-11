@@ -2,7 +2,6 @@ package com.jade.scenes;
 
 import com.jade.GameObject;
 import com.jade.Transform;
-import com.jade.UIObject;
 import com.jade.Window;
 import com.jade.components.*;
 import com.jade.events.KeyListener;
@@ -35,17 +34,17 @@ public class TestScene extends Scene {
         Window.getScene().camera().transform.position.x = 25.0f;
         Window.getScene().camera().transform.rotation.y = 0.0f;
 
-        UIObject fps = new UIObject("FPS Label", new Vector3f(10, 1010, 0));
+        GameObject fps = new GameObject("FPS Label", new Transform(new Vector3f(10, 1010, 0)));
         fpsLabel = new FontRenderer(Constants.DEBUG_FONT, "FPS: ");
         fps.addComponent(fpsLabel);
-        fps.setNonSerializable();
-        this.addUIObject(fps);
+        fps.setNonserializable();
+        this.addGameObject(fps);
 
-        UIObject ms = new UIObject("MS Label", new Vector3f(10, 1040, 0));
+        GameObject ms = new GameObject("MS Label", new Transform(new Vector3f(10, 1040, 0)));
         msLabel = new FontRenderer(Constants.DEBUG_FONT, "MS Last Frame: ");
         ms.addComponent(msLabel);
-        ms.setNonSerializable();
-        this.addUIObject(ms);
+        ms.setNonserializable();
+        this.addGameObject(ms);
 
         GameObject testLight = new GameObject("Test Light", new Transform(new Vector3f(24, 6, 19)));
         PointLight testLightComp = new PointLight(new Vector3f(1.0f, 0.95f, 0.71f), 1.0f);
@@ -166,10 +165,6 @@ public class TestScene extends Scene {
 
         for (GameObject g : gameObjects) {
             g.update(dt);
-        }
-
-        for (UIObject u : uiObjects) {
-            u.update(dt);
         }
 
         if (activeGameObject >= 0) {

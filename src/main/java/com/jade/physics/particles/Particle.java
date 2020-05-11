@@ -1,7 +1,6 @@
 package com.jade.physics.particles;
 
 import com.jade.Component;
-import com.jade.UIObject;
 import com.jade.util.Constants;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -52,7 +51,7 @@ public class Particle extends Component {
     @Override
     public void start() {
         this.inertiaTensor = this.mass *
-                (this.uiObject.transform.scale.y * this.uiObject.transform.scale.y + this.uiObject.transform.scale.x * this.uiObject.transform.scale.x) / 12000;
+                (this.gameObject.transform.scale.y * this.gameObject.transform.scale.y + this.gameObject.transform.scale.x * this.gameObject.transform.scale.x) / 12000;
     }
 
     @Override
@@ -63,12 +62,12 @@ public class Particle extends Component {
         this.velocity.add(forceAccum.mul(dt).mul(this.inverseMass));
         this.clearAccumulator();
 
-        uiObject.transform.position.add(new Vector3f(this.velocity).mul(dt).mul(100));
+        gameObject.transform.position.add(new Vector3f(this.velocity).mul(dt).mul(100));
 
         torque += this.angularVelocity;
         this.alpha = this.torque / this.inertiaTensor;
         this.angularVelocity += this.alpha * dt;
-        uiObject.transform.rotation.z += this.angularVelocity * dt;
+        gameObject.transform.rotation.z += this.angularVelocity * dt;
 
         this.torque = 0;
     }

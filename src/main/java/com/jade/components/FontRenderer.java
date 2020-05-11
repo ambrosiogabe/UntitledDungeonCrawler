@@ -1,8 +1,8 @@
 package com.jade.components;
 
 import com.jade.Component;
+import com.jade.GameObject;
 import com.jade.Transform;
-import com.jade.UIObject;
 import com.jade.Window;
 import com.jade.renderer.fonts.FontTexture;
 import com.jade.util.Constants;
@@ -19,7 +19,7 @@ import java.util.List;
 
 public class FontRenderer extends Component {
     private FontTexture fontTexture;
-    private List<UIObject> uiObjects;
+    private List<GameObject> gameObjects;
     private String text;
     private float width;
     private boolean firstTime = true;
@@ -34,14 +34,14 @@ public class FontRenderer extends Component {
         this.fontTexture = fontTexture;
         this.text = text;
         imText = new ImString(text);
-        this.uiObjects = new ArrayList<>();
+        this.gameObjects = new ArrayList<>();
         calculateObjects(this.text);
     }
 
     @Override
     public void start() {
         this.lastTransform = new Transform();
-        Transform.copyValues(uiObject.transform, this.lastTransform);
+        Transform.copyValues(gameObject.transform, this.lastTransform);
         calculateObjectPositions();
     }
 
@@ -75,19 +75,19 @@ public class FontRenderer extends Component {
             Vector2f sourceOffset = fontTexture.getSourceOffset(c);
             Sprite sprite = new Sprite(width, height, (int)sourceOffset.x, (int)sourceOffset.y, 0, fontTexture.getTexture().getFilepath());
 
-            UIObject newObject;
-            if (i < uiObjects.size()) {
-                newObject = uiObjects.get(i);
+            GameObject newObject;
+            if (i < gameObjects.size()) {
+                newObject = gameObjects.get(i);
                 SpriteRenderer spriteRenderer = newObject.getComponent(SpriteRenderer.class);
                 modifyObject(newObject, (int)currentX, (int)currentY, width, height, sprite, spriteRenderer);
             } else {
-                newObject = new UIObject("Generated", new Vector3f(currentX, currentY, 0), new Vector3f(width, height, 0));
+                newObject = new GameObject("Generated", new Transform(new Vector3f(currentX, currentY, 0), new Vector3f(width, height, 0)));
                 SpriteRenderer spriteRenderer = new SpriteRenderer(sprite);
                 spriteRenderer.setColor(this.color);
                 newObject.addComponent(spriteRenderer);
-                uiObjects.add(newObject);
+                gameObjects.add(newObject);
                 newObject.start();
-                Window.getScene().getRenderer().addUIObject(newObject);
+                Window.getScene().getRenderer().addGameObject(newObject);
             }
 
             currentX += fontTexture.getWidthOf(c);
@@ -96,16 +96,16 @@ public class FontRenderer extends Component {
     }
 
     private void calculateObjectPositions() {
-        float currentX = uiObject.transform.position.x;
-        float currentY = uiObject.transform.position.y;
+        float currentX = gameObject.transform.position.x;
+        float currentY = gameObject.transform.position.y;
 
         char[] charArray = text.toCharArray();
-        assert charArray.length <= this.uiObjects.size() : "Error: Cannot resize modified text in FontRenderer.";
+        assert charArray.length <= this.gameObjects.size() : "Error: Cannot resize modified text in FontRenderer.";
         for (int i=0; i < charArray.length; i++) {
             char c = charArray[i];
             if (c == '\n') {
                 currentY -= fontTexture.getLineHeight();
-                currentX = uiObject.transform.position.x;
+                currentX = gameObject.transform.position.x;
                 continue;
             }
             int width = (int)fontTexture.getWidthOf(c);
@@ -115,15 +115,15 @@ public class FontRenderer extends Component {
                 // TODO: Make it so that font actually rotates about the center of the object...
                 float widthToAdd = fontTexture.getHalfWidthOf(c) + fontTexture.getHalfWidthOf(charArray[i - 1]);
                 float heightToAdd = fontTexture.getLineHeight();
-                currentX += widthToAdd * (float)Math.cos(Math.toRadians(uiObject.transform.rotation.z));
-                currentY += heightToAdd * (float)Math.sin(Math.toRadians(uiObject.transform.rotation.z));
+                currentX += widthToAdd * (float)Math.cos(Math.toRadians(gameObject.transform.rotation.z));
+                currentY += heightToAdd * (float)Math.sin(Math.toRadians(gameObject.transform.rotation.z));
 
 //                currentX += widthToAdd;
 //                currentY += heightToAdd;
                 this.width = widthToAdd;
             }
 
-            UIObject obj = uiObjects.get(i);
+            GameObject obj = gameObjects.get(i);
             SpriteRenderer spriteRenderer = obj.getComponent(SpriteRenderer.class);
             modifyObject(obj, (int)currentX, (int)currentY, width, height, spriteRenderer.getSprite(), spriteRenderer);
         }
@@ -131,23 +131,23 @@ public class FontRenderer extends Component {
 
     public void setColor(Vector4f color) {
         this.color = color;
-        for (UIObject u : uiObjects) {
-            u.getComponent(SpriteRenderer.class).setColor(color);
+        for (GameObject go : gameObjects) {
+            go.getComponent(SpriteRenderer.class).setColor(color);
         }
     }
 
     public void setPosition(Vector3f position, Vector3f rotation) {
-        this.uiObject.transform.position = position;
-        this.uiObject.transform.rotation = rotation;
+        this.gameObject.transform.position = position;
+        this.gameObject.transform.rotation = rotation;
         calculateObjectPositions();
     }
 
-    private void modifyObject(UIObject u, int currentX, int currentY, int width, int height, Sprite sprite, SpriteRenderer spriteRenderer) {
-        u.transform.position.x = currentX;
-        u.transform.position.y = currentY;
-        u.transform.scale.x = width;
-        u.transform.scale.y = height;
-        u.transform.rotation.z = uiObject.transform.rotation.z;
+    private void modifyObject(GameObject go, int currentX, int currentY, int width, int height, Sprite sprite, SpriteRenderer spriteRenderer) {
+        go.transform.position.x = currentX;
+        go.transform.position.y = currentY;
+        go.transform.scale.x = width;
+        go.transform.scale.y = height;
+        go.transform.rotation.z = gameObject.transform.rotation.z;
         spriteRenderer.setSprite(sprite);
         spriteRenderer.setColor(this.color);
     }
@@ -164,8 +164,8 @@ public class FontRenderer extends Component {
         return this.text;
     }
 
-    public List<UIObject> getUIObjects() {
-        return this.uiObjects;
+    public List<GameObject> getGameObjects() {
+        return this.gameObjects;
     }
 
     @Override
@@ -189,14 +189,14 @@ public class FontRenderer extends Component {
 
     @Override
     public void update(float dt) {
-        if (!this.uiObject.transform.position.equals(this.lastTransform.position) || !this.uiObject.transform.rotation.equals(this.lastTransform.rotation)) {
-            this.setPosition(this.uiObject.transform.position, this.uiObject.transform.rotation);
-            Transform.copyValues(this.uiObject.transform, this.lastTransform);
+        if (!this.gameObject.transform.position.equals(this.lastTransform.position) || !this.gameObject.transform.rotation.equals(this.lastTransform.rotation)) {
+            this.setPosition(this.gameObject.transform.position, this.gameObject.transform.rotation);
+            Transform.copyValues(this.gameObject.transform, this.lastTransform);
         }
 
-        for (UIObject u : uiObjects) {
-            u.setVisible(this.uiObject.isVisible());
-            u.update(dt);
+        for (GameObject go : gameObjects) {
+            go.setVisible(this.gameObject.isVisible());
+            go.update(dt);
         }
     }
 
