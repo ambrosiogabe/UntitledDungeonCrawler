@@ -2,10 +2,13 @@ package com.jade.components;
 
 import com.jade.Component;
 import com.jade.Transform;
+import com.jade.Window;
 import com.jade.renderer.Shader;
 import com.jade.util.AssetPool;
 import com.jade.util.Constants;
 import com.jade.util.JMath;
+import imgui.ImGui;
+import imgui.ImVec4;
 import org.joml.Vector4f;
 
 public class SpriteRenderer extends Component {
@@ -20,12 +23,16 @@ public class SpriteRenderer extends Component {
     private Transform lastTransform;
     private int lastSpriteId;
     private boolean lastVisible;
+    private int zIndex;
+
+    private boolean addToRenderer = false;
 
     public SpriteRenderer() {
         this.sprite = new Sprite("images/defaultSprite.png");
 
         this.lastSpriteId = this.sprite.getID();
         this.isDirty = true;
+        this.zIndex = 0;
     }
 
     public SpriteRenderer(Sprite sprite) {
@@ -58,6 +65,12 @@ public class SpriteRenderer extends Component {
             this.isDirty = true;
             Transform.copyValues(this.gameObject.transform, this.lastTransform);
         }
+
+        if (this.addToRenderer) {
+            Window.getScene().getRenderer().addGameObject(this.gameObject);
+            this.isDirty = true;
+            this.addToRenderer = false;
+        }
     }
 
     @Override
@@ -68,6 +81,27 @@ public class SpriteRenderer extends Component {
     @Override
     public String serialize(int tabSize) {
         return null;
+    }
+
+    @Override
+    public void imgui() {
+        int[] imZIndex = {zIndex};
+        ImGui.dragInt("Z-Index", imZIndex, 0.05f, -2, 2);
+        if (imZIndex[0] != zIndex) {
+            zIndex = imZIndex[0];
+            Window.getScene().getRenderer().deleteGameObject(this.gameObject);
+            this.addToRenderer = true;
+            this.isDirty = true;
+        }
+
+        float[] imColor = {color.x, color.y, color.z, color.w};
+        if (ImGui.colorPicker4("Color", imColor)) {
+            color.x = imColor[0];
+            color.y = imColor[1];
+            color.z = imColor[2];
+            color.w = imColor[3];
+            this.isDirty = true;
+        }
     }
 
     public boolean isDirty() {
@@ -110,5 +144,13 @@ public class SpriteRenderer extends Component {
 
     public Vector4f getColor() {
         return this.color;
+    }
+
+    public void setZIndex(int zIndex) {
+        this.zIndex = zIndex;
+    }
+
+    public int zIndex() {
+        return this.zIndex;
     }
 }

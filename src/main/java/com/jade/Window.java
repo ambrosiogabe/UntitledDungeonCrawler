@@ -139,7 +139,7 @@ public class Window {
 
         initGlfw();
         initImGui();
-        Window.changeScene(0);
+        Window.changeScene(3);
         loop();
         destroyImGui();
         destroyGlfw();
@@ -404,9 +404,9 @@ public class Window {
             currentScene.update(dt);
             currentScene.render();
 
-            glDisable(GL_DEPTH_TEST);
+            //glDisable(GL_DEPTH_TEST);
             DebugDraw.endFrame();
-            glEnable(GL_DEPTH_TEST);
+            //glEnable(GL_DEPTH_TEST);
 
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glClearColor(Constants.WINDOW_CLEAR_COLOR.x, Constants.WINDOW_CLEAR_COLOR.y, Constants.WINDOW_CLEAR_COLOR.z, Constants.WINDOW_CLEAR_COLOR.w);

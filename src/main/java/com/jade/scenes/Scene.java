@@ -77,9 +77,15 @@ public abstract class Scene {
             this.gameObjects.add(g);
         } else {
             this.gameObjects.add(g);
+            g.start();
             this.renderer.addGameObject(g);
             this.physics.addGameObject(g);
         }
+    }
+
+    public void deleteGameObject(GameObject g) {
+        this.gameObjects.remove(g);
+        this.renderer.deleteGameObject(g);
     }
 
     public void render() {

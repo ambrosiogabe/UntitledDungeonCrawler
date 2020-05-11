@@ -3,10 +3,9 @@ package com.jade.util;
 import com.jade.file.Parser;
 import com.jade.file.Serialize;
 import com.jade.util.enums.DataType;
-import org.joml.Matrix3f;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.*;
+
+import java.lang.Math;
 
 public class JMath {
     private static final int FLOAT_SIZE = 4;
@@ -160,5 +159,21 @@ public class JMath {
 
     public static Vector2f vector2fFrom3f(Vector3f vec) {
         return new Vector2f(vec.x, vec.y);
+    }
+
+    public static Vector2f vector2fFrom4f(Vector4f vec) {
+        return new Vector2f(vec.x, vec.y);
+    }
+
+    public static Vector2f transformFromModelMatrix(Vector2f vec, Matrix4f modelMatrix) {
+        Vector4f tmp = new Vector4f(vec.x, vec.y, 0, 1);
+        modelMatrix.transform(tmp);
+        return new Vector2f(tmp.x, tmp.y);
+    }
+
+    public static Vector3f transformFromModelMatrix(Vector3f vec, Matrix4f modelMatrix) {
+        Vector4f tmp = new Vector4f(vec.x, vec.y, vec.z, 1);
+        modelMatrix.transform(tmp);
+        return new Vector3f(tmp.x, tmp.y, tmp.z);
     }
 }

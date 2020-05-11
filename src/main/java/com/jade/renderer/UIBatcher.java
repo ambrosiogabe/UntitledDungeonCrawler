@@ -1,5 +1,6 @@
 package com.jade.renderer;
 
+import com.jade.GameObject;
 import com.jade.Window;
 import com.jade.components.SpriteRenderer;
 import com.jade.util.AssetPool;
@@ -195,7 +196,7 @@ public class UIBatcher implements Comparable<UIBatcher> {
             Vector4f currentPos = new Vector4f(xAdd, yAdd, 0.0f, 1.0f).mul(transform);
             vertices[offset] = currentPos.x;
             vertices[offset + 1] = currentPos.y;
-            vertices[offset + 2] = currentPos.z;
+            vertices[offset + 2] = sprite.zIndex();
 
             // Load color
             vertices[offset + 3] = color.x;
@@ -372,6 +373,19 @@ public class UIBatcher implements Comparable<UIBatcher> {
         }
     }
 
+    public boolean hasSpriteRenderer(SpriteRenderer sprite) {
+        return this.sprites.contains(sprite);
+    }
+
+    public void deleteSpriteRenderer(SpriteRenderer sprite) {
+        for (int i=0; i < sprites.size(); i++) {
+            if (sprites.get(i) == sprite) {
+                deleteVertexProperties(i);
+                break;
+            }
+        }
+    }
+
     @Override
     public int compareTo(UIBatcher batch) {
         return Integer.compare(batch.zIndex, this.zIndex);
@@ -379,5 +393,9 @@ public class UIBatcher implements Comparable<UIBatcher> {
 
     public boolean hasRoom() {
         return this.hasRoom;
+    }
+
+    public int zIndex() {
+        return this.zIndex;
     }
 }
