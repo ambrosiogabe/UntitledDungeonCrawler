@@ -3,6 +3,7 @@ package com.jade.util;
 import com.jade.Transform;
 import com.jade.Window;
 import com.jade.renderer.Line;
+import com.jade.renderer.Line2D;
 import com.jade.renderer.Shader;
 import com.jade.renderer.Texture;
 import org.joml.Quaternionf;
@@ -29,11 +30,17 @@ public class DebugDraw {
     private static int MAX_LINES = 500;
 
     private static List<Line> lines = new ArrayList<>();
+    private static List<Line2D> line2D = new ArrayList<>();
     private static float[] vertexArray = new float[MAX_LINES * 6 * 8];
+    private static float[] vertexArray2D = new float[MAX_LINES * 6];
     private static Shader shader = AssetPool.getShader("shaders/debugLines.glsl");
+    private static Shader shader2D = AssetPool.getShader("shaders/debugLines2D.glsl");
 
     private static int vaoID;
     private static int vboID;
+
+    private static int vaoID2d;
+    private static int vboID2d;
 
     private static boolean started = false;
 
@@ -59,6 +66,57 @@ public class DebugDraw {
 
         glVertexAttribPointer(1, 3, GL_FLOAT, false, 6 * Float.BYTES, 3 * Float.BYTES);
         glEnableVertexAttribArray(1);
+
+        //===================================================================================================
+        // 2D lines
+        //===================================================================================================
+        // Generate and bind a Vertex Array
+        vaoID2d = glGenVertexArrays();
+        glBindVertexArray(vaoID2d);
+
+        // Create a Buffer Object and allocate space
+        vboID2d = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, vboID2d);
+        glBufferData(GL_ARRAY_BUFFER, vertexArray2D.length * Float.BYTES, GL_DYNAMIC_DRAW);
+
+        // Create another buffer object for the indices, then upload the indices
+        eboID = glGenBuffers();
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboID);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, getIndicesBuffer2D(), GL_DYNAMIC_DRAW);
+
+        // Enable the buffer to know which coords are positions and which ones are
+        // colors...
+        glVertexAttribPointer(0, 2, GL_FLOAT, false, 5 * Float.BYTES, 0);
+        glEnableVertexAttribArray(0);
+
+        glVertexAttribPointer(1, 3, GL_FLOAT, false, 5 * Float.BYTES, 2 * Float.BYTES);
+        glEnableVertexAttribArray(1);
+    }
+
+    private static IntBuffer getIndicesBuffer2D() {
+        int[] indices = new int[MAX_LINES * 6];
+        for (int i=0; i < MAX_LINES; i++) {
+            loadElementIndices2D(i, indices);
+        }
+        IntBuffer indexBuffer = BufferUtils.createIntBuffer(indices.length);
+        indexBuffer.put(indices).flip();
+        return indexBuffer;
+    }
+
+    private static void loadElementIndices2D(int index, int[] indices) {
+        int offsetArray = 6 * index;
+        int offset = 4 * index;
+
+        // Quad 1
+        // Triangle 1
+        indices[offsetArray] = offset + 3;
+        indices[offsetArray + 1] = offset + 2;
+        indices[offsetArray + 2] = offset + 1;
+
+        // Triangle 2
+        indices[offsetArray + 3] = offset + 1;
+        indices[offsetArray + 4] = offset + 2;
+        indices[offsetArray + 5] = offset + 0;
     }
 
     private static IntBuffer getIndicesBuffer() {
@@ -153,6 +211,13 @@ public class DebugDraw {
                 i--;
             }
         }
+
+        for (int i=0; i < line2D.size(); i++) {
+            if (line2D.get(i).beginFrame() <= 0) {
+                line2D.remove(i);
+                i--;
+            }
+        }
     }
 
     public static void endFrame() {
@@ -177,17 +242,15 @@ public class DebugDraw {
         glBufferSubData(GL_ARRAY_BUFFER, 0, Arrays.copyOfRange(vertexArray, 0, lines.size() * 6 * 8));
 
         // Use our program
-        shader.use();
-        shader.uploadMat4f("uProjection", Window.getScene().camera().getProjectionMatrix());
-        shader.uploadMat4f("uView", Window.getScene().camera().getViewMatrix());
-        shader.uploadFloat("uAspect", Window.getWindow().getAspect());
+        shader2D.use();
+        shader2D.uploadMat4f("uProjection", Window.getScene().camera().getProjectionMatrix());
+        shader2D.uploadMat4f("uView", Window.getScene().camera().getViewMatrix());
+        shader2D.uploadFloat("uAspect", Window.getWindow().getAspect());
 
         // Bind the vertex array and enable our location
         glBindVertexArray(vaoID);
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
-        glEnableVertexAttribArray(2);
-        glEnableVertexAttribArray(3);
 
         // Draw the batch
         glDrawElements(GL_TRIANGLES,lines.size() * 12 * 3, GL_UNSIGNED_INT, 0);
@@ -195,13 +258,76 @@ public class DebugDraw {
         // Disable our location
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
-        glDisableVertexAttribArray(2);
-        glDisableVertexAttribArray(3);
+
+        glBindVertexArray(0);
+
+        // Un-bind our program
+        shader2D.detach();
+
+
+        // =====================================================================================
+        // 2D lines
+        // =====================================================================================
+        index = 0;
+        for (Line2D line : line2D) {
+            Vector2f[] verts = line.getVerts();
+            if (index >= vertexArray2D.length) break;
+
+            for (int i=0; i < 4; i++) {
+                vertexArray2D[index] = verts[i].x;
+                vertexArray2D[index + 1] = verts[i].y;
+
+                vertexArray2D[index + 2] = line.getColor().x;
+                vertexArray2D[index + 3] = line.getColor().y;
+                vertexArray2D[index + 4] = line.getColor().z;
+                index += 5;
+            }
+        }
+
+        glBindBuffer(GL_ARRAY_BUFFER, vboID2d);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, Arrays.copyOfRange(vertexArray2D, 0, line2D.size() * 5 * 4));
+
+        // Use our program
+        shader.use();
+        shader.uploadMat4f("uProjection", Window.getScene().camera().getOrthoProjection());
+        shader.uploadMat4f("uView", Window.getScene().camera().getOrthoView());
+
+        // Bind the vertex array and enable our location
+        glBindVertexArray(vaoID2d);
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+
+        // Draw the batch
+        glDrawElements(GL_TRIANGLES,line2D.size() * 6, GL_UNSIGNED_INT, 0);
+
+        // Disable our location
+        glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
 
         glBindVertexArray(0);
 
         // Un-bind our program
         shader.detach();
+    }
+
+    // =======================================================================================================
+    // Add line2D methods
+    // =======================================================================================================
+    public static void addLine2D(Vector2f from, Vector2f to) {
+        addLine2D(from, to, 0.05f, Constants.COLOR3_GREEN, 1);
+    }
+
+    public static void addLine2D(Vector2f from, Vector2f to, float strokeWidth) {
+        addLine2D(from, to, strokeWidth, Constants.COLOR3_GREEN, 1);
+    }
+
+    public static void addLine2D(Vector2f from, Vector2f to, float strokeWidth, Vector3f color) {
+        addLine2D(from, to, strokeWidth, color, 1);
+    }
+
+    public static void addLine2D(Vector2f from, Vector2f to, float strokeWidth, Vector3f color, int lifetime) {
+        if (lines.size() >= MAX_LINES) return;
+        DebugDraw.line2D.add(new Line2D(from, to, color, strokeWidth, lifetime));
     }
 
     // =======================================================================================================
