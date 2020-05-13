@@ -253,7 +253,7 @@ public class Window {
 
             io.setMouseDown(mouseDown);
 
-            if (!io.getWantCaptureMouse() && mouseDown[1]) {
+            if (!io.getWantCaptureMouse()) {
                 ImGui.setWindowFocus(null);
                 MouseListener.mouseButtonCallback(w, button, action, mods);
             }

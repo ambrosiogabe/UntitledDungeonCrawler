@@ -12,6 +12,15 @@ public class Line2D {
     private float stroke;
     private int lifetime;
 
+    public Line2D(Vector2f from, Vector2f to) {
+        this.from = from;
+        this.to = to;
+        this.verts = null;
+        this.color = null;
+        this.stroke = 0f;
+        this.lifetime = 0;
+    }
+
     public Line2D(Vector2f from, Vector2f to, Vector3f color, float stroke, int lifetime) {
         this.from = from;
         this.to = to;
@@ -41,7 +50,15 @@ public class Line2D {
         return this.from;
     }
 
+    public Vector2f start() {
+        return this.from;
+    }
+
     public Vector2f getTo() {
+        return this.to;
+    }
+
+    public Vector2f end() {
         return this.to;
     }
 
@@ -55,5 +72,9 @@ public class Line2D {
 
     public Vector2f[] getVerts() {
         return this.verts;
+    }
+
+    public float lengthSquared() {
+        return new Vector2f(this.to).sub(this.from).lengthSquared();
     }
 }

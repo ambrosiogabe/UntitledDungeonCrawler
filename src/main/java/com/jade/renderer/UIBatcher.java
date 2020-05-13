@@ -55,6 +55,7 @@ public class UIBatcher implements Comparable<UIBatcher> {
     private Renderer renderer;
     private int maxBatchSize;
 
+    private int[] texSlots = {0, 1, 2, 3, 4, 5, 6, 7};
     private int vaoID, vboID, eboID;
 
     private boolean hasRoom = true;
@@ -281,10 +282,10 @@ public class UIBatcher implements Comparable<UIBatcher> {
         shader.uploadMat4f("uView", renderer.camera().getOrthoView());
         // Upload all the textures
         for (int i=0; i < textures.size(); i++) {
-            shader.uploadTexture("TEX_" + (i + 1), i + 1);
             glActiveTexture(GL_TEXTURE0 + i + 1);
             textures.get(i).bind();
         }
+        shader.uploadIntArray("uTextures", texSlots);
         shader.uploadFloat("uAspect", Window.getWindow().getAspect());
 
         // Bind the vertex array and enable our location

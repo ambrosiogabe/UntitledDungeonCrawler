@@ -149,6 +149,8 @@ public abstract class Scene {
         ImGui.setNextWindowPos(objectPaneWidth, 0, ImGuiCond.Always);
         ImGui.begin("Game View", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
         drawFramebufferTexture(consoleWidth, gameViewHeight);
+        boolean wantCursor = !ImGui.isMouseHoveringRect(objectPaneWidth, 0, objectPaneWidth + consoleWidth, gameViewHeight);
+        ImGui.getIO().setWantCaptureMouse(wantCursor);
         ImGui.end();
     }
 

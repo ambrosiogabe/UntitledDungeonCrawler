@@ -93,29 +93,29 @@ public class JMath {
         return new Vector2f(x, y);
     }
 
-    public static void rotate(Vector2f vec, float angle, Vector2f origin) {
+    public static void rotate(Vector2f vec, float angleDeg, Vector2f origin) {
         float x = vec.x - origin.x;
         float y = vec.y - origin.y;
 
-        float xPrime = vec.x + ((x * (float)Math.cos(Math.toRadians(angle))) - (y * (float)Math.sin(Math.toRadians(angle))));
-        float yPrime = vec.y + ((x * (float)Math.sin(Math.toRadians(angle))) + (y * (float)Math.cos(Math.toRadians(angle))));
+        float xPrime = origin.x + ((x * (float)Math.cos(Math.toRadians(angleDeg))) - (y * (float)Math.sin(Math.toRadians(angleDeg))));
+        float yPrime = origin.y + ((x * (float)Math.sin(Math.toRadians(angleDeg))) + (y * (float)Math.cos(Math.toRadians(angleDeg))));
 
         vec.x = xPrime;
         vec.y = yPrime;
     }
 
-    public static void rotate(Vector2f vec, float angle, Vector3f origin) {
-        float s = (float)(Math.sin(Math.toRadians(angle)));
-        float c = (float)(Math.cos(Math.toRadians(angle)));
+    public static void rotate(Vector2f vec, float angleDeg, Vector3f origin) {
+        float s = (float)(Math.sin(Math.toRadians(angleDeg)));
+        float c = (float)(Math.cos(Math.toRadians(angleDeg)));
 
         float x = vec.x - origin.x;
         float y = vec.y - origin.y;
 
-        float xPrime = x * c - y * s;
-        float yPrime = x * s + y * c;
+        float xPrime = origin.x + (x * c) - (y * s);
+        float yPrime = origin.y + (x * s) + (y * c);
 
-        vec.x = xPrime + origin.x;
-        vec.y = yPrime + origin.y;
+        vec.x = xPrime;
+        vec.y = yPrime;
     }
 
     public static float project(Vector3f a, Vector3f b) {
