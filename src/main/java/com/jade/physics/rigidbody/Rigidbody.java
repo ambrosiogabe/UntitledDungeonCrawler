@@ -95,7 +95,7 @@ public class Rigidbody extends Component {
     public void integrate(float dt) {
         // Adjust positions
         // Update linear positions
-        this.gameObject.transform.position.add(velocity.mul(dt));
+        this.gameObject.transform.position.add(new Vector3f(velocity).mul(dt));
 
         // Update angular position
         Quaternionf q = new Quaternionf(angularVelocity.x, angularVelocity.y, angularVelocity.z, 0);

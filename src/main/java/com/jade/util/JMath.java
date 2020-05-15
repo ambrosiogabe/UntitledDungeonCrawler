@@ -165,6 +165,10 @@ public class JMath {
         return new Vector2f(vec.x, vec.y);
     }
 
+    public static Vector3f vector3fFrom2f(Vector2f vec) {
+        return new Vector3f(vec.x, vec.y, 0);
+    }
+
     public static Vector2f transformFromModelMatrix(Vector2f vec, Matrix4f modelMatrix) {
         Vector4f tmp = new Vector4f(vec.x, vec.y, 0, 1);
         modelMatrix.transform(tmp);

@@ -331,6 +331,42 @@ public class DebugDraw {
     }
 
     // =======================================================================================================
+    // Add box 2D methods
+    // =======================================================================================================
+    public static void addBox2D(Vector2f center, Vector2f dimensions, float rotation) {
+        addBox2D(center, dimensions, rotation,0.05f, Constants.COLOR3_GREEN, 1);
+    }
+
+    public static void addBox2D(Vector2f center, Vector2f dimensions, float rotation, float strokeWidth) {
+        addBox2D(center, dimensions, rotation, strokeWidth, Constants.COLOR3_GREEN, 1);
+    }
+
+    public static void addBox2D(Vector2f center, Vector2f dimensions, float rotation, float strokeWidth, Vector3f color) {
+        addBox2D(center, dimensions, rotation, strokeWidth, color, 1);
+    }
+
+    public static void addBox2D(Vector2f center, Vector2f dimensions, float rotation, float strokeWidth, Vector3f color, int lifetime) {
+        Vector2f min = new Vector2f(center).sub(new Vector2f(dimensions).div(2.0f));
+        Vector2f max = new Vector2f(center).add(new Vector2f(dimensions).div(2.0f));
+
+        Vector2f[] vertices = {
+                new Vector2f(min.x, min.y), new Vector2f(min.x, max.y),
+                new Vector2f(max.x, max.y), new Vector2f(max.x, min.y)
+        };
+
+        if (rotation != 0f) {
+            for (Vector2f vert : vertices) {
+                JMath.rotate(vert, rotation, center);
+            }
+        }
+
+        addLine2D(vertices[0], vertices[1], strokeWidth, color, lifetime);
+        addLine2D(vertices[0], vertices[3], strokeWidth, color, lifetime);
+        addLine2D(vertices[1], vertices[2], strokeWidth, color, lifetime);
+        addLine2D(vertices[2], vertices[3], strokeWidth, color, lifetime);
+    }
+
+    // =======================================================================================================
     // Add line methods
     // =======================================================================================================
     public static void addLine(Vector3f from, Vector3f to) {

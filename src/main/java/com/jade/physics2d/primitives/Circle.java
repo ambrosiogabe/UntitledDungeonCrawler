@@ -2,7 +2,7 @@ package com.jade.physics2d.primitives;
 
 import com.jade.Component;
 
-public class Circle extends Component {
+public class Circle extends Collider2D {
     private float radius;
 
     public Circle(float radius) {

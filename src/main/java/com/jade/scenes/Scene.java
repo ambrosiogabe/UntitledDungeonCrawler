@@ -3,6 +3,7 @@ package com.jade.scenes;
 import com.jade.*;
 import com.jade.components.Model;
 import com.jade.physics.Physics;
+import com.jade.physics2d.Physics2D;
 import com.jade.renderer.Renderer;
 import imgui.ImGui;
 import imgui.ImVec2;
@@ -17,6 +18,7 @@ import java.util.List;
 public abstract class Scene {
     private Renderer renderer;
     protected Physics physics;
+    protected Physics2D physics2D;
 
     protected List<GameObject> gameObjects;
     private Camera camera;
@@ -43,6 +45,7 @@ public abstract class Scene {
         renderer.init();
 
         this.physics = new Physics();
+        this.physics2D = new Physics2D();
 
         this.gameObjects = new ArrayList<>();
     }
@@ -62,6 +65,7 @@ public abstract class Scene {
         for (GameObject go : gameObjects) {
             go.start();
             physics.addGameObject(go);
+            physics2D.addGameObject(go);
             renderer.addGameObject(go);
         }
 
@@ -80,6 +84,7 @@ public abstract class Scene {
             g.start();
             this.renderer.addGameObject(g);
             this.physics.addGameObject(g);
+            this.physics2D.addGameObject(g);
         }
     }
 
