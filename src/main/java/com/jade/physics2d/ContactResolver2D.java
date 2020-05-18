@@ -3,6 +3,8 @@ package com.jade.physics2d;
 import com.jade.physics2d.primitives.Box2D;
 import com.jade.physics2d.primitives.Circle;
 import com.jade.physics2d.primitives.Collider2D;
+import com.jade.physics2d.rigidbody.Rigidbody2D;
+import com.jade.util.DebugDraw;
 import com.jade.util.JMath;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -38,7 +40,11 @@ public class ContactResolver2D {
     // =============================================================================
     private void circleAndCircle(Circle c1, Circle c2) {
         Vector2f lineBetweenCenters = JMath.vector2fFrom3f(c1.gameObject.transform.position).sub(JMath.vector2fFrom3f(c2.gameObject.transform.position));
-        c1.gameObject.transform.position.add(JMath.vector3fFrom2f(lineBetweenCenters));
+        float length = lineBetweenCenters.length();
+        float penetration = (c1.radius() + c2.radius()) - length;
+        lineBetweenCenters.div(length);
+
+        c1.gameObject.transform.position.add(JMath.vector3fFrom2f(lineBetweenCenters).mul(penetration));
     }
 
     private void circleAndBox2D(Circle circle, Box2D box) {
@@ -65,6 +71,12 @@ public class ContactResolver2D {
         }
 
         Vector2f line = new Vector2f(localCirclePos).sub(closestPointToCircle);
+        float lineLength = line.length();
+        float desiredLength = circle.radius() - lineLength;
+        line.div(lineLength);
+
+        line.mul(desiredLength);
+        JMath.rotate(line, box.gameObject.transform.rotation.z, new Vector2f());
         circle.gameObject.transform.position.add(JMath.vector3fFrom2f(line));
     }
 
@@ -105,8 +117,7 @@ public class ContactResolver2D {
             }
         }
 
-        //DebugDraw.addLine2D(new Vector2f(200, 200), new Vector2f(200, 200).add(new Vector2f(axisToTest[axis]).mul(overlap)), 1f);
-        b2.gameObject.transform.position.add(new Vector3f(axisToTest[axis].mul(overlap).x, axisToTest[axis].mul(overlap).y, 0));
+        b2.gameObject.transform.position.add(new Vector3f(new Vector2f(axisToTest[axis]).mul(overlap).x, axisToTest[axis].mul(overlap).y, 0));
     }
 
 

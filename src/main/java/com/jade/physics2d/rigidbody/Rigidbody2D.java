@@ -2,6 +2,7 @@ package com.jade.physics2d.rigidbody;
 
 import com.jade.Component;
 import com.jade.Window;
+import com.jade.physics2d.primitives.Collider2D;
 import com.jade.util.JMath;
 import org.joml.Vector2f;
 
@@ -13,7 +14,7 @@ public class Rigidbody2D extends Component {
     private Vector2f velocity;
     private Vector2f acceleration;
     private float angularVelocity;
-    private float angularAcceleration;
+    private float torque;
 
     private Vector2f forceAccum;
     private float torqueAccum;
@@ -37,7 +38,7 @@ public class Rigidbody2D extends Component {
         this.velocity = new Vector2f();
         this.acceleration = new Vector2f();
         this.angularVelocity = 0;
-        this.angularAcceleration = 0;
+        this.torque = 0;
 
         this.forceAccum = new Vector2f();
         this.torqueAccum = 0;
@@ -46,8 +47,8 @@ public class Rigidbody2D extends Component {
 
     @Override
     public void start() {
-        this.inertiaTensor = 0f;
-        this.inverseInertiaTensor = 0f;
+        this.inertiaTensor = gameObject.getComponent(Collider2D.class).getInertiaTensor(this.mass);
+        this.inverseInertiaTensor = this.inertiaTensor == 0 ? 0 : 1f / this.inertiaTensor;
     }
 
     @Override
@@ -67,8 +68,8 @@ public class Rigidbody2D extends Component {
 
         // Apply angular velocity
         //this.torqueAccum += angularVelocity * angularDamping;
-        this.angularAcceleration = torqueAccum * inverseInertiaTensor;
-        this.angularVelocity += this.angularVelocity * dt;
+        this.torque = torqueAccum * inverseInertiaTensor;
+        this.angularVelocity += this.torque * dt;
 
         // Impose drag
         this.velocity.mul((float)Math.pow(linearDamping, dt));
@@ -82,11 +83,18 @@ public class Rigidbody2D extends Component {
         this.gameObject.transform.position.add(JMath.vector3fFrom2f(velocity).mul(dt));
 
         // Update orientation
-        float deltaTheta = this.angularVelocity * dt;
+        float deltaTheta = this.angularVelocity * dt * 1000;
         this.gameObject.transform.rotation.z += deltaTheta;
     }
 
     public void addLinearForce(Vector2f force) {
+        this.forceAccum.add(force);
+    }
+
+    public void addForceAtLocalPoint(Vector2f force, Vector2f point) {
+        float forceCrossPoint = point.x * force.y - point.y * force.x;
+        torqueAccum += forceCrossPoint;
+
         this.forceAccum.add(force);
     }
 

@@ -152,6 +152,14 @@ public class JMath {
                 0, 0, xy22);
     }
 
+    public static float createSquareInertiaTensor(float mass, Vector2f dimensions) {
+        return (1f / 12f) * mass * (dimensions.x * dimensions.x + dimensions.y * dimensions.y);
+    }
+
+    public static float createCircleInertiaTensor(float mass, float radius) {
+        return 0.5f * mass * radius * radius;
+    }
+
     // Compares two floating point numbers and returns whether they are almost equal
     public static boolean compare(float x, float y) {
         return Math.abs(x - y) <= Float.MIN_VALUE * Math.max(1.0f, Math.max(Math.abs(x), Math.abs(y)));

@@ -87,4 +87,9 @@ public class Box2D extends Collider2D {
             return this.gameObject.transform.position;
         }
     }
+
+    @Override
+    public float getInertiaTensor(float mass) {
+        return JMath.createSquareInertiaTensor(mass, this.gameObject == null ? this.size : JMath.vector2fFrom3f(this.gameObject.transform.scale));
+    }
 }

@@ -1,6 +1,7 @@
 package com.jade.physics2d;
 
 import com.jade.GameObject;
+import com.jade.components.SpriteRenderer;
 import com.jade.physics.rigidbody.Rigidbody;
 import com.jade.physics.rigidbody.colliders.CollisionDetector;
 import com.jade.physics2d.forces.ForceRegistry2D;
@@ -8,6 +9,7 @@ import com.jade.physics2d.forces.Gravity2D;
 import com.jade.physics2d.primitives.Box2D;
 import com.jade.physics2d.primitives.Collider2D;
 import com.jade.physics2d.rigidbody.Rigidbody2D;
+import com.jade.util.Constants;
 import org.joml.Vector2f;
 
 import java.util.ArrayList;
@@ -41,7 +43,7 @@ public class Physics2D {
         if (rb != null) {
             if (!rb.hasInfiniteMass() && !rb.isStatic()) {
                 // Only add gravity, and to our list of rigidbodies if it is dynamic
-                //registry.add(rb, gravity);
+                registry.add(rb, gravity);
                 this.dynamicRigidbodies.add(rb);
                 this.colliders.add(go.getComponent(Collider2D.class));
             }
@@ -56,6 +58,7 @@ public class Physics2D {
         registry.updateForces(physicsTimestep);
         for (Rigidbody2D rb : dynamicRigidbodies) {
             rb.applyForces(physicsTimestep);
+            rb.integrate(physicsTimestep);
         }
 
         // Update dynamic objects in quadtree
@@ -68,19 +71,19 @@ public class Physics2D {
 
         // Resolve all collisions in quadtree
         for (int i=0; i < size; i++) {
-            Rigidbody2D rb = dynamicRigidbodies.get(i);
             Collider2D coll = colliders.get(i);
             List<QuadTreeData> collisions = quadTree.query(coll);
 
             for (int j=0; j < collisions.size(); j++) {
+                coll.gameObject.getComponent(SpriteRenderer.class).setColor(Constants.COLOR4_GREEN);
                 QuadTreeData data = collisions.get(j);
                 contactResolver.resolve(data.collider(), coll);
             }
         }
 
-        // Update position and velocity of all dynamic objects
-        for (Rigidbody2D rb : dynamicRigidbodies) {
-            rb.integrate(physicsTimestep);
-        }
+//        // Update position and velocity of all dynamic objects
+//        for (Rigidbody2D rb : dynamicRigidbodies) {
+//            rb.integrate(physicsTimestep);
+//        }
     }
 }

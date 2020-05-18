@@ -14,7 +14,7 @@ import java.util.Queue;
 
 public class QuadTreeNode {
     private static final int MAX_DEPTH = 5;
-    private static final int MAX_OBEJCTS_PER_NODE = 1;
+    private static final int MAX_OBEJCTS_PER_NODE = 15;
 
     protected List<QuadTreeNode> children;
     protected List<QuadTreeData> contents;
@@ -46,7 +46,7 @@ public class QuadTreeNode {
             // If we are a leaf, check if the area is intersecting with any of the contents
             int size = contents.size();
             for (int i=0; i < size; i++) {
-                if (CollisionDetector2D.colliderAndCollider(contents.get(i).collider(), area)) {
+                if (contents.get(i).collider() != area && CollisionDetector2D.colliderAndCollider(contents.get(i).collider(), area)) {
                     result.add(contents.get(i));
                 }
             }

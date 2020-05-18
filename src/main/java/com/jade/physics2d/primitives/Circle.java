@@ -1,6 +1,7 @@
 package com.jade.physics2d.primitives;
 
 import com.jade.Component;
+import com.jade.util.JMath;
 
 public class Circle extends Collider2D {
     private float radius;
@@ -26,5 +27,10 @@ public class Circle extends Collider2D {
 
     public float radius() {
         return this.radius;
+    }
+
+    @Override
+    public float getInertiaTensor(float mass) {
+        return JMath.createCircleInertiaTensor(mass, this.radius);
     }
 }

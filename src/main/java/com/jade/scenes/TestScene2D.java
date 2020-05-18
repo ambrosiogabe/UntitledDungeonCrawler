@@ -58,8 +58,8 @@ public class TestScene2D extends Scene {
         this.addGameObject(boxTwo);
 
         this.circle = new GameObject("Circle", new Transform(new Vector3f(800f, 500f, 0f), new Vector3f(64, 64, 0)));
-        this.circle.addComponent(new SpriteRenderer(new Sprite("images/mario.png")));
-        this.circle.getComponent(SpriteRenderer.class).setColor(Constants.COLOR4_RED);
+        this.circle.addComponent(new SpriteRenderer(new Sprite("images/defaultCircle.png")));
+        this.circle.getComponent(SpriteRenderer.class).setColor(Constants.COLOR4_WHITE);
         this.circle.addComponent(new Circle(32f));
         this.circle.addComponent(new Rigidbody2D(8f, 0.1f, 0.2f));
         this.addGameObject(circle);
@@ -74,6 +74,8 @@ public class TestScene2D extends Scene {
 
     @Override
     public void update(float dt) {
+        this.boxOne.getComponent(Rigidbody2D.class).addForceAtLocalPoint(new Vector2f(0, 100), new Vector2f(32, 0));
+
         physics2D.update(dt);
         for (GameObject go : gameObjects) {
             go.update(dt);
