@@ -74,4 +74,12 @@ public class Line {
     public Vector3f[] getVerts() {
         return this.verts;
     }
+
+    public Vector3f end() {
+        return this.to;
+    }
+
+    public Vector3f start() {
+        return this.from;
+    }
 }
