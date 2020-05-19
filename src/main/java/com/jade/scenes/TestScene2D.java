@@ -5,7 +5,9 @@ import com.jade.Transform;
 import com.jade.Window;
 import com.jade.components.Sprite;
 import com.jade.components.SpriteRenderer;
+import com.jade.events.KeyListener;
 import com.jade.events.MouseListener;
+import com.jade.physics.rigidbody.Rigidbody;
 import com.jade.physics2d.forces.ForceRegistry2D;
 import com.jade.physics2d.forces.Gravity2D;
 import com.jade.physics2d.rigidbody.CollisionDetector2D;
@@ -19,7 +21,7 @@ import com.jade.util.JMath;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class TestScene2D extends Scene {
 
@@ -49,32 +51,51 @@ public class TestScene2D extends Scene {
         this.boxOne.addComponent(new Rigidbody2D(30f, 0.1f, 0.2f));
         this.addGameObject(boxOne);
 
+        GameObject obj = new GameObject("Box", new Transform(new Vector3f(500f, 470f, 0f), new Vector3f(128f, 30f, 0f)));
+        obj.addComponent(new SpriteRenderer(defaultSprite));
+        obj.addComponent(new Box2D());
+        obj.addComponent(new Rigidbody2D(true));
+        this.addGameObject(obj);
 
-        this.boxTwo = new GameObject("Box Two", new Transform(new Vector3f(580f, 500f, 0f), new Vector3f(32f, 64f, 0f)));
-        this.boxTwo.addComponent(new SpriteRenderer(defaultSprite));
-        this.boxTwo.getComponent(SpriteRenderer.class).setColor(Constants.COLOR4_CYAN);
-        this.boxTwo.addComponent(new Box2D());
-        this.boxTwo.addComponent(new Rigidbody2D(10f, 0.1f, 0.2f));
-        this.addGameObject(boxTwo);
+        obj = new GameObject("Box2", new Transform(new Vector3f(800f, 370f, 0f), new Vector3f(128f, 30f, 0f)));
+        obj.addComponent(new SpriteRenderer(defaultSprite));
+        obj.addComponent(new Box2D());
+        obj.addComponent(new Rigidbody2D(true));
+        this.addGameObject(obj);
 
-        this.circle = new GameObject("Circle", new Transform(new Vector3f(800f, 500f, 0f), new Vector3f(64, 64, 0)));
-        this.circle.addComponent(new SpriteRenderer(new Sprite("images/defaultCircle.png")));
-        this.circle.getComponent(SpriteRenderer.class).setColor(Constants.COLOR4_WHITE);
-        this.circle.addComponent(new Circle(32f));
-        this.circle.addComponent(new Rigidbody2D(8f, 0.1f, 0.2f));
-        this.addGameObject(circle);
-
-        this.circle2 = new GameObject("Circle 2", new Transform(new Vector3f(900, 500, 0), new Vector3f(32, 32, 0)));
-        this.circle2.addComponent(new SpriteRenderer(new Sprite("images/defaultCircle.png")));
-        this.circle2.getComponent(SpriteRenderer.class).setColor(Constants.COLOR4_CYAN);
-        this.circle2.addComponent(new Circle(16f));
-        this.circle2.addComponent(new Rigidbody2D(5f, 0.1f, 0.2f));
-        this.addGameObject(circle2);
+//        this.boxTwo = new GameObject("Box Two", new Transform(new Vector3f(580f, 500f, 0f), new Vector3f(32f, 64f, 0f)));
+//        this.boxTwo.addComponent(new SpriteRenderer(defaultSprite));
+//        this.boxTwo.getComponent(SpriteRenderer.class).setColor(Constants.COLOR4_CYAN);
+//        this.boxTwo.addComponent(new Box2D());
+//        this.boxTwo.addComponent(new Rigidbody2D(10f, 0.1f, 0.2f));
+//        this.addGameObject(boxTwo);
+//
+//        this.circle = new GameObject("Circle", new Transform(new Vector3f(800f, 500f, 0f), new Vector3f(64, 64, 0)));
+//        this.circle.addComponent(new SpriteRenderer(new Sprite("images/defaultCircle.png")));
+//        this.circle.getComponent(SpriteRenderer.class).setColor(Constants.COLOR4_WHITE);
+//        this.circle.addComponent(new Circle(32f));
+//        this.circle.addComponent(new Rigidbody2D(8f, 0.1f, 0.2f));
+//        this.addGameObject(circle);
+//
+//        this.circle2 = new GameObject("Circle 2", new Transform(new Vector3f(900, 500, 0), new Vector3f(32, 32, 0)));
+//        this.circle2.addComponent(new SpriteRenderer(new Sprite("images/defaultCircle.png")));
+//        this.circle2.getComponent(SpriteRenderer.class).setColor(Constants.COLOR4_CYAN);
+//        this.circle2.addComponent(new Circle(16f));
+//        this.circle2.addComponent(new Rigidbody2D(5f, 0.1f, 0.2f));
+//        this.addGameObject(circle2);
     }
 
     @Override
     public void update(float dt) {
-        this.boxOne.getComponent(Rigidbody2D.class).addForceAtLocalPoint(new Vector2f(0, 100), new Vector2f(32, 0));
+
+        if (KeyListener.isKeyPressed(GLFW_KEY_W) && this.boxOne.getComponent(Rigidbody2D.class).isColliding) {
+            this.boxOne.getComponent(Rigidbody2D.class).addImpulse(new Vector2f(0, 2000));
+        }
+        if (KeyListener.isKeyPressed(GLFW_KEY_D)) {
+            this.boxOne.getComponent(Rigidbody2D.class).addLinearForce(new Vector2f(800, 0));
+        } else if (KeyListener.isKeyPressed(GLFW_KEY_A)) {
+            this.boxOne.getComponent(Rigidbody2D.class).addLinearForce(new Vector2f(-800, 0));
+        }
 
         physics2D.update(dt);
         for (GameObject go : gameObjects) {

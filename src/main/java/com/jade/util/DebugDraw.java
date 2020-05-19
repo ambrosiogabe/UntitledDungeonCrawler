@@ -242,10 +242,10 @@ public class DebugDraw {
         glBufferSubData(GL_ARRAY_BUFFER, 0, Arrays.copyOfRange(vertexArray, 0, lines.size() * 6 * 8));
 
         // Use our program
-        shader2D.use();
-        shader2D.uploadMat4f("uProjection", Window.getScene().camera().getProjectionMatrix());
-        shader2D.uploadMat4f("uView", Window.getScene().camera().getViewMatrix());
-        shader2D.uploadFloat("uAspect", Window.getWindow().getAspect());
+        shader.use();
+        shader.uploadMat4f("uProjection", Window.getScene().camera().getProjectionMatrix());
+        shader.uploadMat4f("uView", Window.getScene().camera().getViewMatrix());
+        shader.uploadFloat("uAspect", Window.getWindow().getAspect());
 
         // Bind the vertex array and enable our location
         glBindVertexArray(vaoID);
@@ -262,7 +262,7 @@ public class DebugDraw {
         glBindVertexArray(0);
 
         // Un-bind our program
-        shader2D.detach();
+        shader.detach();
 
 
         // =====================================================================================
@@ -288,9 +288,9 @@ public class DebugDraw {
         glBufferSubData(GL_ARRAY_BUFFER, 0, Arrays.copyOfRange(vertexArray2D, 0, line2D.size() * 5 * 4));
 
         // Use our program
-        shader.use();
-        shader.uploadMat4f("uProjection", Window.getScene().camera().getOrthoProjection());
-        shader.uploadMat4f("uView", Window.getScene().camera().getOrthoView());
+        shader2D.use();
+        shader2D.uploadMat4f("uProjection", Window.getScene().camera().getOrthoProjection());
+        shader2D.uploadMat4f("uView", Window.getScene().camera().getOrthoView());
 
         // Bind the vertex array and enable our location
         glBindVertexArray(vaoID2d);
@@ -307,7 +307,7 @@ public class DebugDraw {
         glBindVertexArray(0);
 
         // Un-bind our program
-        shader.detach();
+        shader2D.detach();
     }
 
     // =======================================================================================================

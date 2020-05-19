@@ -5,6 +5,7 @@ import com.jade.Window;
 import com.jade.physics2d.primitives.Collider2D;
 import com.jade.util.JMath;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 public class Rigidbody2D extends Component {
 
@@ -20,6 +21,8 @@ public class Rigidbody2D extends Component {
     private float torqueAccum;
 
     private boolean isStatic;
+
+    public boolean isColliding = false;
 
     public Rigidbody2D(float mass, float linearDamping, float angularDamping) {
         init(mass, linearDamping, angularDamping, false);
@@ -53,8 +56,8 @@ public class Rigidbody2D extends Component {
 
     @Override
     public void update(float dt) {
-        this.applyForces(1f/60f);
-        this.integrate(1f/60f);
+//        this.applyForces(1f/60f);
+//        this.integrate(1f/60f);
     }
 
     public void applyForces(float dt) {
@@ -96,6 +99,14 @@ public class Rigidbody2D extends Component {
         torqueAccum += forceCrossPoint;
 
         this.forceAccum.add(force);
+    }
+
+    public void addImpulse(Vector2f impulse) {
+        this.velocity.add(impulse);
+    }
+
+    public void setColliding(boolean val) {
+        this.isColliding = val;
     }
 
     public void zeroForces() {

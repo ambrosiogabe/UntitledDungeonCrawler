@@ -112,6 +112,13 @@ public class Window {
                 currentScene.init();
                 currentScene.start();
                 break;
+            case 4:
+                if (currentScene != null)
+                    currentScene.reset();
+                currentScene = new TestScene3D();
+                currentScene.init();
+                currentScene.start();
+                break;
             default:
                 assert false : "Unknown scene '" + newScene + "'";
                 break;
@@ -139,7 +146,7 @@ public class Window {
 
         initGlfw();
         initImGui();
-        Window.changeScene(3);
+        Window.changeScene(4);
         loop();
         destroyImGui();
         destroyGlfw();

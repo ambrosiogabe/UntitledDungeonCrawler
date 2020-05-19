@@ -35,7 +35,7 @@ public class Physics2D {
         this.dynamicRigidbodies = new ArrayList<>();
         this.colliders = new ArrayList<>();
 
-        this.gravity = new Gravity2D(new Vector2f(0, -10));
+        this.gravity = new Gravity2D(new Vector2f(0, -50));
     }
 
     public void addGameObject(GameObject go) {
@@ -74,8 +74,13 @@ public class Physics2D {
             Collider2D coll = colliders.get(i);
             List<QuadTreeData> collisions = quadTree.query(coll);
 
+            if (collisions.size() > 0)
+                dynamicRigidbodies.get(i).setColliding(true);
+            else
+                dynamicRigidbodies.get(i).setColliding(false);
+
             for (int j=0; j < collisions.size(); j++) {
-                coll.gameObject.getComponent(SpriteRenderer.class).setColor(Constants.COLOR4_GREEN);
+                //coll.gameObject.getComponent(SpriteRenderer.class).setColor(Constants.COLOR4_GREEN);
                 QuadTreeData data = collisions.get(j);
                 contactResolver.resolve(data.collider(), coll);
             }

@@ -97,8 +97,8 @@ public class BoxCollider extends Collider {
 
     @Override
     public void drawGizmo() {
-//        DebugDraw.addBox(tmp.set(this.gameObject.transform.position).add(this.offset),
-//                this.dimensions, this.gameObject.transform, 0.05f, Constants.COLOR3_GREEN, 1);
+        DebugDraw.addBox(tmp.set(this.gameObject.transform.position).add(this.offset),
+                this.dimensions, this.gameObject.transform, 0.05f, Constants.COLOR3_GREEN, 1);
     }
 
     @Override

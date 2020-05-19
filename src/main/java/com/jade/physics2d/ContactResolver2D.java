@@ -117,6 +117,7 @@ public class ContactResolver2D {
             }
         }
 
+        if (axisToTest[axis].dot(toCenter) < 0) axisToTest[axis].mul(-1);
         b2.gameObject.transform.position.add(new Vector3f(new Vector2f(axisToTest[axis]).mul(overlap).x, axisToTest[axis].mul(overlap).y, 0));
     }
 
