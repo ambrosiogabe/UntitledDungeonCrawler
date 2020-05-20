@@ -198,6 +198,14 @@ public abstract class Scene {
         return this.gameViewYPos;
     }
 
+    public Physics2D getPhysics2D() {
+        return this.physics2D;
+    }
+
+    public Physics getPhysics() {
+        return this.physics;
+    }
+
     public List<GameObject> getAllGameObjects() {
         return this.gameObjects;
     }

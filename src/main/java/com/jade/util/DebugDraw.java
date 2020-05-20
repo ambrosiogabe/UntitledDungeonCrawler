@@ -314,7 +314,7 @@ public class DebugDraw {
     // Add line2D methods
     // =======================================================================================================
     public static void addLine2D(Vector2f from, Vector2f to) {
-        addLine2D(from, to, 0.05f, Constants.COLOR3_GREEN, 1);
+        addLine2D(from, to, 1f, Constants.COLOR3_GREEN, 1);
     }
 
     public static void addLine2D(Vector2f from, Vector2f to, float strokeWidth) {
@@ -334,7 +334,7 @@ public class DebugDraw {
     // Add box 2D methods
     // =======================================================================================================
     public static void addBox2D(Vector2f center, Vector2f dimensions, float rotation) {
-        addBox2D(center, dimensions, rotation,0.05f, Constants.COLOR3_GREEN, 1);
+        addBox2D(center, dimensions, rotation,1f, Constants.COLOR3_GREEN, 1);
     }
 
     public static void addBox2D(Vector2f center, Vector2f dimensions, float rotation, float strokeWidth) {

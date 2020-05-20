@@ -1,6 +1,7 @@
 package com.jade.physics2d;
 
 import com.jade.GameObject;
+import com.jade.Window;
 import com.jade.components.SpriteRenderer;
 import com.jade.physics.rigidbody.Rigidbody;
 import com.jade.physics.rigidbody.colliders.CollisionDetector;
@@ -8,8 +9,12 @@ import com.jade.physics2d.forces.ForceRegistry2D;
 import com.jade.physics2d.forces.Gravity2D;
 import com.jade.physics2d.primitives.Box2D;
 import com.jade.physics2d.primitives.Collider2D;
+import com.jade.physics2d.primitives.Raycast2D;
 import com.jade.physics2d.rigidbody.Rigidbody2D;
+import com.jade.renderer.Line2D;
 import com.jade.util.Constants;
+import com.jade.util.DebugDraw;
+import com.jade.util.JMath;
 import org.joml.Vector2f;
 
 import java.util.ArrayList;
@@ -67,7 +72,7 @@ public class Physics2D {
             QuadTreeData data = new QuadTreeData(dynamicRigidbodies.get(i).gameObject);
             quadTree.update(data);
         }
-        quadTree.draw();
+        //quadTree.draw();
 
         // Resolve all collisions in quadtree
         for (int i=0; i < size; i++) {
@@ -90,5 +95,30 @@ public class Physics2D {
 //        for (Rigidbody2D rb : dynamicRigidbodies) {
 //            rb.integrate(physicsTimestep);
 //        }
+    }
+
+    public static GameObject raycast(Vector2f origin, Vector2f direction, float maxDistance, GameObject ignore) {
+        Raycast2D ray = new Raycast2D(origin, direction, maxDistance, ignore);
+        return Window.getScene().getPhysics2D().raycast(ray);
+    }
+
+    public GameObject raycast(Raycast2D ray) {
+        List<QuadTreeData> result = quadTree.query(ray);
+        if (result.size() > 0) {
+            int minDistance = Integer.MAX_VALUE;
+            GameObject go = null;
+            for (int i=0; i < result.size(); i++) {
+                QuadTreeData current = result.get(i);
+                float distance = JMath.vector2fFrom3f(current.gameObject().transform.position).sub(ray.origin()).lengthSquared();
+                if (distance < minDistance) {
+                    distance = minDistance;
+                    go = current.gameObject();
+                }
+            }
+
+            return go;
+        }
+
+        return null;
     }
 }

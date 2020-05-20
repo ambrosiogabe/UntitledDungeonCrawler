@@ -146,7 +146,7 @@ public class Window {
 
         initGlfw();
         initImGui();
-        Window.changeScene(4);
+        Window.changeScene(3);
         loop();
         destroyImGui();
         destroyGlfw();
@@ -176,7 +176,7 @@ public class Window {
 
         // ImGui provides 3 different color schemas for styling. We will use the classic one here.
         // Try others with ImGui.styleColors*() methods.
-        ImGui.styleColorsDark();
+        ImGui.styleColorsClassic();
 
         // Initialize ImGuiIO config
         final ImGuiIO io = ImGui.getIO();

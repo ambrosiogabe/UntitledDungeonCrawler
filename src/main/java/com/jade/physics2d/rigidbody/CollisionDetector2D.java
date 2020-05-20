@@ -3,6 +3,7 @@ package com.jade.physics2d.rigidbody;
 import com.jade.physics2d.primitives.Box2D;
 import com.jade.physics2d.primitives.Circle;
 import com.jade.physics2d.primitives.Collider2D;
+import com.jade.physics2d.primitives.Raycast2D;
 import com.jade.renderer.Line2D;
 import com.jade.util.DebugDraw;
 import com.jade.util.JMath;
@@ -20,12 +21,24 @@ public class CollisionDetector2D {
                 return circleAndCircle((Circle)coll1, (Circle)coll2);
             } else if (coll2 instanceof Box2D) {
                 return circleAndBox2D((Circle)coll1, (Box2D)coll2);
+            } else if (coll2 instanceof Raycast2D) {
+                return circleAndRay((Circle)coll1, (Raycast2D)coll2);
             }
         } else if (coll1 instanceof Box2D) {
             if (coll2 instanceof Box2D) {
                 return box2DAndBox2D((Box2D)coll1, (Box2D)coll2);
             } else if (coll2 instanceof Circle) {
                 return box2DAndCircle((Box2D)coll1, (Circle)coll2);
+            } else if (coll2 instanceof Raycast2D) {
+                return box2DAndRay((Box2D)coll1, (Raycast2D)coll2);
+            }
+        } else if (coll1 instanceof Raycast2D) {
+            if (coll2 instanceof Box2D) {
+                return rayAndBox2D((Raycast2D) coll1, (Box2D)coll2);
+            } else if (coll2 instanceof Circle) {
+                return rayAndCircle((Raycast2D) coll1, (Circle)coll2);
+            } else if (coll2 instanceof Raycast2D) {
+                return false;
             }
         }
 
@@ -128,10 +141,55 @@ public class CollisionDetector2D {
     }
 
     // =============================================================================
+    // Ray vs. Primitive tests
+    // =============================================================================
+    public static boolean rayAndCircle(Raycast2D ray, Circle circle) {
+        return false;
+    }
+
+    public static boolean rayAndBox2D(Raycast2D ray, Box2D box) {
+        if (box.gameObject == ray.ignore()) {
+            return false;
+        }
+
+        Vector2f min = box.getMin();
+        Vector2f max = box.getMax();
+        Vector2f origin = ray.origin();
+        Vector2f dir = ray.direction();
+        float maxDistance = ray.maxDistance();
+
+        float tMinX = (min.x - origin.x) / (JMath.compare(dir.x, 0) ? 0.00001f : dir.x);
+        float tMaxX = (max.x - origin.x) / (JMath.compare(dir.x, 0) ? 0.00001f : dir.x);
+        float tMinY = (min.y - origin.y) / (JMath.compare(dir.y, 0) ? 0.00001f : dir.y);
+        float tMaxY = (max.y - origin.y) / (JMath.compare(dir.y, 0) ? 0.00001f : dir.y);
+
+        float tMin = Math.max(Math.min(tMinX, tMaxX), Math.min(tMinY, tMaxY));
+        float tMax = Math.min(Math.max(tMinX, tMaxX), Math.max(tMinY, tMaxY));
+
+        if (tMax < 0) {
+            return false;
+        } else if (tMin > tMax) {
+            return false;
+        } else if (tMin > maxDistance) {
+            return false;
+        }
+
+        if (box.gameObject != null) {
+            DebugDraw.addLine2D(ray.origin(), new Vector2f(ray.origin()).add(new Vector2f(ray.direction()).mul(tMin)));
+        }
+
+        return true;
+    }
+
+    // =============================================================================
     // Circle vs. Primitive tests
     // =============================================================================
     public static boolean circleAndLine(Circle circle, Line2D line) {
         return lineAndCircle(line, circle);
+    }
+
+    public static boolean circleAndRay(Circle circle, Raycast2D ray) {
+        return rayAndCircle(ray, circle);
     }
 
     public static boolean circleAndCircle(Circle c1, Circle c2) {
@@ -172,6 +230,10 @@ public class CollisionDetector2D {
     // =============================================================================
     public static boolean box2DAndCircle(Box2D box, Circle circle) {
         return circleAndBox2D(circle, box);
+    }
+
+    public static boolean box2DAndRay(Box2D box, Raycast2D ray) {
+        return rayAndBox2D(ray, box);
     }
 
     public static boolean box2DAndLine(Box2D box, Line2D line) {

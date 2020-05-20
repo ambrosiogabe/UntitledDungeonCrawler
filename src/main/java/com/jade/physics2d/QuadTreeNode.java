@@ -2,6 +2,7 @@ package com.jade.physics2d;
 
 import com.jade.physics2d.primitives.Box2D;
 import com.jade.physics2d.primitives.Collider2D;
+import com.jade.physics2d.primitives.Raycast2D;
 import com.jade.physics2d.rigidbody.CollisionDetector2D;
 import com.jade.util.DebugDraw;
 import com.jade.util.JMath;

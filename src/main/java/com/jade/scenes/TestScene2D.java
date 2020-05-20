@@ -8,6 +8,7 @@ import com.jade.components.SpriteRenderer;
 import com.jade.events.KeyListener;
 import com.jade.events.MouseListener;
 import com.jade.physics.rigidbody.Rigidbody;
+import com.jade.physics2d.Physics2D;
 import com.jade.physics2d.forces.ForceRegistry2D;
 import com.jade.physics2d.forces.Gravity2D;
 import com.jade.physics2d.rigidbody.CollisionDetector2D;
@@ -20,6 +21,8 @@ import com.jade.util.DebugDraw;
 import com.jade.util.JMath;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+
+import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -85,11 +88,28 @@ public class TestScene2D extends Scene {
 //        this.addGameObject(circle2);
     }
 
+    boolean onGround = true;
     @Override
     public void update(float dt) {
 
-        if (KeyListener.isKeyPressed(GLFW_KEY_W) && this.boxOne.getComponent(Rigidbody2D.class).isColliding) {
-            this.boxOne.getComponent(Rigidbody2D.class).addImpulse(new Vector2f(0, 2000));
+        if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
+            GameObject rayHit = Physics2D.raycast(JMath.vector2fFrom3f(boxOne.transform.position), new Vector2f(0, -1), 128, boxOne);
+            if (rayHit == null) {
+                rayHit = Physics2D.raycast(JMath.vector2fFrom3f(boxOne.transform.position), new Vector2f(0.5f, -0.5f), 128, boxOne);
+            }
+            if (rayHit == null) {
+                rayHit = Physics2D.raycast(JMath.vector2fFrom3f(boxOne.transform.position), new Vector2f(-0.5f, -0.5f), 128, boxOne);
+            }
+
+            if (rayHit != null && boxOne.getComponent(Rigidbody2D.class).isColliding) {
+                onGround = true;
+            }
+
+            if (rayHit != null && onGround) {
+                this.boxOne.getComponent(Rigidbody2D.class).addImpulse(new Vector2f(0, 200));
+            } else {
+                onGround = false;
+            }
         }
         if (KeyListener.isKeyPressed(GLFW_KEY_D)) {
             this.boxOne.getComponent(Rigidbody2D.class).addLinearForce(new Vector2f(800, 0));
