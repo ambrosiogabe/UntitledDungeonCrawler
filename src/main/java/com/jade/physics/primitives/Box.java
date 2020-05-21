@@ -25,4 +25,8 @@ public class Box extends Collider {
     public float getHalfSize(int i) {
         return this.halfSize.get(i);
     }
+
+    public Vector3f halfSize() {
+        return this.halfSize;
+    }
 }

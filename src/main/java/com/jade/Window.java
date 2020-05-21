@@ -133,6 +133,10 @@ public class Window {
         return Window.instance;
     }
 
+    public static boolean windowCreated() {
+        return Window.instance != null;
+    }
+
     public static void stop() {
         glfwSetWindowShouldClose(getWindow().glfwWindow, true);
     }

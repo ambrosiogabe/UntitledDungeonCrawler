@@ -1,8 +1,10 @@
 package com.jade.util;
 
+import com.jade.Window;
 import com.jade.renderer.fonts.FontTexture;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.lwjgl.opengl.GL;
 
 import java.awt.Font;
 
@@ -23,9 +25,9 @@ public class Constants {
     // ======================================================================================================
     // FONTS
     // ======================================================================================================
-    public static final FontTexture DEFAULT_FONT = new FontTexture(new Font("LLPixel", Font.PLAIN, 48), "US-ASCII");
-    public static final FontTexture EXTRA_LARGE_FONT = new FontTexture(new Font("LLPixel", Font.PLAIN, 96), "US-ASCII");
-    public static final FontTexture DEBUG_FONT = new FontTexture(new Font("Arial", Font.PLAIN, 24), "US-ASCII");
+    public static final FontTexture DEFAULT_FONT = Window.windowCreated() ? new FontTexture(new Font("LLPixel", Font.PLAIN, 48), "US-ASCII") : null;
+    public static final FontTexture EXTRA_LARGE_FONT = Window.windowCreated() ? new FontTexture(new Font("LLPixel", Font.PLAIN, 96), "US-ASCII") : null;
+    public static final FontTexture DEBUG_FONT = Window.windowCreated() ? new FontTexture(new Font("Arial", Font.PLAIN, 24), "US-ASCII") : null;
 
     // ======================================================================================================
     // COLORS

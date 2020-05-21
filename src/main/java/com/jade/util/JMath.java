@@ -160,9 +160,38 @@ public class JMath {
         return 0.5f * mass * radius * radius;
     }
 
+    // Compares two floating point numbers and returns whether they are almost equal with custom threshold
+    public static boolean compare(float x, float y, float epsilon) {
+        return Math.abs(x - y) <= epsilon * Math.max(1.0f, Math.max(Math.abs(x), Math.abs(y)));
+    }
+
+    public static boolean compare(Vector2f vec1, Vector2f vec2, float epsilon) {
+        return compare(vec1.x, vec2.x, epsilon) && compare(vec1.y, vec2.y, epsilon);
+    }
+
+    public static boolean compare(Vector3f vec1, Vector3f vec2, float epsilon) {
+        return compare(vec1.x, vec2.x, epsilon) && compare(vec1.y, vec2.y, epsilon) && compare(vec1.z, vec2.z, epsilon);
+    }
+
+    public static boolean compare(Vector4f vec1, Vector4f vec2, float epsilon) {
+        return compare(vec1.x, vec2.x, epsilon) && compare(vec1.y, vec2.y, epsilon) && compare(vec1.z, vec2.z, epsilon) && compare(vec1.w, vec2.w, epsilon);
+    }
+
     // Compares two floating point numbers and returns whether they are almost equal
     public static boolean compare(float x, float y) {
         return Math.abs(x - y) <= Float.MIN_VALUE * Math.max(1.0f, Math.max(Math.abs(x), Math.abs(y)));
+    }
+
+    public static boolean compare(Vector2f vec1, Vector2f vec2) {
+        return compare(vec1.x, vec2.x) && compare(vec1.y, vec2.y);
+    }
+
+    public static boolean compare(Vector3f vec1, Vector3f vec2) {
+        return compare(vec1.x, vec2.x) && compare(vec1.y, vec2.y) && compare(vec1.z, vec2.z);
+    }
+
+    public static boolean compare(Vector4f vec1, Vector4f vec2) {
+        return compare(vec1.x, vec2.x) && compare(vec1.y, vec2.y) && compare(vec1.z, vec2.z) && compare(vec1.w, vec2.w);
     }
 
     public static Vector2f vector2fFrom3f(Vector3f vec) {

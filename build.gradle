@@ -10,21 +10,7 @@ version '1.0-SNAPSHOT'
 project.ext.lwjglVersion = "3.2.3"
 project.ext.jomlVersion = "1.9.24"
 project.ext.imguiNatives = "natives-windows"
-
-switch (OperatingSystem.current()) {
-    case OperatingSystem.LINUX:
-        def osArch = System.getProperty("os.arch")
-        project.ext.lwjglNatives = osArch.startsWith("arm") || osArch.startsWith("aarch64")
-                ? "natives-linux-${osArch.contains("64") || osArch.startsWith("armv8") ? "arm64" : "arm32"}"
-                : "natives-linux"
-        break
-    case OperatingSystem.MAC_OS:
-        project.ext.lwjglNatives = "natives-macos"
-        break
-    case OperatingSystem.WINDOWS:
-        project.ext.lwjglNatives = System.getProperty("os.arch").contains("64") ? "natives-windows" : "natives-windows-x86"
-        break
-}
+project.ext.lwjglNatives = "natives-windows"
 
 repositories {
     mavenCentral()
@@ -35,6 +21,8 @@ repositories {
 }
 
 dependencies {
+    // JUnit
+    testImplementation('junit:junit:4.13')
 
     // Java DearIMGui port
     implementation 'io.imgui.java:binding:1.75-0.7.2'
