@@ -41,14 +41,12 @@ public class IntersectionTester {
     }
 
     public static boolean pointOnLine(Vector3f point, Line line) {
-        // TODO: WRITE TESTS FOR THIS
         Vector3f closestPoint = closestPoint(point, line);
         float distanceSq = closestPoint.sub(point).lengthSquared();
         return JMath.compare(distanceSq, 0.0f);
     }
 
     public static boolean pointOnRay(Vector3f point, Ray ray) {
-        // TODO: WRITE TESTS FOR THIS
         if (point.equals(ray.origin())) {
             return true;
         }
@@ -99,7 +97,6 @@ public class IntersectionTester {
     }
 
     public static Vector3f closestPoint(Vector3f point, Line line) {
-        // TODO: WRITE TESTS FOR THIS
         Vector3f lineVec = new Vector3f(line.end()).sub(line.start());
         float t = new Vector3f(point).sub(line.start()).dot(lineVec) / lineVec.dot(lineVec);
         t = Math.max(t, 0.0f);
@@ -109,7 +106,6 @@ public class IntersectionTester {
     }
 
     public static Vector3f closestPoint(Vector3f point, Ray ray) {
-        // TODO: WRITE TESTS FOR THIS
         float t = new Vector3f(point).sub(ray.origin()).dot(ray.normalDirection());
         t = Math.max(t, 0.0f);
 

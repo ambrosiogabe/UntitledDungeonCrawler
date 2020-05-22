@@ -4,8 +4,10 @@ import com.jade.GameObject;
 import com.jade.Transform;
 import com.jade.physics.primitives.Box;
 import com.jade.physics.primitives.IntersectionTester;
+import com.jade.physics.primitives.Ray;
 import com.jade.physics.primitives.Sphere;
 import com.jade.physics.rigidbody.colliders.IntersectionTests;
+import com.jade.renderer.Line;
 import com.jade.util.JMath;
 import org.joml.Vector3f;
 import org.junit.Test;
@@ -16,6 +18,262 @@ import static org.junit.Assert.assertFalse;
 public class IntersectionTesterTests {
 
     private final float EPSILON = 0.000001f;
+
+    // =========================================================================================================
+    // Line IntersectionTester tests
+    // =========================================================================================================
+    @Test
+    public void pointOnLineShouldReturnTrueTestOne() {
+        Line line = new Line(new Vector3f(0, 0, 0), new Vector3f(12, 4, 0));
+        Vector3f point = new Vector3f(0, 0, 0);
+
+        assertTrue(IntersectionTester.pointOnLine(point, line));
+    }
+
+    @Test
+    public void pointOnLineShouldReturnTrueTestTwo() {
+        Line line = new Line(new Vector3f(0, 0, 0), new Vector3f(12, 4, 0));
+        Vector3f point = new Vector3f(6, 2, 0);
+
+        assertTrue(IntersectionTester.pointOnLine(point, line));
+    }
+
+    @Test
+    public void pointOnLineShouldReturnFalseTestOne() {
+        Line line = new Line(new Vector3f(0, 0, 0), new Vector3f(12, 4, 0));
+        Vector3f point = new Vector3f(4, 2, 0);
+
+        assertFalse(IntersectionTester.pointOnLine(point, line));
+    }
+
+    @Test
+    public void pointOnLineShouldReturnTrueTestThree() {
+        Line line = new Line(new Vector3f(10, 10, 10), new Vector3f(22, 14, 10));
+        Vector3f point = new Vector3f(10, 10, 10);
+
+        assertTrue(IntersectionTester.pointOnLine(point, line));
+    }
+
+    @Test
+    public void pointOnLineShouldReturnTrueTestFour() {
+        Line line = new Line(new Vector3f(10, 10, 10), new Vector3f(22, 14, 10));
+        Vector3f point = new Vector3f(16, 12, 10);
+
+        assertTrue(IntersectionTester.pointOnLine(point, line));
+    }
+
+    @Test
+    public void pointOnLineShouldReturnFalseTestTwo() {
+        Line line = new Line(new Vector3f(10, 10, 10), new Vector3f(22, 14, 10));
+        Vector3f point = new Vector3f(14, 12, 10);
+
+        assertFalse(IntersectionTester.pointOnLine(point, line));
+    }
+
+    @Test
+    public void closestPointToLineTestOne() {
+        Line line = new Line(new Vector3f(0, 0, 0), new Vector3f(12, 4, 0));
+        Vector3f point = new Vector3f(6, 2, 0);
+
+        Vector3f calculatedClosestPoint = IntersectionTester.closestPoint(point, line);
+        Vector3f actualClosestPoint = new Vector3f(6, 2, 0);
+
+        assertTrue(JMath.compare(calculatedClosestPoint, actualClosestPoint));
+    }
+
+    @Test
+    public void closestPointToLineTestTwo() {
+        Line line = new Line(new Vector3f(0, 0, 0), new Vector3f(12, 4, 0));
+        Vector3f point = new Vector3f(13, 3, 0);
+
+        Vector3f calculatedClosestPoint = IntersectionTester.closestPoint(point, line);
+        Vector3f actualClosestPoint = new Vector3f(12, 4, 0);
+
+        assertTrue(JMath.compare(calculatedClosestPoint, actualClosestPoint));
+    }
+
+    @Test
+    public void closestPointToLineTestThree() {
+        Line line = new Line(new Vector3f(0, 0, 0), new Vector3f(12, 4, 0));
+        Vector3f point = new Vector3f(7, 4, 0);
+
+        Vector3f calculatedClosestPoint = IntersectionTester.closestPoint(point, line);
+        Vector3f actualClosestPoint = new Vector3f(7.5f, 2.5f, 0);
+
+        assertTrue(JMath.compare(calculatedClosestPoint, actualClosestPoint));
+    }
+
+    @Test
+    public void closestPointToLineTestFour() {
+        Line line = new Line(new Vector3f(10, 10, 10), new Vector3f(22, 14, 10));
+        Vector3f point = new Vector3f(16, 12, 10);
+
+        Vector3f calculatedClosestPoint = IntersectionTester.closestPoint(point, line);
+        Vector3f actualClosestPoint = new Vector3f(16, 12, 10);
+
+        assertTrue(JMath.compare(calculatedClosestPoint, actualClosestPoint));
+    }
+
+    @Test
+    public void closestPointToLineTestFive() {
+        Line line = new Line(new Vector3f(10, 10, 10), new Vector3f(22, 14, 10));
+        Vector3f point = new Vector3f(23, 13, 10);
+
+        Vector3f calculatedClosestPoint = IntersectionTester.closestPoint(point, line);
+        Vector3f actualClosestPoint = new Vector3f(22, 14, 10);
+
+        assertTrue(JMath.compare(calculatedClosestPoint, actualClosestPoint));
+    }
+
+    @Test
+    public void closestPointToLineTestSix() {
+        Line line = new Line(new Vector3f(10, 10, 10), new Vector3f(22, 14, 10));
+        Vector3f point = new Vector3f(17, 14, 10);
+
+        Vector3f calculatedClosestPoint = IntersectionTester.closestPoint(point, line);
+        Vector3f actualClosestPoint = new Vector3f(17.5f, 12.5f, 10);
+
+        assertTrue(JMath.compare(calculatedClosestPoint, actualClosestPoint));
+    }
+
+
+
+
+    // =========================================================================================================
+    // Raycast IntersectionTester tests
+    // =========================================================================================================
+    @Test
+    public void pointOnRayShouldReturnTrueTestOne() {
+        Ray ray = new Ray(new Vector3f(0), new Vector3f(0.948683f, 0.316228f, 0));
+        Vector3f point = new Vector3f(0, 0, 0);
+
+        assertTrue(IntersectionTester.pointOnRay(point, ray));
+    }
+
+    @Test
+    public void pointOnRayShouldReturnTrueTestTwo() {
+        Ray ray = new Ray(new Vector3f(0), new Vector3f(0.948683f, 0.316228f, 0));
+        Vector3f point = new Vector3f(6, 2, 0);
+
+        assertTrue(IntersectionTester.pointOnRay(point, ray));
+    }
+
+    @Test
+    public void pointOnRayShouldReturnFalseTestOne() {
+        Ray ray = new Ray(new Vector3f(0), new Vector3f(0.948683f, 0.316228f, 0));
+        Vector3f point = new Vector3f(-6, -2, 0);
+
+        assertFalse(IntersectionTester.pointOnRay(point, ray));
+    }
+
+    @Test
+    public void pointOnRayShouldReturnFalseTestTwo() {
+        Ray ray = new Ray(new Vector3f(0), new Vector3f(0.948683f, 0.316228f, 0));
+        Vector3f point = new Vector3f(4, 2, 0);
+
+        assertFalse(IntersectionTester.pointOnRay(point, ray));
+    }
+
+    @Test
+    public void pointOnRayShouldReturnTrueTestThree() {
+        Ray ray = new Ray(new Vector3f(10, 10, 0), new Vector3f(0.948683f, 0.316228f, 0));
+        Vector3f point = new Vector3f(10, 10, 0);
+
+        assertTrue(IntersectionTester.pointOnRay(point, ray));
+    }
+
+    @Test
+    public void pointOnRayShouldReturnTrueTestFour() {
+        Ray ray = new Ray(new Vector3f(10, 10, 0), new Vector3f(0.948683f, 0.316228f, 0));
+        Vector3f point = new Vector3f(16, 12, 0);
+
+        assertTrue(IntersectionTester.pointOnRay(point, ray));
+    }
+
+    @Test
+    public void pointOnRayShouldReturnFalseTestThree() {
+        Ray ray = new Ray(new Vector3f(10, 10, 0), new Vector3f(0.948683f, 0.316228f, 0));
+        Vector3f point = new Vector3f(-6 + 10, -2 + 10, 0);
+
+        assertFalse(IntersectionTester.pointOnRay(point, ray));
+    }
+
+    @Test
+    public void pointOnRayShouldReturnFalseTestFour() {
+        Ray ray = new Ray(new Vector3f(10, 10, 0), new Vector3f(0.948683f, 0.316228f, 0));
+        Vector3f point = new Vector3f(14, 12, 0);
+
+        assertFalse(IntersectionTester.pointOnRay(point, ray));
+    }
+
+    @Test
+    public void closestPointToRayTestOne() {
+        Ray ray = new Ray(new Vector3f(0, 0, 0), new Vector3f(0.948683f, 0.316228f, 0));
+        Vector3f point = new Vector3f(-1, -1, 0);
+
+        Vector3f calculatedClosestPoint = IntersectionTester.closestPoint(point, ray);
+        Vector3f actualClosestPoint = new Vector3f(0, 0, 0);
+
+        assertTrue(JMath.compare(calculatedClosestPoint, actualClosestPoint));
+    }
+
+    @Test
+    public void closestPointToRayTestTwo() {
+        Ray ray = new Ray(new Vector3f(0, 0, 0), new Vector3f((float)(3.0 / Math.sqrt(10f)), (float)(1.0 / Math.sqrt(10f)), 0));
+        Vector3f point = new Vector3f(6, 2, 0);
+
+        Vector3f calculatedClosestPoint = IntersectionTester.closestPoint(point, ray);
+        Vector3f actualClosestPoint = new Vector3f(6, 2, 0);
+
+        assertTrue(JMath.compare(calculatedClosestPoint, actualClosestPoint, EPSILON));
+    }
+
+    @Test
+    public void closestPointToRayTestThree() {
+        Ray ray = new Ray(new Vector3f(0, 0, 0), new Vector3f((float)(3.0 / Math.sqrt(10f)), (float)(1.0 / Math.sqrt(10f)), 0));
+        Vector3f point = new Vector3f(7, 4, 0);
+
+        Vector3f calculatedClosestPoint = IntersectionTester.closestPoint(point, ray);
+        Vector3f actualClosestPoint = new Vector3f(7.5f, 2.5f, 0);
+
+        assertTrue(JMath.compare(calculatedClosestPoint, actualClosestPoint, EPSILON));
+    }
+
+    @Test
+    public void closestPointToRayTestFour() {
+        Ray ray = new Ray(new Vector3f(10, 10, 0), new Vector3f(0.948683f, 0.316228f, 0));
+        Vector3f point = new Vector3f(9, 9, 0);
+
+        Vector3f calculatedClosestPoint = IntersectionTester.closestPoint(point, ray);
+        Vector3f actualClosestPoint = new Vector3f(10, 10, 0);
+
+        assertTrue(JMath.compare(calculatedClosestPoint, actualClosestPoint));
+    }
+
+    @Test
+    public void closestPointToRayTestFive() {
+        Ray ray = new Ray(new Vector3f(10, 10, 0), new Vector3f((float)(3.0 / Math.sqrt(10f)), (float)(1.0 / Math.sqrt(10f)), 0));
+        Vector3f point = new Vector3f(16, 12, 0);
+
+        Vector3f calculatedClosestPoint = IntersectionTester.closestPoint(point, ray);
+        Vector3f actualClosestPoint = new Vector3f(16, 12, 0);
+
+        assertTrue(JMath.compare(calculatedClosestPoint, actualClosestPoint, EPSILON));
+    }
+
+    @Test
+    public void closestPointToRayTestSix() {
+        Ray ray = new Ray(new Vector3f(10, 10, 0), new Vector3f((float)(3.0 / Math.sqrt(10f)), (float)(1.0 / Math.sqrt(10f)), 0));
+        Vector3f point = new Vector3f(17, 14, 0);
+
+        Vector3f calculatedClosestPoint = IntersectionTester.closestPoint(point, ray);
+        Vector3f actualClosestPoint = new Vector3f(17.5f, 12.5f, 0);
+
+        assertTrue(JMath.compare(calculatedClosestPoint, actualClosestPoint, EPSILON));
+    }
+
+
+
 
     // =========================================================================================================
     // Sphere intersection tester tests

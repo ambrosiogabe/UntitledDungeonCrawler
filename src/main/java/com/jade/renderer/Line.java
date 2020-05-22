@@ -11,6 +11,14 @@ public class Line {
     private float stroke;
     private int lifetime;
 
+    public Line(Vector3f from, Vector3f to) {
+        this.from = from;
+        this.to = to;
+        this.color = null;
+        this.stroke = 0f;
+        this.lifetime = 0;
+    }
+
     public Line(Vector3f from, Vector3f to, Vector3f color, float stroke, int lifetime) {
         this.from = from;
         this.to = to;
