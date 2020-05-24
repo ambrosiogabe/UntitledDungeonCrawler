@@ -1,6 +1,5 @@
 package com.jade.physics.primitives;
 
-import com.jade.physics.rigidbody.colliders.BoxCollider;
 import com.jade.renderer.Line;
 import com.jade.util.JMath;
 import org.joml.Vector2f;
@@ -35,7 +34,6 @@ public class IntersectionTester {
     }
 
     public static boolean pointOnPlane(Vector3f point, Plane plane) {
-        // TODO: WRITE TESTS FOR THIS
         float dot = point.dot(plane.normal());
         return JMath.compare(dot - plane.distanceFromOrigin(), 0.0f);
     }
@@ -55,6 +53,28 @@ public class IntersectionTester {
         normal.normalize();
         float diff = normal.dot(ray.normalDirection());
         return JMath.compare(diff, 1.0f);
+    }
+
+    public static boolean pointInTriangle(Vector3f point, Triangle triangle) {
+        // TODO: WRITE TESTS FOR THIS
+        Vector3f a = new Vector3f(triangle.a()).sub(point);
+        Vector3f b = new Vector3f(triangle.b()).sub(point);
+        Vector3f c = new Vector3f(triangle.c()).sub(point);
+
+        Vector3f normPBC = b.cross(c);
+        Vector3f normPCA = c.cross(a);
+        Vector3f normPAB = a.cross(b);
+
+        // If the faces of the pyramid do not have the same normal, the point is not contained
+        if (normPBC.dot(normPCA) < 0f) {
+            return false;
+        } else if (normPBC.dot(normPAB) < 0f) {
+            return false;
+        }
+
+        // If all the faces of the pyramid have the same normal, the pyrmaid is flat,
+        // this means the point is contained
+        return true;
     }
 
     // ====================================================================
@@ -90,7 +110,6 @@ public class IntersectionTester {
     }
 
     public static Vector3f closestPoint(Vector3f point, Plane plane) {
-        // TODO: WRITE TESTS FOR THIS
         float dot = plane.normal().dot(point);
         float distance = dot - plane.distanceFromOrigin();
         return point.sub(new Vector3f(plane.normal()).mul(distance));
@@ -112,9 +131,302 @@ public class IntersectionTester {
         return new Vector3f(ray.origin()).add(new Vector3f(ray.normalDirection()).mul(t));
     }
 
+    public static Vector3f closestPoint(Vector3f point, Triangle triangle) {
+        // TODO: WRITE TESTS FOR THIS
+        Plane plane = fromTriangle(triangle);
+        Vector3f closest = closestPoint(point, plane);
+        if (pointInTriangle(closest, triangle)) {
+            return closest;
+        }
+
+        Vector3f c1 = closestPoint(point, new Line(new Vector3f(triangle.a()), new Vector3f(triangle.b())));
+        Vector3f c2 = closestPoint(point, new Line(new Vector3f(triangle.b()), new Vector3f(triangle.c())));
+        Vector3f c3 = closestPoint(point, new Line(new Vector3f(triangle.c()), new Vector3f(triangle.a())));
+
+        float lengthSq1 = new Vector3f(point).sub(c1).lengthSquared();
+        float lengthSq2 = new Vector3f(point).sub(c2).lengthSquared();
+        float lengthSq3 = new Vector3f(point).sub(c3).lengthSquared();
+
+        if (lengthSq1 < lengthSq2 && lengthSq1 < lengthSq3) {
+            return c1;
+        } else if (lengthSq2 < lengthSq1 && lengthSq2 < lengthSq3) {
+            return c2;
+        }
+
+        return c3;
+    }
+
+
+    // ====================================================================
+    // Line vs. primitive tests
+    // ====================================================================
+    public static boolean lineTest(Sphere sphere, Line line) {
+        // TODO: WRITE TESTS FOR THIS
+        Vector3f closest = closestPoint(sphere.gameObject.transform.position, line);
+        float distSquared = new Vector3f(sphere.gameObject.transform.position).sub(closest).lengthSquared();
+        return distSquared <= sphere.radius() * sphere.radius();
+    }
+
+    public static boolean lineTest(Box box, Line line) {
+        // TODO: WRITE TESTS FOR THIS
+        Ray ray = new Ray(new Vector3f(line.start()), new Vector3f(line.end()).sub(line.start()));
+        float t = raycast(box, ray);
+
+        return t >= 0 && t * t <= line.lengthSquared();
+    }
+
+    public static boolean lineTest(Plane plane, Line line) {
+        // TODO: WRITE TESTS FOR THIS
+        Vector3f ab = new Vector3f(line.end()).sub(line.start());
+
+        float nA = plane.normal().dot(line.start());
+        float nAB = plane.normal().dot(ab);
+
+        // If the line and plane are parallel, nAB will be 0
+        if (JMath.compare(nAB, 0)) {
+            return false;
+        }
+
+        float t = (plane.distanceFromOrigin() - nA) / nAB;
+        return t >= 0.0f && t <= 1.0f;
+    }
+
+    public static boolean lineTest(Triangle triangle, Line line) {
+        // TODO: WRITE TESTS FOR THIS
+        Ray ray = new Ray(new Vector3f(line.start()), new Vector3f(line.end()).sub(line.start()));
+        float t = raycast(triangle, ray);
+        return t >= 0f && t * t <= line.lengthSquared();
+    }
+
+
+
+    // ====================================================================
+    // Raycast vs. primitive tests
+    // ====================================================================
+    public static float raycast(Sphere sphere, Ray ray) {
+        // TODO: WRITE TESTS FOR THIS
+        Vector3f originToSphere = new Vector3f(sphere.gameObject.transform.position).sub(ray.origin());
+        float radiusSquared = sphere.radius() * sphere.radius();
+        float originToSphereLengthSquared = originToSphere.lengthSquared();
+
+        // Project the vector from ray origin onto the direction of the ray
+        float a = originToSphere.dot(ray.normalDirection());
+        float bSq = originToSphereLengthSquared - (a * a);
+        if (radiusSquared - bSq < 0.0f) {
+            return -1; // -1 indicates it did not intersect
+        }
+
+        float f = (float)Math.sqrt(radiusSquared - bSq);
+        if (originToSphereLengthSquared < radiusSquared) {
+            // Ray starts inside the sphere
+            return a + f; // Just reverse direction
+        }
+
+        return a - f; // Otherwise it's a normal intersection
+    }
+
+    public static float raycast(Box box, Ray ray) {
+        // TODO: WRITE TESTS FOR THIS
+        Vector3f origin = ray.origin();
+        Vector3f direction = ray.normalDirection();
+
+        Vector3f size = box.getSize();
+        Vector3f xAxis = box.getAxis(0);
+        Vector3f yAxis = box.getAxis(1);
+        Vector3f zAxis = box.getAxis(2);
+
+        // Get the vector from the origin to the center of the Box
+        Vector3f p = new Vector3f(box.gameObject.transform.position).sub(origin);
+        // Project the direction of the ray onto each axis of the box
+        Vector3f f = new Vector3f(xAxis.dot(direction), yAxis.dot(direction), zAxis.dot(direction));
+        // Next, project p onto every axis of the box
+        Vector3f e = new Vector3f(xAxis.dot(p), yAxis.dot(p), zAxis.dot(p));
+
+        float[] t = { 0, 0, 0, 0, 0, 0 };
+        for (int i=0; i < 3; i++) {
+            if (JMath.compare(f.get(i), 0)) {
+                // If the ray is parallel to the current slab, and the origin of the ray is not inside the slab, we
+                // have no hit
+                if (-e.get(i) - size.get(i) > 0 || -e.get(i) + size.get(i) < 0) {
+                    return -1;
+                }
+                f.setComponent(i, 0.00001f); // Set it to small value to avoid division by zero
+            }
+            t[i * 2 + 0] = (e.get(i) + size.get(i)) / f.get(i); // tmin for this axis
+            t[i * 2 + 1] = (e.get(i) - size.get(i)) / f.get(i); // tmax this axis
+        }
+
+        float tmin = Math.max(
+                Math.max(Math.min(t[0], t[1]), Math.min(t[2], t[3])),
+                Math.min(t[4], t[5])
+        );
+
+        float tmax = Math.min(
+                Math.min(Math.max(t[0], t[1]), Math.max(t[2], t[3])),
+                Math.max(t[4], t[5])
+        );
+
+        if (tmax < 0) {
+            // Box is behind the ray
+            return -1;
+        }
+
+        if (tmin > tmax) {
+            // Ray does not intersect box
+            return -1;
+        }
+
+        if (tmin < 0.0f) {
+            // Ray's origin is inside the box
+            return tmax;
+        }
+        return tmin;
+    }
+
+    public static float raycast(Plane plane, Ray ray) {
+        // TODO: WRITE TESTS FOR THIS
+        float nd = ray.normalDirection().dot(plane.normal());
+        float pn = ray.origin().dot(plane.normal());
+
+        if (nd >= 0f) {
+            return -1;
+        }
+
+        float t = (plane.distanceFromOrigin() - pn) / nd;
+        if (t >= 0f) {
+            return t;
+        }
+
+        return -1;
+    }
+
+    public static float raycast(Triangle triangle, Ray ray) {
+        // TODO: WRITE SUPER TESTS FOR THIS!!!
+        // TODO: ALSO MAKE SURE TO TEST AND FIGURE OUT HOW BARYCENTRIC WORKS!!
+        Plane plane = fromTriangle(triangle);
+        float t = raycast(plane, ray);
+        if (t < 0f) {
+            return t;
+        }
+
+        Vector3f result = new Vector3f(ray.origin()).add(new Vector3f(ray.normalDirection()).mul(t));
+        Vector3f barycentric = barycentric(result, triangle);
+        if (barycentric.x >= 0f && barycentric.x <= 1f &&
+            barycentric.y >= 0f && barycentric.y <= 1f &&
+            barycentric.z >= 0f && barycentric.z <= 1f) {
+            return t;
+        }
+
+        return -1;
+    }
+
+
+
+    // ====================================================================
+    // Triangle vs. primitive tests
+    // ====================================================================
+    public static boolean triangleAndSphere(Triangle triangle, Sphere sphere) {
+        Vector3f closest = closestPoint(sphere.gameObject.transform.position, triangle);
+        float lengthSq = new Vector3f(sphere.gameObject.transform.position).sub(closest).lengthSquared();
+        return lengthSq <= sphere.radius() * sphere.radius();
+    }
+
+    public static boolean triangleAndBox(Triangle triangle, Box box) {
+        // TODO: WRITE TESTS FOR THIS
+        // Find edge vectors of triangle
+        Vector3f f0 = new Vector3f(triangle.b()).sub(triangle.a());
+        Vector3f f1 = new Vector3f(triangle.c()).sub(triangle.b());
+        Vector3f f2 = new Vector3f(triangle.a()).sub(triangle.c());
+
+        // Find face normals of box
+        Vector3f u0 = box.getAxis(0);
+        Vector3f u1 = box.getAxis(1);
+        Vector3f u2 = box.getAxis(2);
+
+        Vector3f[] axes = {
+                u0, u1, u2, // Box normals
+                new Vector3f(f0).cross(f1), // Triangle normal
+
+                // All the cross products
+                new Vector3f(u0).cross(f0), new Vector3f(u0).cross(f1), new Vector3f(u0).cross(f2),
+                new Vector3f(u1).cross(f0), new Vector3f(u1).cross(f1), new Vector3f(u1).cross(f2),
+                new Vector3f(u2).cross(f0), new Vector3f(u2).cross(f1), new Vector3f(u2).cross(f2)
+        };
+
+        for (int i=0; i < axes.length; i++) {
+            if (!overlapOnAxis(box, triangle, axes[i])) {
+                return false; // Separating axis was found
+            }
+        }
+
+        // No separating axis found
+        return true;
+    }
+
+    public static boolean triangleAndPlane(Triangle triangle, Plane plane) {
+        // TODO: WRITE TESTS FOR THIS
+        // Find which side of the plane every point of the triangle is on
+        float side1 = planeEquation(triangle.a(), plane);
+        float side2 = planeEquation(triangle.b(), plane);
+        float side3 = planeEquation(triangle.c(), plane);
+
+        // If all points are ont he plane, they intersect
+        if (JMath.compare(side1, 0) && JMath.compare(side2, 0) && JMath.compare(side3, 0)) {
+            return true;
+        }
+
+        // If all 3 points are in front of the plane, it does not intersect
+        if (side1 > 0 && side2 > 0 && side3 > 0) {
+            return false;
+        }
+
+        // If all 3 points of the triangle are behind the plane, it does not intersect
+        if (side1 < 0 && side2 < 0 && side3 < 0) {
+            return false;
+        }
+
+        // At least 2 points are on opposite sides of the plane
+        return true;
+    }
+
+    public static boolean triangleAndTriangle(Triangle t1, Triangle t2) {
+        // TODO: WRITE TESTS FOR THIS
+        Vector3f[] axes = {
+            satCrossEdge(t1.a(), t1.b(), t1.b(), t1.c()), // Triangle 1 normal
+            satCrossEdge(t2.a(), t2.b(), t2.b(), t2.c()), // Triangle 2 normal
+
+            // All cross products
+            satCrossEdge(t2.a(), t2.b(), t1.a(), t1.b()),
+            satCrossEdge(t2.a(), t2.b(), t1.b(), t1.c()),
+            satCrossEdge(t2.a(), t2.b(), t1.c(), t1.a()),
+
+            satCrossEdge(t2.b(), t2.c(), t1.a(), t1.b()),
+            satCrossEdge(t2.b(), t2.c(), t1.b(), t1.c()),
+            satCrossEdge(t2.b(), t2.c(), t1.c(), t1.a()),
+
+            satCrossEdge(t2.c(), t2.a(), t1.a(), t1.b()),
+            satCrossEdge(t2.c(), t2.a(), t1.b(), t1.c()),
+            satCrossEdge(t2.c(), t2.a(), t1.c(), t1.a())
+        };
+
+        for (int i=0; i < 11; i++) {
+            if (!overlapOnAxis(t1, t2, axes[i])) {
+                return false; // Separating axis found
+            }
+        }
+
+        // No separating axis found
+        return true;
+    }
+
+
     // ====================================================================
     // Sphere vs Primitive tests
     // ====================================================================
+    public static boolean sphereAndTriangle(Sphere sphere, Triangle triangle) {
+        return triangleAndSphere(triangle, sphere);
+    }
+
     public static boolean sphereAndSphere(Sphere s1, Sphere s2) {
         // TODO: WRITE TESTS FOR THIS
         float radiiSum = s1.radius() + s2.radius();
@@ -190,6 +502,52 @@ public class IntersectionTester {
     // ====================================================================
     // Helper functions
     // ====================================================================
+    public static float planeEquation(Vector3f point, Plane plane) {
+        return point.dot(plane.normal()) - plane.distanceFromOrigin();
+    }
+
+    private static Vector3f barycentric(Vector3f point, Triangle triangle) {
+        Vector3f ap = new Vector3f(point).sub(triangle.a());
+        Vector3f bp = new Vector3f(point).sub(triangle.b());
+        Vector3f cp = new Vector3f(point).sub(triangle.c());
+
+        Vector3f ab = new Vector3f(triangle.b()).sub(triangle.a());
+        Vector3f ac = new Vector3f(triangle.c()).sub(triangle.a());
+        Vector3f bc = new Vector3f(triangle.c()).sub(triangle.b());
+        Vector3f cb = new Vector3f(triangle.b()).sub(triangle.c());
+        Vector3f ca = new Vector3f(triangle.a()).sub(triangle.c());
+
+        Vector3f v = new Vector3f(ab).sub(JMath.project(ca, ab));
+        float a = 1f - (v.dot(ap) / v.dot(ab));
+
+        v = new Vector3f(bc).sub(JMath.project(bc, ac));
+        float b = 1f - (v.dot(bp) / v.dot(bc));
+
+        v = new Vector3f(ca).sub(JMath.project(ca, ab));
+        float c = 1f - (v.dot(cp) / v.dot(ca));
+
+        return new Vector3f(a, b, c);
+    }
+
+    private static Vector3f satCrossEdge(Vector3f a, Vector3f b, Vector3f c, Vector3f d) {
+        Vector3f ab = new Vector3f(a).sub(b);
+        Vector3f cd = new Vector3f(c).sub(d);
+        Vector3f result = new Vector3f(ab).cross(cd);
+
+        if (!JMath.compare(result.lengthSquared(), 0)) {
+            return result; // The cross edges are not parallel
+        } else {
+            // ab and cd are parallel
+            Vector3f axis = new Vector3f(ab).cross(new Vector3f(c).sub(a));
+            result = new Vector3f(ab).cross(axis);
+            if (!JMath.compare(result.lengthSquared(), 0)) {
+                return result; // Not parallel
+            }
+        }
+
+        return new Vector3f(); // Triangles are coplanar, no way to get a good cross product
+    }
+
     private static boolean overlapOnAxis(Box one, Box two, Vector3f axis, Vector3f toCenter) {
         // Project the half-size of one onto axis
         float oneProject = transformToAxis(one, axis);
@@ -206,5 +564,51 @@ public class IntersectionTester {
         return  box.getHalfSize(0) * Math.abs(axis.dot(box.getAxis(0))) +
                 box.getHalfSize(1) * Math.abs(axis.dot(box.getAxis(1))) +
                 box.getHalfSize(2) * Math.abs(axis.dot(box.getAxis(2)));
+    }
+
+    private static boolean overlapOnAxis(Box box, Triangle triangle, Vector3f axis) {
+        Vector2f aInterval = getInterval(box, axis);
+        Vector2f bInterval = getInterval(triangle, axis);
+        return ((bInterval.x <= aInterval.y) && (aInterval.x <= bInterval.y));
+    }
+
+    private static boolean overlapOnAxis(Triangle t1, Triangle t2, Vector3f axis) {
+        Vector2f t1Interval = getInterval(t1, axis);
+        Vector2f t2Interval = getInterval(t2, axis);
+        return ((t2Interval.x <= t1Interval.y) && (t1Interval.x <= t2Interval.y));
+    }
+
+    private static Vector2f getInterval(Box box, Vector3f axis) {
+        Vector3f[] vertices = box.getVertices();
+        Vector2f result = new Vector2f();
+        result.x = result.y = axis.dot(vertices[0]);
+
+        for (int i=1; i < 8; i++) {
+            float projection = axis.dot(vertices[i]);
+            result.x = Math.min(projection, result.x);
+            result.y = Math.max(projection, result.y);
+        }
+
+        return result;
+    }
+
+    private static Vector2f getInterval(Triangle triangle, Vector3f axis) {
+        Vector2f result = new Vector2f();
+
+        result.x = axis.dot(triangle.points()[0]);
+        result.y = result.x;
+        for (int i=1; i < 3; i++) {
+            float value = axis.dot(triangle.points()[i]);
+            result.x = Math.min(result.x, value);
+            result.y = Math.max(result.y, value);
+        }
+
+        return result;
+    }
+
+    private static Plane fromTriangle(Triangle t) {
+        Vector3f normal = new Vector3f(t.b()).sub(t.a()).cross(new Vector3f(t.c()).sub(t.a()));
+        float distance = normal.dot(t.a());
+        return new Plane(normal, distance);
     }
 }

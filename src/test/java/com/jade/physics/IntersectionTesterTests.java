@@ -2,10 +2,7 @@ package com.jade.physics;
 
 import com.jade.GameObject;
 import com.jade.Transform;
-import com.jade.physics.primitives.Box;
-import com.jade.physics.primitives.IntersectionTester;
-import com.jade.physics.primitives.Ray;
-import com.jade.physics.primitives.Sphere;
+import com.jade.physics.primitives.*;
 import com.jade.physics.rigidbody.colliders.IntersectionTests;
 import com.jade.renderer.Line;
 import com.jade.util.JMath;
@@ -273,6 +270,147 @@ public class IntersectionTesterTests {
     }
 
 
+
+    // =========================================================================================================
+    // Plane IntersectionTester tests
+    // =========================================================================================================
+    @Test
+    public void pointOnPlaneShouldReturnTrueTestOne() {
+        Plane plane = new Plane(new Vector3f(0, 1, 0), 0);
+        Vector3f point = new Vector3f(-100, 0, 10);
+
+        assertTrue(IntersectionTester.pointOnPlane(point, plane));
+    }
+
+    @Test
+    public void pointOnPlaneShouldReturnTrueTestTwo() {
+        Plane plane = new Plane(new Vector3f(0, 1, 0), 0);
+        Vector3f point = new Vector3f(100, 0, -15);
+
+        assertTrue(IntersectionTester.pointOnPlane(point, plane));
+    }
+
+    @Test
+    public void pointOnPlaneShouldReturnFalseTestOne() {
+        Plane plane = new Plane(new Vector3f(0, 1, 0), 0);
+        Vector3f point = new Vector3f(0, 10, 5);
+
+        assertFalse(IntersectionTester.pointOnPlane(point, plane));
+    }
+
+    @Test
+    public void pointOnPlaneShouldReturnTrueTestThree() {
+        Plane plane = new Plane(new Vector3f(0, 1, 0), 10);
+        Vector3f point = new Vector3f(-110, 10, 20);
+
+        assertTrue(IntersectionTester.pointOnPlane(point, plane));
+    }
+
+    @Test
+    public void pointOnPlaneShouldReturnTrueTestFour() {
+        Plane plane = new Plane(new Vector3f(0, 1, 0), 10);
+        Vector3f point = new Vector3f(110, 10, -25);
+
+        assertTrue(IntersectionTester.pointOnPlane(point, plane));
+    }
+
+    @Test
+    public void pointOnPlaneShouldReturnFalseTestTwo() {
+        Plane plane = new Plane(new Vector3f(0, 1, 0), 10);
+        Vector3f point = new Vector3f(10, 0, 15);
+
+        assertFalse(IntersectionTester.pointOnPlane(point, plane));
+    }
+
+    @Test
+    public void pointOnPlaneShouldReturnTrueTestSix() {
+        Plane plane = new Plane(new Vector3f(3, 4, 0), 0);
+        Vector3f point = new Vector3f(-4, 3, 0);
+
+        assertTrue(IntersectionTester.pointOnPlane(point, plane));
+    }
+
+    @Test
+    public void pointOnPlaneShouldReturnTrueTestSeven() {
+        Plane plane = new Plane(new Vector3f(3, 4, 0), 0);
+        Vector3f point = new Vector3f(4, -3, 0);
+
+        assertTrue(IntersectionTester.pointOnPlane(point, plane));
+    }
+
+    @Test
+    public void pointOnPlaneShouldReturnFalseTestThree() {
+        Plane plane = new Plane(new Vector3f(3, 4, 0), 0);
+        Vector3f point = new Vector3f(-3, 4.1f, 0);
+
+        assertFalse(IntersectionTester.pointOnPlane(point, plane));
+    }
+
+    @Test
+    public void closestPointToPlaneTestOne() {
+        Plane plane = new Plane(new Vector3f(0, 1, 0), 0);
+        Vector3f point = new Vector3f(0, 10, 5);
+
+        Vector3f calculatedClosest = IntersectionTester.closestPoint(point, plane);
+        Vector3f actualClosest = new Vector3f(0, 0, 5);
+
+        assertTrue(JMath.compare(calculatedClosest, actualClosest));
+    }
+
+    @Test
+    public void closestPointToPlaneTestTwo() {
+        Plane plane = new Plane(new Vector3f(0, 1, 0), 0);
+        Vector3f point = new Vector3f(-10, -10, 10);
+
+        Vector3f calculatedClosest = IntersectionTester.closestPoint(point, plane);
+        Vector3f actualClosest = new Vector3f(-10, 0, 10);
+
+        assertTrue(JMath.compare(calculatedClosest, actualClosest));
+    }
+
+    @Test
+    public void closestPointToPlaneTestThree() {
+        Plane plane = new Plane(new Vector3f(0, 1, 0), 0);
+        Vector3f point = new Vector3f(0, 0, 5);
+
+        Vector3f calculatedClosest = IntersectionTester.closestPoint(point, plane);
+        Vector3f actualClosest = new Vector3f(0, 0, 5);
+
+        assertTrue(JMath.compare(calculatedClosest, actualClosest));
+    }
+
+    @Test
+    public void closestPointToPlaneTestFour() {
+        Plane plane = new Plane(new Vector3f(3, 4, 0), 0);
+        Vector3f point = new Vector3f(-1, 7, 0);
+
+        Vector3f calculatedClosest = IntersectionTester.closestPoint(point, plane);
+        Vector3f actualClosest = new Vector3f(-4, 3, 0);
+
+        assertTrue(JMath.compare(actualClosest, calculatedClosest));
+    }
+
+    @Test
+    public void closestPointToPlaneTestFive() {
+        Plane plane = new Plane(new Vector3f(3, 4, 0), 0);
+        Vector3f point = new Vector3f(7, 1, 0);
+
+        Vector3f calculatedClosest = IntersectionTester.closestPoint(point, plane);
+        Vector3f actualClosest = new Vector3f(4, -3, 0);
+
+        assertTrue(JMath.compare(actualClosest, calculatedClosest, EPSILON));
+    }
+
+    @Test
+    public void closestPointToPlaneTestSix() {
+        Plane plane = new Plane(new Vector3f(3, 4, 0), 0);
+        Vector3f point = new Vector3f(3, 4, 0);
+
+        Vector3f calculatedClosest = IntersectionTester.closestPoint(point, plane);
+        Vector3f actualClosest = new Vector3f(0, 0, 0);
+
+        assertTrue(JMath.compare(actualClosest, calculatedClosest));
+    }
 
 
     // =========================================================================================================

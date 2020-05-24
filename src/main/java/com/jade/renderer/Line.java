@@ -90,4 +90,12 @@ public class Line {
     public Vector3f start() {
         return this.from;
     }
+
+    public float lengthSquared() {
+        return new Vector3f(this.to).sub(this.from).lengthSquared();
+    }
+
+    public float length() {
+        return new Vector3f(this.to).sub(this.from).length();
+    }
 }

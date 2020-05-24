@@ -13,10 +13,6 @@ public class Plane extends Collider {
         this.distanceFromOrigin = distanceFromOrigin;
     }
 
-    public static float planeEquation(Vector3f point, Plane plane) {
-        return point.dot(plane.normal) - plane.distanceFromOrigin;
-    }
-
     @Override
     public Component copy() {
         return null;

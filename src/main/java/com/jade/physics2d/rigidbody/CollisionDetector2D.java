@@ -148,6 +148,7 @@ public class CollisionDetector2D {
     }
 
     public static boolean rayAndBox2D(Raycast2D ray, Box2D box) {
+        // TODO: REWRITE THIS TO ACCOUNT FOR ROTATED BOXES!!!
         if (box.gameObject == ray.ignore()) {
             return false;
         }

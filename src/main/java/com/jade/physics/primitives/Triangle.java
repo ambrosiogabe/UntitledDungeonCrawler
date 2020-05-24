@@ -1,8 +1,9 @@
 package com.jade.physics.primitives;
 
+import com.jade.Component;
 import org.joml.Vector3f;
 
-public class Triangle {
+public class Triangle extends Collider {
     private float[] pointValues = new float[9];
 
     public Triangle(Vector3f p1, Vector3f p2, Vector3f p3) {
@@ -36,5 +37,15 @@ public class Triangle {
                 a(), b(), c()
         };
         return points;
+    }
+
+    @Override
+    public Component copy() {
+        return null;
+    }
+
+    @Override
+    public String serialize(int tabSize) {
+        return null;
     }
 }
