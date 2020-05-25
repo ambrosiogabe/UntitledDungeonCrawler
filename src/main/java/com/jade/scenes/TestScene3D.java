@@ -5,14 +5,12 @@ import com.jade.Transform;
 import com.jade.Window;
 import com.jade.components.*;
 import com.jade.events.KeyListener;
+import com.jade.physics.PhysicsSystem;
+import com.jade.physics.coRigidbody.Rigidbody;
 import com.jade.physics.primitives.Box;
 import com.jade.physics.primitives.IntersectionTester;
+import com.jade.physics.primitives.Plane;
 import com.jade.physics.primitives.Sphere;
-import com.jade.physics.rigidbody.Rigidbody;
-import com.jade.physics.rigidbody.boundingVolumes.BoundingSphere;
-import com.jade.physics.rigidbody.colliders.BoxCollider;
-import com.jade.physics.rigidbody.colliders.Plane;
-import com.jade.physics.rigidbody.colliders.SphereCollider;
 import com.jade.util.Constants;
 import com.jade.util.DebugDraw;
 import org.joml.Vector3f;
@@ -24,6 +22,7 @@ public class TestScene3D extends Scene {
     private FontRenderer msLabel;
 
     GameObject sphere, cubeOne, cubeTwo, plane;
+    PhysicsSystem testPhysics = new PhysicsSystem();
 
     @Override
     public void init() {
@@ -55,22 +54,39 @@ public class TestScene3D extends Scene {
         cubeOne.addComponent(new Box(new Vector3f(1f)));
         this.addGameObject(cubeOne);
 
+        testPhysics.addConstraint(cubeOne.getComponent(Box.class));
+
         cubeTwo = new GameObject("Other Cube", new Transform(new Vector3f(40, -5, 17), new Vector3f(1.25f)));
         cubeTwo.addComponent(new Model("mesh-ext/cube.obj"));
         cubeTwo.getComponent(Model.class).addPointLight(testLightComp);
         cubeTwo.addComponent(new Box(new Vector3f(1.25f)));
         this.addGameObject(cubeTwo);
 
+        testPhysics.addConstraint(cubeTwo.getComponent(Box.class));
+
         plane = new GameObject("Plane", new Transform(new Vector3f(30, -6, 4), new Vector3f(50, 50, 1), new Vector3f(90, 0, 0)));
         plane.addComponent(new Model("mesh-ext/plane.obj"));
         plane.getComponent(Model.class).addPointLight(testLightComp);
+        plane.addComponent(new Plane(new Vector3f(0, 1, 0), -6));
         this.addGameObject(plane);
+
+        testPhysics.addConstraint(plane.getComponent(Plane.class));
 
         sphere = new GameObject("Sphere", new Transform(new Vector3f(30, -2, 15), new Vector3f(0.05f)));
         sphere.addComponent(new Model("mesh-ext/sphere.obj"));
         sphere.getComponent(Model.class).addPointLight(testLightComp);
         sphere.addComponent(new Sphere(0.05f));
         this.addGameObject(sphere);
+
+        for (int i=0; i < 10; i++) {
+            GameObject particle = new GameObject("Particle" + i, new Transform(new Vector3f(31.9f, 0 + i * (0.2f), 16.9f + i * (0.1f)), new Vector3f(0.1f)));
+            particle.addComponent(new Model("mesh-ext/sphere.obj"));
+            particle.getComponent(Model.class).addPointLight(testLightComp);
+            particle.addComponent(new Sphere(0.1f));
+            particle.addComponent(new Rigidbody());
+            this.addGameObject(particle);
+            testPhysics.addRigidbody(particle.getComponent(Rigidbody.class));
+        }
 
         GameObject cameraController = new GameObject("Camera Controller", new Transform());
         cameraController.addComponent(new FlyingCameraController());
@@ -79,6 +95,7 @@ public class TestScene3D extends Scene {
     }
 
     private int labelFrame = 0;
+    private boolean runPhysics = false;
     @Override
     public void update(float dt) {
         labelFrame--;
@@ -94,6 +111,12 @@ public class TestScene3D extends Scene {
             DebugDraw.addLine(cubeOne.transform.position, new Vector3f(sphere.transform.position).add(dir.mul(2f)));
         }
 
+        if (KeyListener.isKeyPressed(GLFW_KEY_SPACE)) {
+            runPhysics = true;
+        }
+        if (runPhysics) {
+            testPhysics.update(1f / 60f);
+        }
         for (GameObject g : gameObjects) {
             g.update(dt);
         }

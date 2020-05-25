@@ -160,6 +160,21 @@ public class IntersectionTester {
     // ====================================================================
     // Line vs. primitive tests
     // ====================================================================
+    public static boolean lineTest(Collider collider, Line line) {
+        if (collider instanceof Sphere) {
+            return lineTest((Sphere)collider, line);
+        } else if (collider instanceof Box) {
+            return lineTest((Box)collider, line);
+        } else if (collider instanceof Plane) {
+            return lineTest((Plane)collider, line);
+        } else if (collider instanceof Triangle) {
+            return lineTest((Triangle)collider, line);
+        }
+
+        assert false : "Uh oh. Should not have reached here";
+        return false;
+    }
+
     public static boolean lineTest(Sphere sphere, Line line) {
         // TODO: WRITE TESTS FOR THIS
         Vector3f closest = closestPoint(sphere.gameObject.transform.position, line);
@@ -170,7 +185,9 @@ public class IntersectionTester {
     public static boolean lineTest(Box box, Line line) {
         // TODO: WRITE TESTS FOR THIS
         Ray ray = new Ray(new Vector3f(line.start()), new Vector3f(line.end()).sub(line.start()));
-        float t = raycast(box, ray);
+        RaycastResult res = new RaycastResult();
+        raycast(box, ray, res);
+        float t = res.t();
 
         return t >= 0 && t * t <= line.lengthSquared();
     }
@@ -194,7 +211,9 @@ public class IntersectionTester {
     public static boolean lineTest(Triangle triangle, Line line) {
         // TODO: WRITE TESTS FOR THIS
         Ray ray = new Ray(new Vector3f(line.start()), new Vector3f(line.end()).sub(line.start()));
-        float t = raycast(triangle, ray);
+        RaycastResult result = new RaycastResult();
+        raycast(triangle, ray, result);
+        float t = result.t();
         return t >= 0f && t * t <= line.lengthSquared();
     }
 
@@ -203,8 +222,25 @@ public class IntersectionTester {
     // ====================================================================
     // Raycast vs. primitive tests
     // ====================================================================
-    public static float raycast(Sphere sphere, Ray ray) {
+    public static boolean raycast(Collider collider, Ray ray, RaycastResult result) {
+        if (collider instanceof Sphere) {
+            return raycast((Sphere)collider, ray, result);
+        } else if (collider instanceof Box) {
+            return raycast((Box)collider, ray, result);
+        } else if (collider instanceof Plane) {
+            return raycast((Plane)collider, ray, result);
+        } else if (collider instanceof Triangle) {
+            return raycast((Triangle)collider, ray, result);
+        }
+
+        assert false : "Uh oh. Should not have reached here";
+        return false;
+    }
+
+    public static boolean raycast(Sphere sphere, Ray ray, RaycastResult result) {
         // TODO: WRITE TESTS FOR THIS
+        RaycastResult.reset(result);
+
         Vector3f originToSphere = new Vector3f(sphere.gameObject.transform.position).sub(ray.origin());
         float radiusSquared = sphere.radius() * sphere.radius();
         float originToSphereLengthSquared = originToSphere.lengthSquared();
@@ -213,20 +249,33 @@ public class IntersectionTester {
         float a = originToSphere.dot(ray.normalDirection());
         float bSq = originToSphereLengthSquared - (a * a);
         if (radiusSquared - bSq < 0.0f) {
-            return -1; // -1 indicates it did not intersect
+            return false; // -1 indicates it did not intersect
         }
 
         float f = (float)Math.sqrt(radiusSquared - bSq);
+        float t = 0;
         if (originToSphereLengthSquared < radiusSquared) {
             // Ray starts inside the sphere
-            return a + f; // Just reverse direction
+            t = a + f; // Just reverse direction
         }
 
-        return a - f; // Otherwise it's a normal intersection
+        t = a - f; // Otherwise it's a normal intersection
+
+        if (result != null) {
+            Vector3f point = new Vector3f(ray.origin()).add(new Vector3f(ray.normalDirection()).mul(t));
+            Vector3f normal = new Vector3f(point).sub(sphere.gameObject.transform.position);
+            normal.normalize();
+
+            result.init(point, normal, t, true);
+        }
+
+        return true;
     }
 
-    public static float raycast(Box box, Ray ray) {
+    public static boolean raycast(Box box, Ray ray, RaycastResult result) {
         // TODO: WRITE TESTS FOR THIS
+        RaycastResult.reset(result);
+
         Vector3f origin = ray.origin();
         Vector3f direction = ray.normalDirection();
 
@@ -248,7 +297,7 @@ public class IntersectionTester {
                 // If the ray is parallel to the current slab, and the origin of the ray is not inside the slab, we
                 // have no hit
                 if (-e.get(i) - size.get(i) > 0 || -e.get(i) + size.get(i) < 0) {
-                    return -1;
+                    return false;
                 }
                 f.setComponent(i, 0.00001f); // Set it to small value to avoid division by zero
             }
@@ -268,56 +317,86 @@ public class IntersectionTester {
 
         if (tmax < 0) {
             // Box is behind the ray
-            return -1;
+            return false;
         }
 
         if (tmin > tmax) {
             // Ray does not intersect box
-            return -1;
+            return false;
         }
 
+        float tResult = tmin;
         if (tmin < 0.0f) {
             // Ray's origin is inside the box
-            return tmax;
+            tResult = tmax;
         }
-        return tmin;
+
+        if (result != null) {
+            Vector3f point = new Vector3f(ray.origin()).add(new Vector3f(ray.normalDirection()).mul(tResult));
+            Vector3f[] normals = {
+                    xAxis, new Vector3f(xAxis).mul(-1),
+                    yAxis, new Vector3f(yAxis).mul(-1),
+                    zAxis, new Vector3f(zAxis).mul(-1)
+            };
+            Vector3f normal = normals[0];
+
+            for (int i=0; i < normals.length; i++) {
+                if (JMath.compare(tResult, t[i])) {
+                    normal = normals[i];
+                    break;
+                }
+            }
+
+            result.init(point, normal, tResult, true);
+        }
+        return true;
     }
 
-    public static float raycast(Plane plane, Ray ray) {
+    public static boolean raycast(Plane plane, Ray ray, RaycastResult result) {
         // TODO: WRITE TESTS FOR THIS
+        RaycastResult.reset(result);
         float nd = ray.normalDirection().dot(plane.normal());
         float pn = ray.origin().dot(plane.normal());
 
         if (nd >= 0f) {
-            return -1;
+            return false;
         }
 
         float t = (plane.distanceFromOrigin() - pn) / nd;
         if (t >= 0f) {
-            return t;
+            if (result != null) {
+                Vector3f point = new Vector3f(ray.origin()).add(new Vector3f(ray.normalDirection()).mul(t));
+                Vector3f normal = new Vector3f(plane.normal());
+                result.init(point, normal, t, true);
+            }
+            return true;
         }
 
-        return -1;
+        return false;
     }
 
-    public static float raycast(Triangle triangle, Ray ray) {
+    public static boolean raycast(Triangle triangle, Ray ray, RaycastResult result) {
         // TODO: WRITE SUPER TESTS FOR THIS!!!
         // TODO: ALSO MAKE SURE TO TEST AND FIGURE OUT HOW BARYCENTRIC WORKS!!
+        RaycastResult.reset(result);
         Plane plane = fromTriangle(triangle);
-        float t = raycast(plane, ray);
-        if (t < 0f) {
-            return t;
+        if (!raycast(plane, ray, result)) {
+            return false;
         }
 
-        Vector3f result = new Vector3f(ray.origin()).add(new Vector3f(ray.normalDirection()).mul(t));
-        Vector3f barycentric = barycentric(result, triangle);
+        float t = result.t();
+        Vector3f resultingPoint = new Vector3f(ray.origin()).add(new Vector3f(ray.normalDirection()).mul(t));
+        Vector3f barycentric = barycentric(resultingPoint, triangle);
         if (barycentric.x >= 0f && barycentric.x <= 1f &&
             barycentric.y >= 0f && barycentric.y <= 1f &&
             barycentric.z >= 0f && barycentric.z <= 1f) {
-            return t;
+            if (result != null) {
+                result.init(resultingPoint, result.normal(), t, true);
+            }
+            return true;
         }
 
-        return -1;
+        return false;
     }
 
 

@@ -150,7 +150,7 @@ public class Window {
 
         initGlfw();
         initImGui();
-        Window.changeScene(3);
+        Window.changeScene(4);
         loop();
         destroyImGui();
         destroyGlfw();
