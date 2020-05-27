@@ -73,6 +73,10 @@ public class Box extends Collider {
         return this.halfSize.get(i);
     }
 
+    public Vector3f getHalfSize() {
+        return this.halfSize;
+    }
+
     public Vector3f getSize() {
         return this.size;
     }

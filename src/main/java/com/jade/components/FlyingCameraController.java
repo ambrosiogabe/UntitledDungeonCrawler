@@ -13,6 +13,9 @@ public class FlyingCameraController extends Component {
 
     private Camera mainCamera;
     private float yaw, pitch;
+    private float initialSpeed = 5f;
+    private float maxSpeed = 50f;
+    private float currentSpeed = initialSpeed;
 
     @Override
     public void start() {
@@ -23,10 +26,15 @@ public class FlyingCameraController extends Component {
 
     @Override
     public void update(float dt) {
-        float velocity = 50.0f * dt;
+        float velocity = currentSpeed * dt;
         Vector3f speedVec = new Vector3f(0.0f, 0.0f, 0.0f);
 
         if (KeyListener.isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
+            currentSpeed += 0.1f;
+            if (currentSpeed > maxSpeed) {
+                currentSpeed = maxSpeed;
+            }
+
             Window.lockCursor();
             if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
                 speedVec.add(mainCamera.cameraForward());
@@ -58,6 +66,7 @@ public class FlyingCameraController extends Component {
             mainCamera.transform.rotation.x = pitch;
             mainCamera.transform.rotation.y = yaw;
         } else {
+            currentSpeed = initialSpeed;
             Window.unlockCursor();
         }
     }

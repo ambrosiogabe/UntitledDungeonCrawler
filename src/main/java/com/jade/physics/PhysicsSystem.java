@@ -103,8 +103,8 @@ public class PhysicsSystem {
             float scalar = depth / totalInverseMass;
             Vector3f correction = new Vector3f(results.get(i).normal()).mul(scalar).mul(linearProjectionPercent);
 
-            m1.gameObject.transform.position.sub(new Vector3f(correction).mul(m1.inverseMass()));
-            m2.gameObject.transform.position.sub(new Vector3f(correction).mul(m2.inverseMass()));
+            m1.position().sub(new Vector3f(correction).mul(m1.inverseMass()));
+            m2.position().add(new Vector3f(correction).mul(m2.inverseMass()));
 
             m1.synchCollisionVolumes();
             m2.synchCollisionVolumes();
@@ -141,7 +141,7 @@ public class PhysicsSystem {
         }
 
         Vector3f impulse = new Vector3f(relativeNorm).mul(j);
-        a.addLinearImpulse(new Vector3f(impulse).mul(invMass1).mul(1f));
+        a.addLinearImpulse(new Vector3f(impulse).mul(invMass1).mul(-1f));
         b.addLinearImpulse(new Vector3f(impulse).mul(invMass2).mul(1f));
 
         // Friction
@@ -168,7 +168,7 @@ public class PhysicsSystem {
         }
 
         Vector3f tangentialImpulse = new Vector3f(t).mul(jt);
-        a.addLinearImpulse(new Vector3f(tangentialImpulse).mul(invMass1).mul(1f));
+        a.addLinearImpulse(new Vector3f(tangentialImpulse).mul(invMass1).mul(-1f));
         b.addLinearImpulse(new Vector3f(tangentialImpulse).mul(invMass2).mul(1f));
     }
 

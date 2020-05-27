@@ -49,12 +49,12 @@ public class TestScene3D extends Scene {
         testLight.addComponent(testLightComp);
         this.addGameObject(testLight);
 
-        cubeOne = new GameObject("Cube 1", new Transform(new Vector3f(32, -5, 17), new Vector3f(1f)));
+        cubeOne = new GameObject("Cube 1", new Transform(new Vector3f(38.6f, 0f, 17), new Vector3f(1f)));
         Model cubeModel = new Model("mesh-ext/cube.obj");
         cubeModel.addPointLight(testLightComp);
         cubeOne.addComponent(cubeModel);
         cubeOne.addComponent(new Box(new Vector3f(2f)));
-        cubeOne.addComponent(new Rigidbody(0f));
+        cubeOne.addComponent(new Rigidbody(5f));
         this.addGameObject(cubeOne);
 
         testPhysics.addRigidbody(cubeOne.getComponent(Rigidbody.class));
@@ -62,7 +62,7 @@ public class TestScene3D extends Scene {
         cubeTwo = new GameObject("Other Cube", new Transform(new Vector3f(40, -5, 17), new Vector3f(1.25f)));
         cubeTwo.addComponent(new Model("mesh-ext/cube.obj"));
         cubeTwo.getComponent(Model.class).addPointLight(testLightComp);
-        cubeTwo.addComponent(new Box(new Vector3f(1.25f)));
+        cubeTwo.addComponent(new Box(new Vector3f(2.5f)));
         cubeTwo.addComponent(new Rigidbody(0f));
         this.addGameObject(cubeTwo);
 
@@ -72,9 +72,10 @@ public class TestScene3D extends Scene {
         plane.addComponent(new Model("mesh-ext/plane.obj"));
         plane.getComponent(Model.class).addPointLight(testLightComp);
         plane.addComponent(new Plane(new Vector3f(0, 1, 0), -6));
+        plane.addComponent(new Rigidbody(0f));
         this.addGameObject(plane);
 
-        testPhysics.addConstraint(plane.getComponent(Plane.class));
+        testPhysics.addRigidbody(plane.getComponent(Rigidbody.class));
 
         sphere = new GameObject("Sphere", new Transform(new Vector3f(30, -2, 15), new Vector3f(1f)));
         sphere.addComponent(new Model("mesh-ext/sphere.obj"));
@@ -110,10 +111,11 @@ public class TestScene3D extends Scene {
             labelFrame = 5;
         }
 
-        if (IntersectionTester.sphereAndBox(sphere.getComponent(Sphere.class), cubeOne.getComponent(Box.class))) {
-            CollisionManifold manifold = Collisions.findCollisionFeatures(sphere.getComponent(Sphere.class), cubeOne.getComponent(Box.class));
+        if (IntersectionTester.boxAndBox(cubeTwo.getComponent(Box.class), cubeOne.getComponent(Box.class))) {
+            CollisionManifold manifold = Collisions.findCollisionFeatures(cubeTwo.getComponent(Box.class), cubeOne.getComponent(Box.class));
             for (int i=0; i < manifold.contacts().size(); i++) {
-                DebugDraw.addLine(manifold.contacts().get(i), new Vector3f(manifold.contacts().get(i)).add(new Vector3f(manifold.normal()).mul(manifold.depth())));
+                Vector3f start = new Vector3f(manifold.contacts().get(i));
+                DebugDraw.addLine(start, new Vector3f(start).add(new Vector3f(manifold.normal()).mul(manifold.depth())));
             }
         }
 

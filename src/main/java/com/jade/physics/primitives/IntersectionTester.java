@@ -114,7 +114,7 @@ public class IntersectionTester {
     public static Vector3f closestPoint(Vector3f point, Plane plane) {
         float dot = plane.normal().dot(point);
         float distance = dot - plane.distanceFromOrigin();
-        return point.sub(new Vector3f(plane.normal()).mul(distance));
+        return new Vector3f(point).sub(new Vector3f(plane.normal()).mul(distance));
     }
 
     public static Vector3f closestPoint(Vector3f point, Line line) {
@@ -653,14 +653,18 @@ public class IntersectionTester {
         // Project this onto the axis
         float distance = Math.abs(toCenter.dot(axis));
 
+        if (JMath.compare(axis.lengthSquared(), 0)) {
+            return true;
+        }
+
         // Check for overlap
         return (distance < oneProject + twoProject);
     }
 
     private static float transformToAxis(Box box, Vector3f axis) {
-        return  box.getHalfSize(0) * Math.abs(axis.dot(box.getAxis(0))) +
-                box.getHalfSize(1) * Math.abs(axis.dot(box.getAxis(1))) +
-                box.getHalfSize(2) * Math.abs(axis.dot(box.getAxis(2)));
+        return  box.getHalfSize().x * Math.abs(axis.dot(box.getAxis(0))) +
+                box.getHalfSize().y * Math.abs(axis.dot(box.getAxis(1))) +
+                box.getHalfSize().z * Math.abs(axis.dot(box.getAxis(2)));
     }
 
     private static boolean overlapOnAxis(Box box, Triangle triangle, Vector3f axis) {

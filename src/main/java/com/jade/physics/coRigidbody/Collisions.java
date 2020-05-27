@@ -2,6 +2,8 @@ package com.jade.physics.coRigidbody;
 
 import com.jade.physics.primitives.*;
 import com.jade.renderer.Line;
+import com.jade.util.Constants;
+import com.jade.util.DebugDraw;
 import com.jade.util.JMath;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -16,16 +18,26 @@ public class Collisions {
                 return findCollisionFeatures((Sphere)a, (Sphere)b);
             } else if (b instanceof  Box) {
                 return findCollisionFeatures((Box)b, (Sphere)a);
+            } else if (b instanceof Plane) {
+                return findCollisionFeatures((Sphere)a, (Plane)b);
             }
         } else if (a instanceof Box) {
             if (b instanceof Sphere) {
                 return findCollisionFeatures((Box)a, (Sphere)b);
             } else if (b instanceof Box) {
                 return findCollisionFeatures((Box)a, (Box)b);
+            } else if (b instanceof Plane) {
+                return findCollisionFeatures((Box)a, (Plane)b);
+            }
+        } else if (a instanceof Plane) {
+            if (b instanceof Sphere) {
+                return findCollisionFeatures((Sphere)b, (Plane)a);
+            } else if (b instanceof Box) {
+                return findCollisionFeatures((Box)b, (Plane)a);
             }
         }
 
-        assert false : "Uh oh. Undefined collision behavior...";
+        assert false : "Uh oh. Undefined collision behavior. Between '" + a.getClass().getSimpleName() + "' and '" + b.getClass().getSimpleName() + "'";
         return null;
     }
 
@@ -51,6 +63,28 @@ public class Collisions {
 
         result.init(true, normal, depth);
         result.addContactPoint(contact);
+        return result;
+    }
+
+    public static CollisionManifold findCollisionFeatures(Sphere sphere, Plane plane) {
+        // TODO: WRITE TESTS FOR THIS
+        CollisionManifold result = new CollisionManifold();
+        result.reset();
+
+        Vector3f closestPoint = IntersectionTester.closestPoint(sphere.gameObject.transform.position, plane);
+        float distanceSquared = new Vector3f(closestPoint).sub(sphere.gameObject.transform.position).lengthSquared();
+        if (distanceSquared > sphere.radius() * sphere.radius()) {
+            return result;
+        }
+
+        Vector3f normal = new Vector3f(plane.normal());
+        Vector3f outsidePoint = new Vector3f(sphere.gameObject.transform.position).sub(new Vector3f(normal).mul(sphere.radius()));
+        float distance = new Vector3f(closestPoint).sub(outsidePoint).length();
+        Vector3f contactPoint = new Vector3f(closestPoint).add(new Vector3f(outsidePoint).sub(closestPoint).mul(0.5f));
+
+        result.init(true, normal, distance * 0.5f);
+        result.addContactPoint(contactPoint);
+
         return result;
     }
 
@@ -84,9 +118,10 @@ public class Collisions {
 
         Vector3f outsidePoint = new Vector3f(sphere.gameObject.transform.position).sub(new Vector3f(normal).mul(sphere.radius()));
         float distance = new Vector3f(closestPoint).sub(outsidePoint).length();
+        Vector3f contactPoint = new Vector3f(closestPoint).add(new Vector3f(outsidePoint).sub(closestPoint).mul(0.5f));
 
         result.init(true, normal, distance * 0.5f);
-        result.addContactPoint(new Vector3f(closestPoint).add(new Vector3f(outsidePoint).sub(closestPoint)).mul(0.5f));
+        result.addContactPoint(contactPoint);
 
         return result;
     }
@@ -118,6 +153,7 @@ public class Collisions {
 
         Vector3f hitNormal = new Vector3f();
         Vector2f shouldFlip = new Vector2f();
+        result.setDepth(Float.MAX_VALUE);
         for (int i=0; i < axes.length; i++) {
             if (axes[i].lengthSquared() < 0.001f) {
                 continue;
@@ -131,7 +167,7 @@ public class Collisions {
                     axes[i].mul(-1f);
                 }
                 result.setDepth(depth);
-                result.setNormal(axes[i]);
+                hitNormal.set(axes[i]);
             }
         }
 
@@ -167,6 +203,14 @@ public class Collisions {
         }
 
         result.init(true, axis);
+
+        return result;
+    }
+
+    public static CollisionManifold findCollisionFeatures(Box a, Plane plane) {
+        // TODO: WRITE TESTS FOR THIS
+        CollisionManifold result = new CollisionManifold();
+        result.reset();
 
         return result;
     }

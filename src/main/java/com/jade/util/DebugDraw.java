@@ -406,10 +406,6 @@ public class DebugDraw {
         Vector3f up = new Vector3f(transform.up);
         Vector3f right = new Vector3f(transform.right);
 
-        addLine(center, new Vector3f(center).add(forward), 0.1f, Constants.COLOR3_GREEN);
-        addLine(center, new Vector3f(center).add(right), 0.1f, Constants.COLOR3_RED);
-        addLine(center, new Vector3f(center).add(up), 0.1f, Constants.COLOR3_BLUE);
-
         float halfWidth = dimensions.x / 2.0f;
         float halfHeight = dimensions.y / 2.0f;
         float halfLength = dimensions.z / 2.0f;
