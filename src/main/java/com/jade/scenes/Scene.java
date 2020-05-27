@@ -24,7 +24,6 @@ public abstract class Scene {
     private Camera camera;
 
     protected int activeGameObject = -1;
-    protected int activeUiObject = -1;
     private int selected = -1;
 
     private float lastConsoleHeight = 200;
@@ -108,7 +107,7 @@ public abstract class Scene {
 
         for (int i=0; i < gameObjects.size(); i++) {
             if (gameObjects.get(i).isSerializable()) {
-                if (ImGui.selectable(gameObjects.get(i).getName(), selected == i && activeUiObject == -1)) {
+                if (ImGui.selectable(gameObjects.get(i).getName(), selected == i)) {
                     activeGameObject = i;
                     selected = activeGameObject;
                 }
@@ -118,9 +117,6 @@ public abstract class Scene {
             activeGameObject = -1;
         }
         ImGui.end();
-        if (selected != activeUiObject) {
-            activeUiObject = -1;
-        }
 
         // ==================================================================
         // Render Selected Object inspector window
@@ -212,11 +208,6 @@ public abstract class Scene {
 
     public void setActiveGameObject(int i) {
         this.activeGameObject = i;
-        this.selected = i;
-    }
-
-    public void setActiveUiObject(int i) {
-        this.activeUiObject = i;
         this.selected = i;
     }
 

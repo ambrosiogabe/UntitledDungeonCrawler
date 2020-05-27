@@ -1,6 +1,8 @@
 package com.jade.physics.primitives;
 
 import com.jade.renderer.Line;
+import com.jade.util.Constants;
+import com.jade.util.DebugDraw;
 import com.jade.util.JMath;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -517,6 +519,7 @@ public class IntersectionTester {
     public static boolean sphereAndBox(Sphere sphere, Box box) {
         // TODO: WRITE TESTS FOR THIS
         Vector3f closestPoint = closestPoint(sphere.gameObject.transform.position, box);
+        DebugDraw.addLine(closestPoint, new Vector3f(closestPoint).add(0, 1, 0), 0.01f, Constants.COLOR3_BLUE);
         float distanceSquared = new Vector3f(sphere.gameObject.transform.position).sub(closestPoint).lengthSquared();
         return distanceSquared < sphere.radius() * sphere.radius();
     }
@@ -581,6 +584,21 @@ public class IntersectionTester {
     // ====================================================================
     // Helper functions
     // ====================================================================
+    public static Vector2f getInterval(Box box, Vector3f axis) {
+        // TODO: WRITE TESTS FOR THIS
+        Vector3f[] vertices = box.getVertices();
+        Vector2f result = new Vector2f();
+        result.x = result.y = axis.dot(vertices[0]);
+
+        for (int i=1; i < 8; i++) {
+            float projection = axis.dot(vertices[i]);
+            result.x = Math.min(projection, result.x);
+            result.y = Math.max(projection, result.y);
+        }
+
+        return result;
+    }
+
     public static float planeEquation(Vector3f point, Plane plane) {
         return point.dot(plane.normal()) - plane.distanceFromOrigin();
     }
@@ -655,20 +673,6 @@ public class IntersectionTester {
         Vector2f t1Interval = getInterval(t1, axis);
         Vector2f t2Interval = getInterval(t2, axis);
         return ((t2Interval.x <= t1Interval.y) && (t1Interval.x <= t2Interval.y));
-    }
-
-    private static Vector2f getInterval(Box box, Vector3f axis) {
-        Vector3f[] vertices = box.getVertices();
-        Vector2f result = new Vector2f();
-        result.x = result.y = axis.dot(vertices[0]);
-
-        for (int i=1; i < 8; i++) {
-            float projection = axis.dot(vertices[i]);
-            result.x = Math.min(projection, result.x);
-            result.y = Math.max(projection, result.y);
-        }
-
-        return result;
     }
 
     private static Vector2f getInterval(Triangle triangle, Vector3f axis) {

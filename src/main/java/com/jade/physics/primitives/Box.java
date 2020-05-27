@@ -1,6 +1,8 @@
 package com.jade.physics.primitives;
 
 import com.jade.Component;
+import com.jade.util.DebugDraw;
+import imgui.ImGui;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -45,6 +47,21 @@ public class Box extends Collider {
     @Override
     public Component copy() {
         return null;
+    }
+
+    @Override
+    public void imgui() {
+        float[] size = {this.size.x, this.size.y, this.size.z};
+        ImGui.dragFloat3("Size: ", size);
+        if (!this.size.equals(size[0], size[1], size[2])) {
+            this.size.set(size[0], size[1], size[2]);
+            this.halfSize.set(size[0] / 2f, size[1] / 2f, size[2] / 2f);
+        }
+    }
+
+    @Override
+    public void drawGizmo() {
+        DebugDraw.addBox(this.gameObject.transform.position, this.size, this.gameObject.transform);
     }
 
     @Override

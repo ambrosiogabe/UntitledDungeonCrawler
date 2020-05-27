@@ -6,6 +6,8 @@ import com.jade.Window;
 import com.jade.components.*;
 import com.jade.events.KeyListener;
 import com.jade.physics.PhysicsSystem;
+import com.jade.physics.coRigidbody.CollisionManifold;
+import com.jade.physics.coRigidbody.Collisions;
 import com.jade.physics.coRigidbody.Rigidbody;
 import com.jade.physics.primitives.Box;
 import com.jade.physics.primitives.IntersectionTester;
@@ -51,18 +53,20 @@ public class TestScene3D extends Scene {
         Model cubeModel = new Model("mesh-ext/cube.obj");
         cubeModel.addPointLight(testLightComp);
         cubeOne.addComponent(cubeModel);
-        cubeOne.addComponent(new Box(new Vector3f(1f)));
+        cubeOne.addComponent(new Box(new Vector3f(2f)));
+        cubeOne.addComponent(new Rigidbody(0f));
         this.addGameObject(cubeOne);
 
-        testPhysics.addConstraint(cubeOne.getComponent(Box.class));
+        testPhysics.addRigidbody(cubeOne.getComponent(Rigidbody.class));
 
         cubeTwo = new GameObject("Other Cube", new Transform(new Vector3f(40, -5, 17), new Vector3f(1.25f)));
         cubeTwo.addComponent(new Model("mesh-ext/cube.obj"));
         cubeTwo.getComponent(Model.class).addPointLight(testLightComp);
         cubeTwo.addComponent(new Box(new Vector3f(1.25f)));
+        cubeTwo.addComponent(new Rigidbody(0f));
         this.addGameObject(cubeTwo);
 
-        testPhysics.addConstraint(cubeTwo.getComponent(Box.class));
+        testPhysics.addRigidbody(cubeTwo.getComponent(Rigidbody.class));
 
         plane = new GameObject("Plane", new Transform(new Vector3f(30, -6, 4), new Vector3f(50, 50, 1), new Vector3f(90, 0, 0)));
         plane.addComponent(new Model("mesh-ext/plane.obj"));
@@ -72,10 +76,11 @@ public class TestScene3D extends Scene {
 
         testPhysics.addConstraint(plane.getComponent(Plane.class));
 
-        sphere = new GameObject("Sphere", new Transform(new Vector3f(30, -2, 15), new Vector3f(0.05f)));
+        sphere = new GameObject("Sphere", new Transform(new Vector3f(30, -2, 15), new Vector3f(1f)));
         sphere.addComponent(new Model("mesh-ext/sphere.obj"));
         sphere.getComponent(Model.class).addPointLight(testLightComp);
-        sphere.addComponent(new Sphere(0.05f));
+        sphere.addComponent(new Sphere(1f));
+        sphere.addComponent(new Rigidbody(1f));
         this.addGameObject(sphere);
 
         for (int i=0; i < 10; i++) {
@@ -83,7 +88,7 @@ public class TestScene3D extends Scene {
             particle.addComponent(new Model("mesh-ext/sphere.obj"));
             particle.getComponent(Model.class).addPointLight(testLightComp);
             particle.addComponent(new Sphere(0.1f));
-            particle.addComponent(new Rigidbody());
+            particle.addComponent(new Rigidbody(1f));
             this.addGameObject(particle);
             testPhysics.addRigidbody(particle.getComponent(Rigidbody.class));
         }
@@ -105,10 +110,11 @@ public class TestScene3D extends Scene {
             labelFrame = 5;
         }
 
-        if (IntersectionTester.pointInBox(sphere.transform.position, cubeOne.getComponent(Box.class))) {
-            Vector3f dir = new Vector3f(sphere.transform.position).sub(cubeOne.transform.position);
-            dir.normalize();
-            DebugDraw.addLine(cubeOne.transform.position, new Vector3f(sphere.transform.position).add(dir.mul(2f)));
+        if (IntersectionTester.sphereAndBox(sphere.getComponent(Sphere.class), cubeOne.getComponent(Box.class))) {
+            CollisionManifold manifold = Collisions.findCollisionFeatures(sphere.getComponent(Sphere.class), cubeOne.getComponent(Box.class));
+            for (int i=0; i < manifold.contacts().size(); i++) {
+                DebugDraw.addLine(manifold.contacts().get(i), new Vector3f(manifold.contacts().get(i)).add(new Vector3f(manifold.normal()).mul(manifold.depth())));
+            }
         }
 
         if (KeyListener.isKeyPressed(GLFW_KEY_SPACE)) {
@@ -119,6 +125,10 @@ public class TestScene3D extends Scene {
         }
         for (GameObject g : gameObjects) {
             g.update(dt);
+        }
+
+        if (activeGameObject >= 0) {
+            gameObjects.get(activeGameObject).drawGizmo();
         }
     }
 }
