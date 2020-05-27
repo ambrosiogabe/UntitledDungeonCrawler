@@ -2,19 +2,23 @@ package com.jade.physics.coRigidbody;
 
 import com.jade.Component;
 import com.jade.physics.primitives.Collider;
-import com.jade.physics.primitives.IntersectionTester;
-import com.jade.physics.primitives.Ray;
-import com.jade.physics.primitives.RaycastResult;
-import com.jade.renderer.Line;
-import com.jade.util.DebugDraw;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.List;
 
 public class Rigidbody extends Component {
+    // Linear
     private Vector3f position, oldPosition;
     private Vector3f forces, velocity;
     private float inverseMass, mass;
+
+    // Angular
+    private Vector3f angularVelocity, torques;
+    private Matrix3f inverseInertiaTensor;
+
     private float cor; // Coefficient of Restitution
 
     private Vector3f gravity;
@@ -26,26 +30,48 @@ public class Rigidbody extends Component {
         this.forces = new Vector3f();
         this.velocity = new Vector3f();
 
+        this.angularVelocity = new Vector3f();
+        this.torques = new Vector3f();
+
         this.friction = 0.6f;
         this.gravity = new Vector3f(0f, -9.82f, 0f);
         this.mass = mass;
         this.inverseMass = this.mass == 0f ? 0f : 1 / this.mass;
-        this.cor = 0.5f;
+        this.cor = 0.95f;
     }
 
     @Override
     public void start() {
         this.position.set(this.gameObject.transform.position);
         this.oldPosition.set(this.gameObject.transform.position);
+        Matrix3f inertiaTensor = this.gameObject.getComponent(Collider.class).getInertiaTensor(this.mass);
+        this.inverseInertiaTensor = new Matrix3f();
+        inertiaTensor.invert(this.inverseInertiaTensor);
     }
 
     public void physicsUpdate(float deltaTime) {
+        if (this.mass == 0f) return;
+
         float damping = 0.98f;
+
+        // Calculate linear velocity
         Vector3f acceleration = new Vector3f(forces).mul(inverseMass);
         velocity.add(acceleration.mul(deltaTime));
         velocity.mul(damping);
 
+        // Calculate angular velocity
+        Vector3f angularAcceleration = inverseInertiaTensor.transform(torques);
+        angularVelocity.add(new Vector3f(angularAcceleration).mul(deltaTime));
+        angularVelocity.mul(damping);
+
+        // Update linear position
         position.add(new Vector3f(velocity).mul(deltaTime));
+
+        // Update angular data
+        Quaternionf q = new Quaternionf(angularVelocity.x, angularVelocity.y, angularVelocity.z, 0);
+        q.scale(0.5f).mul(this.gameObject.transform.orientation);
+        this.gameObject.transform.orientation.add(q);
+
         synchCollisionVolumes();
     }
 
@@ -82,6 +108,14 @@ public class Rigidbody extends Component {
 
     public void addLinearImpulse(Vector3f impulse) {
         this.velocity.add(impulse);
+    }
+
+    public void addRotationalImpulse(Vector3f point, Vector3f impulse) {
+        Vector3f centerOfMass = this.position;
+        Vector3f torque = new Vector3f(point).sub(centerOfMass).cross(impulse);
+
+        Vector3f angularAcceleration = inverseInertiaTensor.transform(torque);
+        angularVelocity.add(angularAcceleration);
     }
 
     @Override
@@ -121,5 +155,17 @@ public class Rigidbody extends Component {
 
     public float friction() {
         return this.friction;
+    }
+
+    public Matrix3f getInverseInertiaTensor() {
+        return this.inverseInertiaTensor;
+    }
+
+    public Vector3f angularVelocity() {
+        return this.angularVelocity;
+    }
+
+    public boolean hasInfiniteMass() {
+        return this.mass == 0f;
     }
 }

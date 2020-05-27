@@ -176,7 +176,6 @@ public class Collisions {
         }
 
         Vector3f axis = hitNormal;
-        axis.normalize();
         List<Vector3f> c1 = clipEdgesToBox(getEdges(b), a);
         List<Vector3f> c2 = clipEdgesToBox(getEdges(a), b);
         for (int i=0; i < c1.size(); i++) {
@@ -194,7 +193,7 @@ public class Collisions {
             Vector3f contact = result.contacts().get(i);
             contact.add(new Vector3f(axis).mul(axis.dot(new Vector3f(pointOnPlane).sub(contact))));
 
-            for (int j=result.contacts().size() - 1; j >= 0; j--) {
+            for (int j=result.contacts().size() - 1; j > i; j--) {
                 if (new Vector3f(result.contacts().get(j)).sub(result.contacts().get(i)).lengthSquared() < 0.0001f) {
                     result.contacts().remove(j);
                     break;
@@ -226,7 +225,7 @@ public class Collisions {
         int[][] index = {
                 // Indices for each edge in the box
                 {0, 1}, {0, 2}, {2, 3}, {1, 3}, {0, 4}, {2, 6},
-                {4, 5}, {6, 7}, {4, 6}, {5, 7}, {1, 5}, {3, 7}
+                {4, 5}, {4, 6}, {6, 7}, {5, 7}, {1, 5}, {3, 7}
         };
 
         for (int j=0; j < index.length; j++) {
@@ -241,7 +240,7 @@ public class Collisions {
 
     private static List<Plane> getPlanes(Box box) {
         Vector3f center = box.gameObject.transform.position;
-        Vector3f extents = box.getSize();
+        Vector3f extents = box.getHalfSize();
         Vector3f[] axes = {
                 box.getAxis(0),
                 box.getAxis(1),
@@ -288,7 +287,7 @@ public class Collisions {
         float t = (plane.distanceFromOrigin() - nA) / nAB;
         if (t >= 0f && t <= 1f) {
             if (outPoint != null) {
-                outPoint = new Vector3f(line.start()).add(new Vector3f(ab).mul(t));
+                outPoint.set(new Vector3f(line.start()).add(new Vector3f(ab).mul(t)));
             }
             return true;
         }
@@ -303,15 +302,19 @@ public class Collisions {
         for (int i=0; i < planes.size(); i++) {
             for (int j=0; j < edges.size(); j++) {
                 if (clipToPlane(planes.get(i), edges.get(j), intersection)) {
-                    result.add(new Vector3f(intersection));
+                    if (IntersectionTester.pointInBox(intersection, box)) {
+                        result.add(new Vector3f(intersection));
+                    }
                 }
             }
         }
+        assert result.size() <= edges.size() : "We should not get any more points then we have edges.";
 
         return result;
     }
 
     private static float penetrationDepth(Box b1, Box b2, Vector3f axis, Vector2f outShouldFlip) {
+        axis.normalize();
         Vector2f interval1 = IntersectionTester.getInterval(b1, axis);
         Vector2f interval2 = IntersectionTester.getInterval(b2, axis);
 

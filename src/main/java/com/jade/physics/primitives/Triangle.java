@@ -1,6 +1,7 @@
 package com.jade.physics.primitives;
 
 import com.jade.Component;
+import org.joml.Matrix3f;
 import org.joml.Vector3f;
 
 public class Triangle extends Collider {
@@ -47,5 +48,10 @@ public class Triangle extends Collider {
     @Override
     public String serialize(int tabSize) {
         return null;
+    }
+
+    @Override
+    public Matrix3f getInertiaTensor(float mass) {
+        return new Matrix3f().identity();
     }
 }

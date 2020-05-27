@@ -115,6 +115,7 @@ public class TestScene3D extends Scene {
             CollisionManifold manifold = Collisions.findCollisionFeatures(cubeTwo.getComponent(Box.class), cubeOne.getComponent(Box.class));
             for (int i=0; i < manifold.contacts().size(); i++) {
                 Vector3f start = new Vector3f(manifold.contacts().get(i));
+                manifold.normal().normalize();
                 DebugDraw.addLine(start, new Vector3f(start).add(new Vector3f(manifold.normal()).mul(manifold.depth())));
             }
         }

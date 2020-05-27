@@ -1,6 +1,7 @@
 package com.jade.physics.primitives;
 
 import com.jade.Component;
+import org.joml.Matrix3f;
 import org.joml.Vector3f;
 
 public class Plane extends Collider {
@@ -29,5 +30,10 @@ public class Plane extends Collider {
 
     public float distanceFromOrigin() {
         return distanceFromOrigin;
+    }
+
+    @Override
+    public Matrix3f getInertiaTensor(float mass) {
+        return new Matrix3f().identity();
     }
 }

@@ -1,8 +1,12 @@
 package com.jade.physics.primitives;
 
 import com.jade.Component;
+import com.jade.util.Constants;
 import com.jade.util.DebugDraw;
+import com.jade.util.JMath;
 import imgui.ImGui;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -34,7 +38,12 @@ public class Box extends Collider {
     private void calculateVertices() {
         for (int i=0; i < this.baseVertices.length; i++) {
             Vector4f tmp = new Vector4f(this.baseVertices[i], 1);
-            this.gameObject.transform.modelMatrix.transform(tmp);
+            Matrix4f scaleFree = new Matrix4f(this.gameObject.transform.modelMatrix);
+            scaleFree.mul(1f / this.gameObject.transform.scale.x, 0f, 0f, 0f,
+                            0f, 1f / this.gameObject.transform.scale.y, 0f, 0f,
+                            0f, 0f, 1f / this.gameObject.transform.scale.z, 0f,
+                            0f, 0f, 0f, 1f);
+            tmp.mul(scaleFree);
             this.transformedVertices[i].set(tmp.x, tmp.y, tmp.z);
         }
     }
@@ -95,5 +104,10 @@ public class Box extends Collider {
 
     public Vector3f[] getVertices() {
         return this.transformedVertices;
+    }
+
+    @Override
+    public Matrix3f getInertiaTensor(float mass) {
+        return JMath.createRectanglularPrismInertiaTensor(mass, this.size);
     }
 }

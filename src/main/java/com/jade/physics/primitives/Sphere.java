@@ -2,8 +2,10 @@ package com.jade.physics.primitives;
 
 import com.jade.Component;
 import com.jade.util.DebugDraw;
+import com.jade.util.JMath;
 import imgui.ImFloat;
 import imgui.ImGui;
+import org.joml.Matrix3f;
 
 public class Sphere extends Collider {
     private float radius;
@@ -37,5 +39,10 @@ public class Sphere extends Collider {
 
     public float radius() {
         return this.radius;
+    }
+
+    @Override
+    public Matrix3f getInertiaTensor(float mass) {
+        return JMath.createSphereInertiaTensor(mass, this.radius);
     }
 }

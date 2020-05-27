@@ -119,6 +119,10 @@ public class JMath {
     }
 
     public static Matrix3f createRectanglularPrismInertiaTensor(float mass, Vector3f dimensions) {
+        if (mass == 0f) {
+            return new Matrix3f();
+        }
+
         float xy00 = (1.0f / 12.0f) * mass * (dimensions.y * dimensions.y + dimensions.z * dimensions.z);
         float xy11 = (1.0f / 12.0f) * mass * (dimensions.x * dimensions.x + dimensions.z * dimensions.z);
         float xy22 = (1.0f / 12.0f) * mass * (dimensions.x * dimensions.x + dimensions.y * dimensions.y);
@@ -129,6 +133,10 @@ public class JMath {
     }
 
     public static Matrix3f createSphereInertiaTensor(float mass, float radius) {
+        if (mass == 0f) {
+            return new Matrix3f();
+        }
+
         float xy00 = (2f / 5f) * mass * (radius * radius);
         float xy11 = xy00;
         float xy22 = xy00;
@@ -139,6 +147,10 @@ public class JMath {
     }
 
     public static Matrix3f createPlaneInertiaTensor(float mass, Vector2f dimensions) {
+        if (mass == 0f) {
+            return new Matrix3f();
+        }
+
         float xy00 = (1.0f / 12.0f) * mass * (dimensions.y * dimensions.y);
         float xy11 = (1.0f / 12.0f) * mass * (dimensions.x * dimensions.x);
         float xy22 = (1.0f / 12.0f) * mass * (dimensions.x * dimensions.x + dimensions.y * dimensions.y);
