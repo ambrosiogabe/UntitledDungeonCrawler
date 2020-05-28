@@ -7,6 +7,7 @@ import com.jade.util.DebugDraw;
 import com.jade.util.JMath;
 import imgui.ImGui;
 import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -120,7 +121,8 @@ public class BoxCollider extends Collider {
 
     @Override
     public Matrix3f getInertiaTensor(float mass) {
-        return JMath.createRectanglularPrismInertiaTensor(mass, dimensions);
+        return new Matrix3f().identity();
+        //return JMath.createRectanglularPrismInertiaTensor(mass, dimensions);
     }
 
     public Vector3f getHalfSize() {

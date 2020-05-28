@@ -2,6 +2,7 @@ package com.jade.physics.primitives;
 
 import com.jade.Component;
 import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public class Triangle extends Collider {
@@ -51,7 +52,10 @@ public class Triangle extends Collider {
     }
 
     @Override
-    public Matrix3f getInertiaTensor(float mass) {
-        return new Matrix3f().identity();
+    public Matrix4f getInertiaTensor(float mass) {
+        return new Matrix4f(0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0);
     }
 }

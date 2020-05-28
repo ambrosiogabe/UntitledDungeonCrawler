@@ -13,5 +13,5 @@ public abstract class Collider extends Component {
         return axis;
     }
 
-    public abstract Matrix3f getInertiaTensor(float mass);
+    public abstract Matrix4f getInertiaTensor(float mass);
 }

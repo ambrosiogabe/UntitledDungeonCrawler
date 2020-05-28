@@ -6,6 +6,7 @@ import com.jade.util.JMath;
 import imgui.ImFloat;
 import imgui.ImGui;
 import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 
 public class Sphere extends Collider {
     private float radius;
@@ -42,7 +43,7 @@ public class Sphere extends Collider {
     }
 
     @Override
-    public Matrix3f getInertiaTensor(float mass) {
+    public Matrix4f getInertiaTensor(float mass) {
         return JMath.createSphereInertiaTensor(mass, this.radius);
     }
 }

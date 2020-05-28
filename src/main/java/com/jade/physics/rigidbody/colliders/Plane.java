@@ -18,7 +18,8 @@ public class Plane extends Collider {
 
     @Override
     public Matrix3f getInertiaTensor(float mass) {
-        return JMath.createPlaneInertiaTensor(mass, new Vector2f(gameObject.transform.scale.x, gameObject.transform.scale.y));
+        return new Matrix3f().identity();
+        //return JMath.createPlaneInertiaTensor(mass, new Vector2f(gameObject.transform.scale.x, gameObject.transform.scale.y));
     }
 
     @Override

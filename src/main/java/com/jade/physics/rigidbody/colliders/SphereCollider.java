@@ -22,7 +22,8 @@ public class SphereCollider extends Collider {
 
     @Override
     public Matrix3f getInertiaTensor(float mass) {
-        return JMath.createSphereInertiaTensor(mass, this.radius);
+        return new Matrix3f().identity();
+        //return JMath.createSphereInertiaTensor(mass, this.radius);
     }
 
     public void debugTestCollision(SphereCollider other, CollisionData data) {

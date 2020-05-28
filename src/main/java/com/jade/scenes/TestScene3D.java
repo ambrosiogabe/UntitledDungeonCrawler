@@ -23,7 +23,7 @@ public class TestScene3D extends Scene {
     private FontRenderer fpsLabel;
     private FontRenderer msLabel;
 
-    GameObject sphere, cubeOne, cubeTwo, plane;
+    GameObject sphere, cubeOne, cubeTwo, plane, groundCube;
     PhysicsSystem testPhysics = new PhysicsSystem();
 
     @Override
@@ -49,7 +49,7 @@ public class TestScene3D extends Scene {
         testLight.addComponent(testLightComp);
         this.addGameObject(testLight);
 
-        cubeOne = new GameObject("Cube 1", new Transform(new Vector3f(38.6f, 0f, 17), new Vector3f(1f)));
+        cubeOne = new GameObject("Cube 1", new Transform(new Vector3f(38.1f, 0f, 17), new Vector3f(1f)));
         Model cubeModel = new Model("mesh-ext/cube.obj");
         cubeModel.addPointLight(testLightComp);
         cubeOne.addComponent(cubeModel);
@@ -68,14 +68,22 @@ public class TestScene3D extends Scene {
 
         testPhysics.addRigidbody(cubeTwo.getComponent(Rigidbody.class));
 
-        plane = new GameObject("Plane", new Transform(new Vector3f(30, -6, 4), new Vector3f(50, 50, 1), new Vector3f(90, 0, 0)));
-        plane.addComponent(new Model("mesh-ext/plane.obj"));
-        plane.getComponent(Model.class).addPointLight(testLightComp);
-        plane.addComponent(new Plane(new Vector3f(0, 1, 0), -6));
-        plane.addComponent(new Rigidbody(0f));
-        this.addGameObject(plane);
+//        plane = new GameObject("Plane", new Transform(new Vector3f(30, -6, 4), new Vector3f(50, 50, 1), new Vector3f(90, 0, 0)));
+//        plane.addComponent(new Model("mesh-ext/plane.obj"));
+//        plane.getComponent(Model.class).addPointLight(testLightComp);
+//        plane.addComponent(new Plane(new Vector3f(0, 1, 0), -6));
+//        plane.addComponent(new Rigidbody(0f));
+//        this.addGameObject(plane);
+//
+//        testPhysics.addRigidbody(plane.getComponent(Rigidbody.class));
+        groundCube = new GameObject("Ground Cube", new Transform(new Vector3f(30, -7.25f, 4), new Vector3f(50, 1, 50)));
+        groundCube.addComponent(new Model("mesh-ext/cube.obj"));
+        groundCube.getComponent(Model.class).addPointLight(testLightComp);
+        groundCube.addComponent(new Box(new Vector3f(100f, 2f, 100f)));
+        groundCube.addComponent(new Rigidbody(0f));
+        this.addGameObject(groundCube);
 
-        testPhysics.addRigidbody(plane.getComponent(Rigidbody.class));
+        testPhysics.addRigidbody(groundCube.getComponent(Rigidbody.class));
 
         sphere = new GameObject("Sphere", new Transform(new Vector3f(30, -2, 15), new Vector3f(1f)));
         sphere.addComponent(new Model("mesh-ext/sphere.obj"));
@@ -109,15 +117,6 @@ public class TestScene3D extends Scene {
             fpsLabel.setText(String.format("FPS: %.3f", (1.0f / dt)));
             msLabel.setText(String.format("MS Last Frame: %.3f", dt * 1000.0f));
             labelFrame = 5;
-        }
-
-        if (IntersectionTester.boxAndBox(cubeTwo.getComponent(Box.class), cubeOne.getComponent(Box.class))) {
-            CollisionManifold manifold = Collisions.findCollisionFeatures(cubeTwo.getComponent(Box.class), cubeOne.getComponent(Box.class));
-            for (int i=0; i < manifold.contacts().size(); i++) {
-                Vector3f start = new Vector3f(manifold.contacts().get(i));
-                manifold.normal().normalize();
-                DebugDraw.addLine(start, new Vector3f(start).add(new Vector3f(manifold.normal()).mul(manifold.depth())));
-            }
         }
 
         if (KeyListener.isKeyPressed(GLFW_KEY_SPACE)) {

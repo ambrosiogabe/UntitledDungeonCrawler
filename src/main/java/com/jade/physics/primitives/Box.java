@@ -107,7 +107,7 @@ public class Box extends Collider {
     }
 
     @Override
-    public Matrix3f getInertiaTensor(float mass) {
+    public Matrix4f getInertiaTensor(float mass) {
         return JMath.createRectanglularPrismInertiaTensor(mass, this.size);
     }
 }

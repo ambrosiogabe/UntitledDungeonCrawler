@@ -118,46 +118,58 @@ public class JMath {
         vec.y = yPrime;
     }
 
-    public static Matrix3f createRectanglularPrismInertiaTensor(float mass, Vector3f dimensions) {
+    public static Matrix4f createRectanglularPrismInertiaTensor(float mass, Vector3f dimensions) {
         if (mass == 0f) {
-            return new Matrix3f();
+            return new Matrix4f(0f, 0f, 0f, 0f,
+                            0f, 0f, 0f, 0f,
+                            0f, 0f, 0f, 0f,
+                            0f, 0f, 0f, 0f);
         }
 
         float xy00 = (1.0f / 12.0f) * mass * (dimensions.y * dimensions.y + dimensions.z * dimensions.z);
         float xy11 = (1.0f / 12.0f) * mass * (dimensions.x * dimensions.x + dimensions.z * dimensions.z);
         float xy22 = (1.0f / 12.0f) * mass * (dimensions.x * dimensions.x + dimensions.y * dimensions.y);
 
-        return new Matrix3f(xy00, 0, 0,
-                      0, xy11, 0,
-                      0, 0, xy22);
+        return new Matrix4f(xy00, 0, 0, 0,
+                      0, xy11, 0, 0,
+                      0, 0, xy22, 0,
+                      0, 0, 0, 1);
     }
 
-    public static Matrix3f createSphereInertiaTensor(float mass, float radius) {
+    public static Matrix4f createSphereInertiaTensor(float mass, float radius) {
         if (mass == 0f) {
-            return new Matrix3f();
+            return new Matrix4f(0f, 0f, 0f, 0f,
+                    0f, 0f, 0f, 0f,
+                    0f, 0f, 0f, 0f,
+                    0f, 0f, 0f, 0f);
         }
 
         float xy00 = (2f / 5f) * mass * (radius * radius);
         float xy11 = xy00;
         float xy22 = xy00;
 
-        return new Matrix3f(xy00, 0, 0,
-                0, xy11, 0,
-                0, 0, xy22);
+        return new Matrix4f(xy00, 0, 0, 0,
+                0, xy11, 0, 0,
+                0, 0, xy22, 0,
+                0, 0, 0, 1);
     }
 
-    public static Matrix3f createPlaneInertiaTensor(float mass, Vector2f dimensions) {
+    public static Matrix4f createPlaneInertiaTensor(float mass, Vector2f dimensions) {
         if (mass == 0f) {
-            return new Matrix3f();
+            return new Matrix4f(0f, 0f, 0f, 0f,
+                    0f, 0f, 0f, 0f,
+                    0f, 0f, 0f, 0f,
+                    0f, 0f, 0f, 0f);
         }
 
         float xy00 = (1.0f / 12.0f) * mass * (dimensions.y * dimensions.y);
         float xy11 = (1.0f / 12.0f) * mass * (dimensions.x * dimensions.x);
         float xy22 = (1.0f / 12.0f) * mass * (dimensions.x * dimensions.x + dimensions.y * dimensions.y);
 
-        return new Matrix3f(xy00, 0, 0,
-                0, xy11, 0,
-                0, 0, xy22);
+        return new Matrix4f(xy00, 0, 0, 0,
+                0, xy11, 0, 0,
+                0, 0, xy22, 0,
+                0, 0, 0, 1);
     }
 
     public static float createSquareInertiaTensor(float mass, Vector2f dimensions) {
@@ -230,5 +242,11 @@ public class JMath {
         float dot = length.dot(direction);
         float magSq = direction.lengthSquared();
         return new Vector3f(direction).mul(dot / magSq);
+    }
+
+    public static Vector3f mul(Vector3f vec, Matrix4f mat) {
+        Vector4f tmp = new Vector4f(vec.x, vec.y, vec.z, 1);
+        mat.transform(tmp);
+        return new Vector3f(tmp.x, tmp.y, tmp.z);
     }
 }
