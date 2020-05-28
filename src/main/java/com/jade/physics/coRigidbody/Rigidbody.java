@@ -68,10 +68,30 @@ public class Rigidbody extends Component {
         velocity.add(acceleration.mul(deltaTime));
         velocity.mul(damping);
 
+        if (Math.abs(velocity.x) < 0.0001f) {
+            velocity.x = 0f;
+        }
+        if (Math.abs(velocity.y) < 0.0001f) {
+            velocity.y = 0f;
+        }
+        if (Math.abs(velocity.z) < 0.0001f) {
+            velocity.z = 0f;
+        }
+
         // Calculate angular velocity
         Vector3f angularAcceleration = JMath.mul(torques, inverseInertiaTensor);
         angularVelocity.add(new Vector3f(angularAcceleration).mul(deltaTime));
         angularVelocity.mul(damping);
+
+        if (Math.abs(angularVelocity.x) < 0.0001f) {
+            angularVelocity.x = 0f;
+        }
+        if (Math.abs(angularVelocity.y) < 0.0001f) {
+            angularVelocity.y = 0f;
+        }
+        if (Math.abs(angularVelocity.z) < 0.0001f) {
+            angularVelocity.z = 0f;
+        }
 
         // Update linear position
         position.add(new Vector3f(velocity).mul(deltaTime));
@@ -83,6 +103,7 @@ public class Rigidbody extends Component {
                                         angularVelocity.z * deltaTime * 0.5f, 0);
         q.mul(this.gameObject.transform.orientation);
         this.gameObject.transform.orientation.add(q);
+        this.gameObject.transform.orientation.normalize();
         //this.gameObject.transform.orientation.integrate(deltaTime, angularVelocity.x, angularVelocity.y, angularVelocity.z);
 
         synchCollisionVolumes();

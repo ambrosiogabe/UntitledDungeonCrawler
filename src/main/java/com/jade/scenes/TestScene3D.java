@@ -85,12 +85,12 @@ public class TestScene3D extends Scene {
 
         testPhysics.addRigidbody(groundCube.getComponent(Rigidbody.class));
 
-        sphere = new GameObject("Sphere", new Transform(new Vector3f(30, -2, 15), new Vector3f(1f)));
-        sphere.addComponent(new Model("mesh-ext/sphere.obj"));
-        sphere.getComponent(Model.class).addPointLight(testLightComp);
-        sphere.addComponent(new Sphere(1f));
-        sphere.addComponent(new Rigidbody(1f));
-        this.addGameObject(sphere);
+//        sphere = new GameObject("Sphere", new Transform(new Vector3f(30, -2, 15), new Vector3f(1f)));
+//        sphere.addComponent(new Model("mesh-ext/sphere.obj"));
+//        sphere.getComponent(Model.class).addPointLight(testLightComp);
+//        sphere.addComponent(new Sphere(1f));
+//        sphere.addComponent(new Rigidbody(1f));
+//        this.addGameObject(sphere);
 
         for (int i=0; i < 10; i++) {
             GameObject particle = new GameObject("Particle" + i, new Transform(new Vector3f(31.9f, 0 + i * (0.2f), 16.9f + i * (0.1f)), new Vector3f(0.1f)));
