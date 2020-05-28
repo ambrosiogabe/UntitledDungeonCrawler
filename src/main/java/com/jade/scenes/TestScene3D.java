@@ -103,31 +103,51 @@ public class TestScene3D extends Scene {
 //            testPhysics.addGameObject(particle);
 //        }
 
-        sphere = new GameObject("Sphere", new Transform(new Vector3f(5, 8f, -7f)));
-        sphere.addComponent(new Model("mesh-ext/sphere.obj"));
-        sphere.getComponent(Model.class).addPointLight(testLightComp);
-        sphere.addComponent(new Rigidbody(15f));
-        sphere.addComponent(new Sphere(1f));
-        this.addGameObject(sphere);
-        testPhysics.addGameObject(sphere);
-        testPhysics.addForceRegistration(sphere.getComponent(Rigidbody.class), new AnchoredRod(
-                new Vector3f(0, 1, 0),
-                new Vector3f(20f, 10f, -7f)));
+//        sphere = new GameObject("Sphere", new Transform(new Vector3f(5, 8f, -7f)));
+//        sphere.addComponent(new Model("mesh-ext/sphere.obj"));
+//        sphere.getComponent(Model.class).addPointLight(testLightComp);
+//        sphere.addComponent(new Rigidbody(15f));
+//        sphere.addComponent(new Sphere(1f));
+//        this.addGameObject(sphere);
+//        testPhysics.addGameObject(sphere);
+//        testPhysics.addForceRegistration(sphere.getComponent(Rigidbody.class), new AnchoredRod(
+//                new Vector3f(0, 1, 0),
+//                new Vector3f(20f, 10f, -7f)));
+//
+//
+//        for (int i=0; i < 7; i++) {
+//            for (int j=0; j < i - 1; j++) {
+//                float x = 20;
+//                float y = (j * 2.1f) - (5);
+//                float z = (i * 2.1f) - (j * 1.05f) - (15);
+//                GameObject cube = new GameObject("Cube" + i + "" + j, new Transform(new Vector3f(x, y, z)));
+//                cube.addComponent(new Model("mesh-ext/cube.obj"));
+//                cube.getComponent(Model.class).addPointLight(testLightComp);
+//                cube.addComponent(new Rigidbody(0.1f));
+//                cube.addComponent(new Box(new Vector3f(2f, 2f, 2f)));
+//                this.addGameObject(cube);
+//                testPhysics.addGameObject(cube);
+//            }
+//        }
 
-
-        for (int i=0; i < 7; i++) {
-            for (int j=0; j < i - 1; j++) {
-                float x = 20;
-                float y = (j * 2.1f) - (5);
-                float z = (i * 2.1f) - (j * 1.05f) - (15);
-                GameObject cube = new GameObject("Cube" + i + "" + j, new Transform(new Vector3f(x, y, z)));
-                cube.addComponent(new Model("mesh-ext/cube.obj"));
-                cube.getComponent(Model.class).addPointLight(testLightComp);
-                cube.addComponent(new Rigidbody(0.1f));
-                cube.addComponent(new Box(new Vector3f(2f, 2f, 2f)));
-                this.addGameObject(cube);
-                testPhysics.addGameObject(cube);
+        for (int i=0; i < 15; i++) {
+            float x = 20;
+            float y = -4f;
+            float z = (i * 2.1f) - (15f);
+            float thetaX = 0f;
+            float thetaY = 0f;
+            float thetaZ = 0f;
+            if (i == 0) {
+                thetaX = 15f;
             }
+            GameObject cube = new GameObject("Cube" + i + "", new Transform(new Vector3f(x, y, z), new Vector3f(1f, 2, 0.3f),
+            new Vector3f(thetaX, thetaY, thetaZ)));
+            cube.addComponent(new Model("mesh-ext/cube.obj"));
+            cube.getComponent(Model.class).addPointLight(testLightComp);
+            cube.addComponent(new Rigidbody(1f));
+            cube.addComponent(new Box(new Vector3f(2f, 4f, 0.6f)));
+            this.addGameObject(cube);
+            testPhysics.addGameObject(cube);
         }
 
         GameObject cameraController = new GameObject("Camera Controller", new Transform());
@@ -149,8 +169,8 @@ public class TestScene3D extends Scene {
 
 //        DebugDraw.addLine(new Vector3f(cubeOne.transform.position).add(new Vector3f(cubeOne.transform.up).mul(1)),
 //                new Vector3f(42, 10, 17), 0.05f, new Vector3f(0.5f, 0.5f, 0.5f));
-        DebugDraw.addLine(new Vector3f(sphere.transform.position).add(new Vector3f(sphere.transform.up).mul(1)),
-                new Vector3f(20f, 10f, -7f), 0.05f, new Vector3f(0.5f, 0.5f, 0.5f));
+//        DebugDraw.addLine(new Vector3f(sphere.transform.position).add(new Vector3f(sphere.transform.up).mul(1)),
+//                new Vector3f(20f, 10f, -7f), 0.05f, new Vector3f(0.5f, 0.5f, 0.5f));
 
         if (KeyListener.isKeyPressed(GLFW_KEY_SPACE)) {
             runPhysics = true;

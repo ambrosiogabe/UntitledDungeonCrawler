@@ -32,7 +32,8 @@ public class Constants {
     // ======================================================================================================
     // COLORS
     // ======================================================================================================
-    public static Vector4f WINDOW_CLEAR_COLOR = new Vector4f(0.15f, 0.25f, 0.41f, 1.0f);
+    //public static Vector4f WINDOW_CLEAR_COLOR = new Vector4f(0.15f, 0.25f, 0.41f, 1.0f);
+    public static Vector4f WINDOW_CLEAR_COLOR = new Vector4f(0.529f, 0.807f, 0.921f, 1.0f);
     public static final Vector4f COLOR4_WHITE = new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
     public static final Vector4f COLOR4_RED = new Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
     public static final Vector4f COLOR4_GREEN = new Vector4f(0.0f, 1.0f, 0.0f, 1.0f);
