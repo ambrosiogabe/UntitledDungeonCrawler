@@ -2,18 +2,12 @@ package com.jade.physics2d;
 
 import com.jade.GameObject;
 import com.jade.Window;
-import com.jade.components.SpriteRenderer;
-import com.jade.physics.rigidbody.Rigidbody;
-import com.jade.physics.rigidbody.colliders.CollisionDetector;
 import com.jade.physics2d.forces.ForceRegistry2D;
 import com.jade.physics2d.forces.Gravity2D;
 import com.jade.physics2d.primitives.Box2D;
 import com.jade.physics2d.primitives.Collider2D;
 import com.jade.physics2d.primitives.Raycast2D;
 import com.jade.physics2d.rigidbody.Rigidbody2D;
-import com.jade.renderer.Line2D;
-import com.jade.util.Constants;
-import com.jade.util.DebugDraw;
 import com.jade.util.JMath;
 import org.joml.Vector2f;
 

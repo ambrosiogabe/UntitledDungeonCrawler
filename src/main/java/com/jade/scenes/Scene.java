@@ -1,15 +1,13 @@
 package com.jade.scenes;
 
 import com.jade.*;
-import com.jade.components.Model;
-import com.jade.physics.Physics;
+import com.jade.physics.depecrated.Physics;
 import com.jade.physics2d.Physics2D;
 import com.jade.renderer.Renderer;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.enums.ImGuiCond;
 import imgui.enums.ImGuiWindowFlags;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;

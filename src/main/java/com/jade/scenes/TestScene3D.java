@@ -6,15 +6,10 @@ import com.jade.Window;
 import com.jade.components.*;
 import com.jade.events.KeyListener;
 import com.jade.physics.PhysicsSystem;
-import com.jade.physics.coRigidbody.CollisionManifold;
-import com.jade.physics.coRigidbody.Collisions;
-import com.jade.physics.coRigidbody.Rigidbody;
+import com.jade.physics.rigidbody.Rigidbody;
 import com.jade.physics.primitives.Box;
-import com.jade.physics.primitives.IntersectionTester;
-import com.jade.physics.primitives.Plane;
 import com.jade.physics.primitives.Sphere;
 import com.jade.util.Constants;
-import com.jade.util.DebugDraw;
 import org.joml.Vector3f;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;

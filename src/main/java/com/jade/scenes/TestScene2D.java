@@ -6,23 +6,13 @@ import com.jade.Window;
 import com.jade.components.Sprite;
 import com.jade.components.SpriteRenderer;
 import com.jade.events.KeyListener;
-import com.jade.events.MouseListener;
-import com.jade.physics.rigidbody.Rigidbody;
 import com.jade.physics2d.Physics2D;
-import com.jade.physics2d.forces.ForceRegistry2D;
-import com.jade.physics2d.forces.Gravity2D;
-import com.jade.physics2d.rigidbody.CollisionDetector2D;
 import com.jade.physics2d.primitives.Box2D;
-import com.jade.physics2d.primitives.Circle;
 import com.jade.physics2d.rigidbody.Rigidbody2D;
-import com.jade.renderer.Line2D;
 import com.jade.util.Constants;
-import com.jade.util.DebugDraw;
 import com.jade.util.JMath;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-
-import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 

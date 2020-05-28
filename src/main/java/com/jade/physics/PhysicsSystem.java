@@ -1,14 +1,10 @@
 package com.jade.physics;
 
-import com.jade.physics.coRigidbody.CollisionManifold;
-import com.jade.physics.coRigidbody.Collisions;
-import com.jade.physics.coRigidbody.Rigidbody;
-import com.jade.physics.primitives.Box;
+import com.jade.physics.rigidbody.CollisionManifold;
+import com.jade.physics.rigidbody.Collisions;
+import com.jade.physics.rigidbody.Rigidbody;
 import com.jade.physics.primitives.Collider;
-import com.jade.physics.rigidbody.colliders.CollisionDetector;
-import com.jade.physics2d.rigidbody.CollisionDetector2D;
 import com.jade.util.JMath;
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 

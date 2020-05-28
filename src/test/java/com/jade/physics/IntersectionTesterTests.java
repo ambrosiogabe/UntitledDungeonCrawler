@@ -3,7 +3,6 @@ package com.jade.physics;
 import com.jade.GameObject;
 import com.jade.Transform;
 import com.jade.physics.primitives.*;
-import com.jade.physics.rigidbody.colliders.IntersectionTests;
 import com.jade.renderer.Line;
 import com.jade.util.JMath;
 import org.joml.Vector3f;
