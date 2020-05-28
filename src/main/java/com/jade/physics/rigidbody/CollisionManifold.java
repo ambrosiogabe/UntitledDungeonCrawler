@@ -10,8 +10,10 @@ public class CollisionManifold {
     private Vector3f normal;
     private float depth;
     private List<Vector3f> contacts;
+    private boolean shouldFlipColliders;
 
     public CollisionManifold() {
+        this.shouldFlipColliders = false;
         this.colliding = false;
         this.normal = new Vector3f();
         this.depth = 0f;
@@ -19,6 +21,7 @@ public class CollisionManifold {
     }
 
     public void reset() {
+        this.shouldFlipColliders = false;
         this.colliding = false;
         this.normal.set(0, 1, 0);
         this.depth = 0;
@@ -63,5 +66,13 @@ public class CollisionManifold {
     public void setNormal(Vector3f normal) {
         this.normal.set(normal);
         this.normal.normalize();
+    }
+
+    public void setShouldFlipColliders(boolean val) {
+        this.shouldFlipColliders = val;
+    }
+
+    public boolean shouldFlipColliders() {
+        return this.shouldFlipColliders;
     }
 }

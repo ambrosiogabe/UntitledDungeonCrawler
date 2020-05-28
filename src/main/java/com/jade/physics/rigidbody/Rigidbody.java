@@ -37,7 +37,7 @@ public class Rigidbody extends Component {
         this.gravity = new Vector3f(0f, -9.82f, 0f);
         this.mass = mass;
         this.inverseMass = this.mass == 0f ? 0f : 1 / this.mass;
-        this.cor = 0.95f;
+        this.cor = 0.45f;
     }
 
     @Override
@@ -105,10 +105,17 @@ public class Rigidbody extends Component {
         //this.gameObject.transform.orientation.integrate(deltaTime, angularVelocity.x, angularVelocity.y, angularVelocity.z);
 
         synchCollisionVolumes();
+
+        clearAccumulators();
     }
 
     public void applyForces() {
         this.forces.set(new Vector3f(gravity).mul(mass));
+    }
+
+    private void clearAccumulators() {
+        this.forces.zero();
+        this.torques.zero();
     }
 
     public void solveConstraints(List<Collider> constraints) {

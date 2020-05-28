@@ -15,7 +15,9 @@ public class Collisions {
             if (b instanceof Sphere) {
                 return findCollisionFeatures((Sphere)a, (Sphere)b);
             } else if (b instanceof  Box) {
-                return findCollisionFeatures((Box)b, (Sphere)a);
+                CollisionManifold result = findCollisionFeatures((Box)b, (Sphere)a);
+                result.setShouldFlipColliders(true);
+                return result;
             } else if (b instanceof Plane) {
                 return findCollisionFeatures((Sphere)a, (Plane)b);
             }
@@ -29,7 +31,9 @@ public class Collisions {
             }
         } else if (a instanceof Plane) {
             if (b instanceof Sphere) {
-                return findCollisionFeatures((Sphere)b, (Plane)a);
+                CollisionManifold result = findCollisionFeatures((Sphere)b, (Plane)a);
+                result.setShouldFlipColliders(true);
+                return result;
             } else if (b instanceof Box) {
                 return findCollisionFeatures((Box)b, (Plane)a);
             }

@@ -10,17 +10,16 @@ public class Spring implements ForceGenerator {
 
     // The point of connection of the spring to the other object
     // in that object's local coordinates
-    Vector3f otherConnectionPoint;
+    Vector3f otherPointWorldSpace;
 
     // The particle at the other end of the spring
-    Rigidbody other;
+    //Rigidbody other;
 
     float springConstant, restLength;
 
-    public Spring(Vector3f localConnectionPoint, Rigidbody other, Vector3f otherConnectionPoint, float springConstant, float restLength) {
+    public Spring(Vector3f localConnectionPoint, Vector3f otherPointWorldSpace, float springConstant, float restLength) {
         this.connectionPoint = localConnectionPoint;
-        this.other = other;
-        this.otherConnectionPoint = otherConnectionPoint;
+        this.otherPointWorldSpace = otherPointWorldSpace;
         this.springConstant = springConstant;
         this.restLength = restLength;
     }
@@ -29,7 +28,7 @@ public class Spring implements ForceGenerator {
     public void updateForce(Rigidbody body, float duration) {
         // Calculate the two ends in world space
         Vector3f lws = body.getPointInWorldSpace(connectionPoint);
-        Vector3f ows = other.getPointInWorldSpace(otherConnectionPoint);
+        Vector3f ows = new Vector3f(otherPointWorldSpace);
 
         // Calculate the vector of the spring (in local space)
         Vector3f force = new Vector3f(lws).sub(ows);

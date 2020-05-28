@@ -1,5 +1,10 @@
 package com.jade.physics;
 
+import com.jade.GameObject;
+import com.jade.physics.forces.ForceGenerator;
+import com.jade.physics.forces.ForceRegistration;
+import com.jade.physics.forces.ForceRegistry;
+import com.jade.physics.forces.Gravity;
 import com.jade.physics.rigidbody.CollisionManifold;
 import com.jade.physics.rigidbody.Collisions;
 import com.jade.physics.rigidbody.Rigidbody;
@@ -19,6 +24,9 @@ public class PhysicsSystem {
     private List<Rigidbody> colliders2;
     private List<CollisionManifold> results;
 
+    private ForceRegistry forceRegistry;
+    private Gravity gravity;
+
     // Keep between 0.2 and 0.8
     float linearProjectionPercent;
     float penetrationSlack;
@@ -31,10 +39,13 @@ public class PhysicsSystem {
         this.colliders1 = new ArrayList<>();
         this.colliders2 = new ArrayList<>();
         this.results = new ArrayList<>();
+        this.forceRegistry = new ForceRegistry();
 
         this.linearProjectionPercent = 0.45f;
         this.penetrationSlack = 0.01f;
-        this.impulseIteration = 6;
+        this.impulseIteration = 20;
+
+        this.gravity = new Gravity(new Vector3f(0, -9.82f, 0));
     }
 
     public void update(float deltaTime) {
@@ -60,17 +71,23 @@ public class PhysicsSystem {
                 }
 
                 if (result.colliding()) {
-                    colliders1.add(bodies.get(i));
-                    colliders2.add(bodies.get(j));
+                    if (!result.shouldFlipColliders()) {
+                        colliders1.add(bodies.get(i));
+                        colliders2.add(bodies.get(j));
+                    } else {
+                        colliders1.add(bodies.get(j));
+                        colliders2.add(bodies.get(i));
+                    }
                     results.add(result);
                 }
             }
         }
 
         // Apply all forces
-        for (int i=0; i < size; i++) {
-            bodies.get(i).applyForces();
-        }
+//        for (int i=0; i < size; i++) {
+//            bodies.get(i).applyForces();
+//        }
+        forceRegistry.updateForces(deltaTime);
 
         // Resolve collisions
         for (int k=0; k < impulseIteration; k++) {
@@ -204,6 +221,18 @@ public class PhysicsSystem {
 
     public void addRigidbody(Rigidbody body) {
         this.bodies.add(body);
+    }
+
+    public void addGameObject(GameObject go) {
+        Rigidbody rb = go.getComponent(Rigidbody.class);
+        if (rb != null) {
+            this.bodies.add(rb);
+            this.forceRegistry.add(rb, gravity);
+        }
+    }
+
+    public void addForceRegistration(Rigidbody body, ForceGenerator generator) {
+        this.forceRegistry.add(body, generator);
     }
 
     public void addConstraint(Collider constraint) {
